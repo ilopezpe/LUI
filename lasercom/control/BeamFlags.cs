@@ -6,20 +6,26 @@ using System.Threading;
 namespace lasercom.control
 {
     /// <summary>
-    /// Class representing BeamFlags operated by 232 SDA12 microcontroller.
-    /// Note that due to limitations of the microcontroller, the flags can
-    /// NOT BE CLOSED SIMULTANEOUSLY. Instead, that behavior is emulated.
+    /// Class representing BeamFlags operated by numato usbgpio16 controller.
     /// </summary>
     public class BeamFlags:AbstractBeamFlags
     {
-        public const string OpenFlashCommand = "!0SO1";
-        public const string CloseFlashCommand = "!0SO000";
+        //use masks to send commands simultaneously
+        public const string gpioOutputs = "00ff";
+        public const string gpioMask = "c000";
 
-        public const string OpenLaserCommand = "!0SO2";
-        public const string CloseLaserCommand = "!0SO000";
+        //probe light shutter
+        //reverse logic, i.e. high = close shutters. low = open shutters.
+        public const string OpenFlashCommand = "gpio clear E\r";
+        public const string CloseFlashCommand = "gpio set E\r";
 
-        public const string OpenLaserAndFlashCommand = "!0SO3";
-        public const string CloseLaserAndFlashCommand = "!0SO000";
+        //laser shutter
+        public const string OpenLaserCommand = "gpio clear F\r";
+        public const string CloseLaserCommand = "gpio set F\r";
+
+        // the following allows switching both io14 and io15 simultaneously.
+        public const string OpenLaserAndFlashCommand = "gpio writeall 0000\r";
+        public const string CloseLaserAndFlashCommand = "gpio writeall ffff\r";
 
         // Approximate time in ms for solenoid to switch.
         public const int DefaultDelay = 300;
@@ -54,7 +60,17 @@ namespace lasercom.control
         {
             Delay = DefaultDelay;
             _port = new SerialPort(portName);
-            _port.Open();
+            _port.BaudRate = 9600;
+            if (!_port.IsOpen)
+                _port.Open();
+
+            _port.DiscardInBuffer();
+            _port.Write("gpio iodir" + gpioOutputs + "\r");
+            Thread.Sleep(10);
+            _port.Write("gpio iomask " + gpioMask + "\r");
+            Thread.Sleep(10);
+            _port.DiscardOutBuffer();
+
             CloseLaserAndFlash();
         }
 
@@ -70,9 +86,11 @@ namespace lasercom.control
         /// <param name="wait"></param>
         private void OpenLaser(bool wait)
         {
+            _port.DiscardInBuffer();
             _port.Write(OpenLaserCommand);
             if (wait) Thread.Sleep(Delay);
-            LaserState = BeamFlagState.Open;
+              LaserState = BeamFlagState.Open;
+            _port.DiscardOutBuffer();
         }
 
         public override void OpenFlash()
@@ -82,9 +100,11 @@ namespace lasercom.control
 
         private void OpenFlash(bool wait)
         {
+            _port.DiscardInBuffer();
             _port.Write(OpenFlashCommand);
             if (wait) Thread.Sleep(Delay);
-            FlashState = BeamFlagState.Open;
+              FlashState = BeamFlagState.Open;
+            _port.DiscardOutBuffer();
         }
 
         public override void OpenLaserAndFlash()
@@ -94,10 +114,12 @@ namespace lasercom.control
 
         private void OpenLaserAndFlash(bool wait)
         {
+            _port.DiscardInBuffer();
             _port.Write(OpenLaserAndFlashCommand);
             if (wait) Thread.Sleep(Delay);
-            LaserState = BeamFlagState.Open;
-            FlashState = BeamFlagState.Open;
+                LaserState = BeamFlagState.Open;
+                FlashState = BeamFlagState.Open;
+            _port.DiscardOutBuffer();
         }
 
         public override void CloseLaser()
@@ -105,20 +127,13 @@ namespace lasercom.control
             CloseLaser(true);
         }
 
-        /// <summary>
-        /// Emulating closing the laser flag independently by closing both flags
-        /// and then re-opening the flash flag if necessary.
-        /// Using the sleep in OpenFlash() allows both State values to be updated
-        /// after waking (ensuring the flags have reached their new positions).
-        /// </summary>
-        /// <param name="wait"></param>
         private void CloseLaser(bool wait)
         {
-            _port.Write(CloseLaserAndFlashCommand);
-            if (FlashState == BeamFlagState.Open) OpenFlash(wait); // Sleep in OpenFlash if requested.
-            else if (wait) Thread.Sleep(Delay); // Didn't enter OpenFlash, need to sleep.
-            LaserState = BeamFlagState.Closed;
-            //throw new NotImplementedException("Can't close flags independently");
+            _port.DiscardInBuffer();
+            _port.Write(CloseLaserCommand);
+            if (wait) Thread.Sleep(Delay);
+                LaserState = BeamFlagState.Closed;
+            _port.DiscardOutBuffer();
         }
 
         public override void CloseFlash()
@@ -128,11 +143,11 @@ namespace lasercom.control
 
         private void CloseFlash(bool wait)
         {
-            _port.Write(CloseLaserAndFlashCommand);
-            if (LaserState == BeamFlagState.Open) OpenLaser(wait);
-            else if (wait) Thread.Sleep(Delay);
-            FlashState = BeamFlagState.Closed;
-            //throw new NotImplementedException("Can't close flags independently");
+            _port.DiscardInBuffer();
+            _port.Write(CloseFlashCommand);
+            if (wait) Thread.Sleep(Delay);
+              FlashState = BeamFlagState.Closed;
+            _port.DiscardOutBuffer();
         }
 
         public override void CloseLaserAndFlash()
@@ -142,10 +157,12 @@ namespace lasercom.control
 
         private void CloseLaserAndFlash(bool wait)
         {
+            _port.DiscardInBuffer();
             _port.Write(CloseLaserAndFlashCommand);
             if (wait) Thread.Sleep(Delay);
-            LaserState = BeamFlagState.Closed;
-            FlashState = BeamFlagState.Closed;
+               LaserState = BeamFlagState.Closed;
+              FlashState = BeamFlagState.Closed;
+            _port.DiscardOutBuffer();
         }
 
         private void EnsurePortDisposed()
