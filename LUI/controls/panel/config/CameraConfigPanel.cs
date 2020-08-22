@@ -1,6 +1,6 @@
-﻿using System;
+﻿using lasercom.camera;
+using System;
 using System.Windows.Forms;
-using lasercom.camera;
 
 namespace LUI.controls
 {
@@ -92,7 +92,7 @@ namespace LUI.controls
             var user = GuiUtil.SimpleFileNameDialog("CAL Files|*.cal");
             CalFile.Control.Text = user != "" ? user : orig;
         }
-    
+
         public override void CopyFrom(CameraParameters other)
         {
             CalFile.Control.Text = other.CalFile;
@@ -110,7 +110,7 @@ namespace LUI.controls
             other.VBin = (int)VBin.Control.Value;
             other.VStart = (int)VStart.Control.Value;
             other.VCount = (int)Math.Max(-1, VEnd.Control.Value - VStart.Control.Value + 1);
-            other.ReadMode = ReadMode.Control.SelectedItem != null ? ((Tuple<string,int>)ReadMode.Control.SelectedItem).Item2 : AndorCamera.ReadModeFVB;
+            other.ReadMode = ReadMode.Control.SelectedItem != null ? ((Tuple<string, int>)ReadMode.Control.SelectedItem).Item2 : AndorCamera.ReadModeFVB;
             other.SaturationLevel = (int)SaturationLevel.Control.Value;
         }
     }

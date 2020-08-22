@@ -6,7 +6,7 @@ namespace lasercom.control
 {
     [DataContract]
     public class BeamFlagsParameters : LuiObjectParameters<BeamFlagsParameters>
-    {        
+    {
         [DataMember]
         public string PortName { get; set; }
 

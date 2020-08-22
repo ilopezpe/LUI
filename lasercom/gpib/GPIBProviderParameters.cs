@@ -1,6 +1,6 @@
-﻿using System;
+﻿using lasercom.objects;
+using System;
 using System.Runtime.Serialization;
-using lasercom.objects;
 
 namespace lasercom.gpib
 {

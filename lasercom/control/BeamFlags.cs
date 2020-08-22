@@ -8,7 +8,7 @@ namespace lasercom.control
     /// <summary>
     /// Class representing BeamFlags operated by numato usbgpio16 controller.
     /// </summary>
-    public class BeamFlags:AbstractBeamFlags
+    public class BeamFlags : AbstractBeamFlags
     {
         //use masks to send commands simultaneously
         public const string gpioOutputs = "00ff";
@@ -91,7 +91,7 @@ namespace lasercom.control
             _port.DiscardInBuffer();
             _port.Write(OpenLaserCommand);
             if (wait) Thread.Sleep(Delay);
-              LaserState = BeamFlagState.Open;
+            LaserState = BeamFlagState.Open;
             _port.DiscardOutBuffer();
         }
 
@@ -105,7 +105,7 @@ namespace lasercom.control
             _port.DiscardInBuffer();
             _port.Write(OpenFlashCommand);
             if (wait) Thread.Sleep(Delay);
-              FlashState = BeamFlagState.Open;
+            FlashState = BeamFlagState.Open;
             _port.DiscardOutBuffer();
         }
 
@@ -119,8 +119,8 @@ namespace lasercom.control
             _port.DiscardInBuffer();
             _port.Write(OpenLaserAndFlashCommand);
             if (wait) Thread.Sleep(Delay);
-                LaserState = BeamFlagState.Open;
-                FlashState = BeamFlagState.Open;
+            LaserState = BeamFlagState.Open;
+            FlashState = BeamFlagState.Open;
             _port.DiscardOutBuffer();
         }
 
@@ -134,7 +134,7 @@ namespace lasercom.control
             _port.DiscardInBuffer();
             _port.Write(CloseLaserCommand);
             if (wait) Thread.Sleep(Delay);
-                LaserState = BeamFlagState.Closed;
+            LaserState = BeamFlagState.Closed;
             _port.DiscardOutBuffer();
         }
 
@@ -148,7 +148,7 @@ namespace lasercom.control
             _port.DiscardInBuffer();
             _port.Write(CloseFlashCommand);
             if (wait) Thread.Sleep(Delay);
-              FlashState = BeamFlagState.Closed;
+            FlashState = BeamFlagState.Closed;
             _port.DiscardOutBuffer();
         }
 
@@ -162,8 +162,8 @@ namespace lasercom.control
             _port.DiscardInBuffer();
             _port.Write(CloseLaserAndFlashCommand);
             if (wait) Thread.Sleep(Delay);
-               LaserState = BeamFlagState.Closed;
-              FlashState = BeamFlagState.Closed;
+            LaserState = BeamFlagState.Closed;
+            FlashState = BeamFlagState.Closed;
             _port.DiscardOutBuffer();
         }
 

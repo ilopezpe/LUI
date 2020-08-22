@@ -1,15 +1,15 @@
-﻿using System;
-using System.ComponentModel;
-using System.Threading;
-using System.Windows.Forms;
-using System.Windows.Threading;
-using Extensions;
+﻿using Extensions;
 using lasercom;
 using lasercom.camera;
 using lasercom.control;
 using lasercom.objects;
 using log4net;
 using LUI.config;
+using System;
+using System.ComponentModel;
+using System.Threading;
+using System.Windows.Forms;
+using System.Windows.Threading;
 
 namespace LUI.tabs
 {
@@ -35,14 +35,14 @@ namespace LUI.tabs
             {
                 if (InvokeRequired)
                 {
-                    BeginInvoke(new Action(() => 
+                    BeginInvoke(new Action(() =>
                         CameraStatus.Text = Commander.Camera.DecodeStatus(value)));
                 }
                 else
                 {
                     CameraStatus.Text = Commander.Camera.DecodeStatus(value);
                 }
-                
+
             }
         }
 
@@ -50,7 +50,7 @@ namespace LUI.tabs
         {
             Config = config;
             Commander = new Commander();
-            
+
             InitializeComponent();
             Init();
 
@@ -126,7 +126,7 @@ namespace LUI.tabs
         public virtual void HandleCameraChanged(object sender, EventArgs e)
         {
             // Replace the Camera property in the Commander.
-            if (CameraBox.SelectedObject != null) 
+            if (CameraBox.SelectedObject != null)
                 Commander.Camera = (ICamera)Config.GetObject(CameraBox.SelectedObject);
 
             if (Commander.Camera != null)
@@ -164,9 +164,9 @@ namespace LUI.tabs
 
         public virtual void HandleBeamFlagsChanged(object sender, EventArgs e)
         {
-            if (Commander.BeamFlag != null) 
+            if (Commander.BeamFlag != null)
                 Commander.BeamFlag.CloseLaserAndFlash();
-            if (BeamFlagBox.SelectedObject != null) 
+            if (BeamFlagBox.SelectedObject != null)
                 Commander.BeamFlag = (IBeamFlags)Config.GetObject(BeamFlagBox.SelectedObject);
         }
 
@@ -191,8 +191,7 @@ namespace LUI.tabs
         protected virtual void LoadSettings()
         {
             var Settings = Config.TabSettings[this.GetType().Name];
-            string value;
-            if (Settings.TryGetValue("Camera", out value) && value != null && value != "")
+            if (Settings.TryGetValue("Camera", out string value) && value != null && value != "")
                 CameraBox.SelectedObject = Config.GetFirstParameters(typeof(CameraParameters), value);
             if (Settings.TryGetValue("BeamFlag", out value) && value != null && value != "")
                 BeamFlagBox.SelectedObject = Config.GetFirstParameters(typeof(BeamFlagsParameters), value);
@@ -221,9 +220,9 @@ namespace LUI.tabs
                 if (OldPumpState == PumpState.Open) Commander.Pump.SetOpen();
                 if (OldFlashState == BeamFlagState.Open && OldLaserState == BeamFlagState.Open)
                     Commander.BeamFlag.OpenLaserAndFlash();
-                else if (OldFlashState == BeamFlagState.Open) 
+                else if (OldFlashState == BeamFlagState.Open)
                     Commander.BeamFlag.OpenFlash();
-                else if (OldLaserState == BeamFlagState.Open) 
+                else if (OldLaserState == BeamFlagState.Open)
                     Commander.BeamFlag.OpenLaser();
                 worker.ReportProgress(percentProgress, progress);
             }
@@ -277,7 +276,7 @@ namespace LUI.tabs
             worker.RunWorkerAsync(N);
             OnTaskStarted(EventArgs.Empty);
         }
-        
+
         protected virtual void Pause_Click(object sender, EventArgs e)
         {
             if (Paused.WaitOne(0)) // True if set (running/resumed).
@@ -352,7 +351,7 @@ namespace LUI.tabs
         {
             get
             {
-                return worker != null ? worker.IsBusy : false;
+                return worker != null && worker.IsBusy;
             }
         }
 

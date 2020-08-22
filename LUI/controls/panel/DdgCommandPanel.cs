@@ -1,10 +1,10 @@
-﻿using System;
+﻿using lasercom;
+using lasercom.ddg;
+using LUI.config;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using lasercom;
-using lasercom.ddg;
-using LUI.config;
 
 namespace LUI.controls
 {
@@ -184,7 +184,6 @@ namespace LUI.controls
 
         bool IsPrimaryDelayValueValid()
         {
-            double value;
             if (PrimaryDelayDdg == null ||
                 PrimaryDelayDelay == null ||
                 PrimaryDelayTrigger == null ||
@@ -192,7 +191,7 @@ namespace LUI.controls
             {
                 return false;
             }
-            else if (!double.TryParse(PrimaryDelayText, out value))
+            else if (!double.TryParse(PrimaryDelayText, out double value))
             {
                 return false;
             }

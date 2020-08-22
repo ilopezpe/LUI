@@ -1,16 +1,16 @@
-﻿using System;
+﻿using lasercom;
+using lasercom.camera;
+using lasercom.ddg;
+using lasercom.io;
+using LUI.config;
+using LUI.controls;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using lasercom;
-using lasercom.camera;
-using lasercom.ddg;
-using lasercom.io;
-using LUI.config;
-using LUI.controls;
 
 namespace LUI.tabs
 {
@@ -80,7 +80,7 @@ namespace LUI.tabs
 
         struct ProgressObject
         {
-            public ProgressObject(object Data, int Counts, double VarCounts, int Peak, double VarPeak, 
+            public ProgressObject(object Data, int Counts, double VarCounts, int Peak, double VarPeak,
                 int CountsN, double VarCountsN, int PeakN, double VarPeakN, Dialog Status)
             {
                 this.Data = Data;
@@ -93,7 +93,7 @@ namespace LUI.tabs
                 this.PeakN = PeakN;
                 this.VarPeakN = VarPeakN;
                 this.Status = Status;
-            }                             
+            }
             public readonly object Data;
             public readonly int Counts;
             public readonly int Peak;
@@ -211,12 +211,16 @@ namespace LUI.tabs
         {
             base.LoadSettings();
             var Settings = Config.TabSettings[this.GetType().Name];
-            string value;
-            if (Settings.TryGetValue("PrimaryDelayDdg", out value) && value != null && value != "")
+            if (Settings.TryGetValue("PrimaryDelayDdg", out string value) && value != null && value != "")
+            {
                 DdgConfigBox.PrimaryDelayDdg = (DelayGeneratorParameters)Config.GetFirstParameters(
                     typeof(DelayGeneratorParameters), value);
+            }
+
             if (Settings.TryGetValue("PrimaryDelayDelay", out value) && value != null && value != "")
+            {
                 DdgConfigBox.PrimaryDelayDelay = value;
+            }
         }
 
         protected override void SaveSettings()
@@ -229,7 +233,7 @@ namespace LUI.tabs
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
-            if (CollectLaser.Checked && 
+            if (CollectLaser.Checked &&
                 (DdgConfigBox.PrimaryDelayDdg == null || DdgConfigBox.PrimaryDelayDelay == null))
             {
                 MessageBox.Show("Primary delay must be configured.", "Error", MessageBoxButtons.OK);
@@ -251,7 +255,7 @@ namespace LUI.tabs
 
             GraphScroll.Enabled = ImageMode.Checked;
             UpdateGraphScroll();
-            
+
             CameraImage_ValueChanged(sender, e);
             ImageMode_CheckedChanged(sender, e);
             FvbMode_CheckedChanged(sender, e);
@@ -290,11 +294,11 @@ namespace LUI.tabs
         /// <param name="e"></param>
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
-            if (PauseCancelProgress(e, -1, 
-                new ProgressObject(null, 0, 0, 0, 0, 0, 0 ,0, 0, Dialog.INIT))) return;
-            
+            if (PauseCancelProgress(e, -1,
+                new ProgressObject(null, 0, 0, 0, 0, 0, 0, 0, 0, Dialog.INIT))) return;
+
             WorkArgs args = (WorkArgs)e.Argument;
-            
+
             int cmasum = 0; // Cumulative moving average over scans
             double varsum = 0;
             int cmapeak = 0;
@@ -307,7 +311,7 @@ namespace LUI.tabs
             int[] pastpeaks = new int[args.NAvg];
 
             int finalSize = args.SoftwareBinning ?
-                Commander.Camera.AcqSize / Commander.Camera.Image.Height : 
+                Commander.Camera.AcqSize / Commander.Camera.Image.Height :
                 Commander.Camera.AcqSize;
             double nrows = (double)Commander.Camera.AcqSize / finalSize;
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
@@ -340,7 +344,7 @@ namespace LUI.tabs
                         if (DataBuffer[idx] > peak) peak = DataBuffer[idx];
                     }
                 }
-                    
+
                 double vartemp;
                 int delta = sum - cmasum;
                 cmasum += delta / (i + 1);
@@ -382,10 +386,10 @@ namespace LUI.tabs
                 RawData.WriteNext(BinnedDataBuffer, 0);
 
                 var progress = new ProgressObject(
-                    Array.ConvertAll((int[])BinnedDataBuffer, x => (double)x / nrows), 
-                    cmasum, varsum / i, cmapeak, varpeak / i, nsum, nvarsum / i, 
+                    Array.ConvertAll((int[])BinnedDataBuffer, x => (double)x / nrows),
+                    cmasum, varsum / i, cmapeak, varpeak / i, nsum, nvarsum / i,
                     npeak, nvarpeak / i, Dialog.PROGRESS_DATA);
-                if (PauseCancelProgress(e, i+1, progress)) return;
+                if (PauseCancelProgress(e, i + 1, progress)) return;
             }
 
             Commander.BeamFlag.CloseLaserAndFlash();
@@ -563,7 +567,7 @@ namespace LUI.tabs
             int count = LastAcqWidth;
 
             Graph.ClearData();
-            
+
             if (ShowLast.Checked && LastLight != null)
             {
                 Graph.MarkerColor = Graph.ColorOrder[1];
@@ -692,7 +696,7 @@ namespace LUI.tabs
                     {
                         MatFile mat = new MatFile(saveFile.FileName);
                         MatVar<double> V = mat.CreateVariable<double>("aln", Light.Length, 1);
-                        V.WriteNext(Light,1);
+                        V.WriteNext(Light, 1);
                         mat.Dispose();
                     }
                     catch (IOException ex)

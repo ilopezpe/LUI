@@ -71,7 +71,7 @@ namespace lasercom.camera
             _Height = 255;
             _Width = 1024;
             Image = new ImageArea(1, 1, 0, Width, 0, Height);
-            Calibration = Enumerable.Range(0, Width).Select(x=>(double)x).ToArray();
+            Calibration = Enumerable.Range(0, Width).Select(x => (double)x).ToArray();
             ReadMode = AndorCamera.ReadModeFVB;
         }
 

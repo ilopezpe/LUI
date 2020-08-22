@@ -1,5 +1,5 @@
-﻿using System;
-using ATSHAMROCKCS;
+﻿using ATSHAMROCKCS;
+using System;
 
 namespace lasercom.control
 {
@@ -95,7 +95,7 @@ namespace lasercom.control
                     if (value < MinWavelength || value > MaxWavelength) throw new ArgumentException("Wavelength limit error.");
                     LastStatus = ShamrockSdk.ShamrockSetWavelength(Device, (float)value);
                 }
-                
+
             }
         }
 

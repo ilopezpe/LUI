@@ -1,6 +1,6 @@
-﻿using System;
+﻿using lasercom.objects;
+using System;
 using System.IO.Ports;
-using lasercom.objects;
 
 namespace lasercom.control
 {
@@ -8,12 +8,13 @@ namespace lasercom.control
     /// Represents a Harvard Apparatus syringe pump using the custom
     /// flip-flop box and foot-pedal hack.
     /// </summary>
-    public class HarvardPump:AbstractPump
+    public class HarvardPump : AbstractPump
     {
         private SerialPort _port;
 
-        public HarvardPump(LuiObjectParameters p) : 
-            this(p as PumpParameters) { }
+        public HarvardPump(LuiObjectParameters p) :
+            this(p as PumpParameters)
+        { }
 
         public HarvardPump(PumpParameters p)
         {

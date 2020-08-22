@@ -1,13 +1,13 @@
-﻿using System;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using lasercom;
+﻿using lasercom;
 using lasercom.camera;
 using lasercom.control;
 using LUI.config;
 using LUI.controls;
+using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace LUI.tabs
 {
@@ -145,7 +145,7 @@ namespace LUI.tabs
 
                 Data.ColumnSum(Dark, DataBuffer);
 
-                if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_DARK)) return;
+                if (PauseCancelProgress(e, i + 1, Dialog.PROGRESS_DARK)) return;
             }
             Data.DivideArray(Dark, N);
 
@@ -164,10 +164,10 @@ namespace LUI.tabs
             for (int i = 0; i < N; i++)
             {
                 TryAcquire(DataBuffer);
-                
+
                 Data.ColumnSum(Ground, DataBuffer);
 
-                if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_FLASH)) return;
+                if (PauseCancelProgress(e, i + 1, Dialog.PROGRESS_FLASH)) return;
             }
             Data.DivideArray(Ground, N);
             Data.Dissipate(Ground, Dark);
@@ -190,7 +190,7 @@ namespace LUI.tabs
 
                 Data.ColumnSum(Excited, DataBuffer);
 
-                if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_TRANS)) return;
+                if (PauseCancelProgress(e, i + 1, Dialog.PROGRESS_TRANS)) return;
             }
 
             Commander.BeamFlag.CloseLaserAndFlash();
@@ -205,7 +205,7 @@ namespace LUI.tabs
             Data.Dissipate(Excited, Dark);
 
             if (PauseCancelProgress(e, -1, Dialog.CALCULATE)) return;
-            
+
             e.Result = Data.DeltaOD(Ground, Excited);
         }
 

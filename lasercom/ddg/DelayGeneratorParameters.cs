@@ -1,7 +1,7 @@
-﻿using System;
-using System.Runtime.Serialization;
-using lasercom.gpib;
+﻿using lasercom.gpib;
 using lasercom.objects;
+using System;
+using System.Runtime.Serialization;
 
 namespace lasercom.ddg
 {
@@ -14,7 +14,7 @@ namespace lasercom.ddg
     {
         [DataMember]
         public byte GpibAddress { get; set; }
-        
+
         [DataMember]
         public GpibProviderParameters GpibProvider { get; set; }
 
@@ -23,7 +23,7 @@ namespace lasercom.ddg
             get
             {
                 if (GpibProvider != null)
-                    return new LuiObjectParameters[] {GpibProvider};
+                    return new LuiObjectParameters[] { GpibProvider };
                 return new LuiObjectParameters[0];
             }
         }
@@ -40,7 +40,7 @@ namespace lasercom.ddg
 
         }
 
-        public DelayGeneratorParameters(DelayGeneratorParameters other) 
+        public DelayGeneratorParameters(DelayGeneratorParameters other)
             : base(other)
         {
 

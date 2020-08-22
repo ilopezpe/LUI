@@ -1,7 +1,7 @@
-﻿using System;
-using System.Windows.Forms;
-using lasercom.ddg;
+﻿using lasercom.ddg;
 using lasercom.gpib;
+using System;
+using System.Windows.Forms;
 
 namespace LUI.controls
 {
@@ -22,7 +22,7 @@ namespace LUI.controls
             GpibAddress = new LabeledControl<ComboBox>(new ComboBox(), "GPIB Address:");
             GpibAddress.Control.DropDownStyle = ComboBoxStyle.DropDownList;
             for (byte b = 0; b < 32; b++) GpibAddress.Control.Items.Add(b);
-            GpibAddress.Control.SelectedIndexChanged += (s,e) => OnOptionsChanged(s,e);
+            GpibAddress.Control.SelectedIndexChanged += (s, e) => OnOptionsChanged(s, e);
             this.Controls.Add(GpibAddress);
         }
 

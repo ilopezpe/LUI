@@ -16,7 +16,7 @@ using lasercom.objects;
 namespace lasercom.camera
 {
 
-    public class CameraTempControlled:AndorCamera
+    public class CameraTempControlled : AndorCamera
     {
         public const int DefaultTemperature = 20;
         public const float TemperatureEps = 3F;
@@ -98,7 +98,7 @@ namespace lasercom.camera
             AndorSdk.SetTemperature(targetTemperature);
             float currentTemperature = 0;
             AndorSdk.GetTemperatureF(ref currentTemperature);
-            while ( Math.Abs(currentTemperature - targetTemperature) > TemperatureEps )
+            while (Math.Abs(currentTemperature - targetTemperature) > TemperatureEps)
             {
                 if (token.HasValue && token.Value.IsCancellationRequested) break;
                 AndorSdk.GetTemperatureF(ref currentTemperature);

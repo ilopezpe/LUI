@@ -1,7 +1,7 @@
-﻿using System;
-using lasercom;
+﻿using lasercom;
 using lasercom.io;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace LUI_Unit_Tests
 {
@@ -9,7 +9,7 @@ namespace LUI_Unit_Tests
     public class MatFileTests
     {
         MatFile File;
-        
+
         [TestMethod]
         public void TestMatFile()
         {
@@ -26,7 +26,7 @@ namespace LUI_Unit_Tests
             dblmat.WriteNext(data10, 0); // Third row.
 
             double[] data2 = { 2, 4, 6, 8 };
-            dblmat.Write(data2, new long[]{4, 8}, new long[]{2, 2}); // Bottom right corner.
+            dblmat.Write(data2, new long[] { 4, 8 }, new long[] { 2, 2 }); // Bottom right corner.
 
             MatVar<int> intarr3d = File.CreateVariable<int>("intarr3d", 5, 5, 5);
 
@@ -58,6 +58,6 @@ namespace LUI_Unit_Tests
         {
             File.Dispose();
         }
-        
+
     }
 }

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CsvHelper;
-using CsvHelper.Configuration;
 
 namespace lasercom.io
 {
@@ -39,7 +39,7 @@ namespace lasercom.io
             }
         }
 
-        public static T[] ReadVector<T>(string FileName) 
+        public static T[] ReadVector<T>(string FileName)
         {
             T[] vector;
             var config = new CsvConfiguration
@@ -48,7 +48,7 @@ namespace lasercom.io
                 HasHeaderRecord = false
             };
             using (TextReader reader = File.OpenText(FileName))
-            using(CsvReader csv = new CsvReader(reader, config))
+            using (CsvReader csv = new CsvReader(reader, config))
                 vector = csv.GetRecords<T>().ToArray<T>();
             return vector;
         }

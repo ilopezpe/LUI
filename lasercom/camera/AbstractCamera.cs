@@ -1,11 +1,11 @@
-﻿using System.IO;
-using System.Linq;
-using lasercom.io;
+﻿using lasercom.io;
 using lasercom.objects;
+using System.IO;
+using System.Linq;
 
 namespace lasercom.camera
 {
-    public abstract class AbstractCamera:LuiObject<CameraParameters>, ICamera
+    public abstract class AbstractCamera : LuiObject<CameraParameters>, ICamera
     {
         public abstract int Width
         {
@@ -124,7 +124,7 @@ namespace lasercom.camera
         public abstract uint Acquire(int[] DataBuffer);
 
         public abstract string DecodeStatus(uint status);
-        
+
         public override void Update(CameraParameters p)
         {
             LoadCalibration(p.CalFile);
@@ -138,7 +138,7 @@ namespace lasercom.camera
         {
             if (CalFile == null || CalFile == "")
             {
-                Calibration = Enumerable.Range(0, (int)Width).Select(x=>(double)x).ToArray();
+                Calibration = Enumerable.Range(0, (int)Width).Select(x => (double)x).ToArray();
             }
             else
             {

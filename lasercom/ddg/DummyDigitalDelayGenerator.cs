@@ -1,12 +1,12 @@
-﻿using System;
-using lasercom.objects;
+﻿using lasercom.objects;
+using System;
 
 namespace lasercom.ddg
 {
     /// <summary>
     /// Dummy DDG implementing required methods as no-ops.
     /// </summary>
-    public class DummyDigitalDelayGenerator:AbstractDigitalDelayGenerator
+    public class DummyDigitalDelayGenerator : AbstractDigitalDelayGenerator
     {
 
         public DummyDigitalDelayGenerator(LuiObjectParameters p) : this() { }

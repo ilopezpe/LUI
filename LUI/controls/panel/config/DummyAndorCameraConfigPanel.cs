@@ -1,5 +1,5 @@
-﻿using System;
-using lasercom.camera;
+﻿using lasercom.camera;
+using System;
 
 namespace LUI.controls
 {

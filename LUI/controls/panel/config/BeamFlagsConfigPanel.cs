@@ -1,6 +1,6 @@
-﻿using System;
+﻿using lasercom.control;
+using System;
 using System.Windows.Forms;
-using lasercom.control;
 
 namespace LUI.controls
 {
@@ -32,7 +32,7 @@ namespace LUI.controls
             Delay.Control.ValueChanged += OnOptionsChanged;
             this.Controls.Add(Delay);
         }
-        
+
 
         override public void CopyTo(BeamFlagsParameters other)
         {

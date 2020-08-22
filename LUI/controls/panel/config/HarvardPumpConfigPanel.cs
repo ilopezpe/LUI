@@ -1,6 +1,6 @@
-﻿using System;
+﻿using lasercom.control;
+using System;
 using System.Windows.Forms;
-using lasercom.control;
 
 namespace LUI.controls
 {
@@ -14,8 +14,8 @@ namespace LUI.controls
             get { return typeof(HarvardPump); }
         }
 
-       public HarvardPumpConfigPanel()
-            : base()
+        public HarvardPumpConfigPanel()
+             : base()
         {
             COMPort = new LabeledControl<ComboBox>(new ComboBox(), "COM Port:");
             lasercom.Util.EnumerateSerialPorts().ForEach(x => COMPort.Control.Items.Add(x));

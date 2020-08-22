@@ -1,12 +1,12 @@
-﻿using System;
+﻿using log4net;
+using LUI.config;
+using LUI.tabs;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using log4net;
-using LUI.config;
-using LUI.tabs;
 
 namespace LUI
 {
@@ -59,7 +59,7 @@ namespace LUI
             SuspendLayout();
 
             // Dispose resources when the form is closed;
-            FormClosed += (s,e) => Config.Dispose();
+            FormClosed += (s, e) => Config.Dispose();
 
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             StartPosition = FormStartPosition.WindowsDefaultLocation;
@@ -85,40 +85,40 @@ namespace LUI
             CalibrationPage = new TabPage();
             PowerPage = new TabPage();
             OptionsPage = new TabPage();
-            
+
             HomePage.BackColor = System.Drawing.SystemColors.Control;
             HomePage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             HomePage.Name = "HomePage";
             HomePage.TabIndex = 2;
             HomePage.Text = "Home";
-            
+
             SpecPage.BackColor = System.Drawing.SystemColors.Control;
             SpecPage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             SpecPage.Name = "SpecPage";
             TROSPage.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             SpecPage.TabIndex = 3;
             SpecPage.Text = "Spectrum";
-            
+
             TROSPage.BackColor = System.Drawing.SystemColors.Control;
             TROSPage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             TROSPage.Name = "TROSPage";
             TROSPage.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             TROSPage.TabIndex = 0;
             TROSPage.Text = "TROS";
-            
+
             ResidualsPage.BackColor = System.Drawing.SystemColors.Control;
             ResidualsPage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ResidualsPage.Name = "ResidualsPage";
             ResidualsPage.TabIndex = 4;
             ResidualsPage.Text = "Residuals";
-            
+
             CalibrationPage.BackColor = System.Drawing.SystemColors.Control;
             CalibrationPage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             CalibrationPage.Name = "CalibrationPage";
             CalibrationPage.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             CalibrationPage.TabIndex = 1;
             CalibrationPage.Text = "Calibration";
-            
+
             PowerPage.BackColor = System.Drawing.SystemColors.Control;
             PowerPage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             PowerPage.Name = "PowerPage";
@@ -130,7 +130,7 @@ namespace LUI
             OptionsPage.Name = "OptionsPage";
             OptionsPage.TabIndex = 7;
             OptionsPage.Text = "Options";
-            
+
             Tabs.TabPages.Add(HomePage);
             Tabs.TabPages.Add(SpecPage);
             Tabs.TabPages.Add(TROSPage);
@@ -174,8 +174,7 @@ namespace LUI
             foreach (TabPage page in Tabs.TabPages)
             {
                 if (page != HomePage && page != OptionsPage) page.Enabled = false;
-                var luiTab = page.Controls[0] as LuiTab;
-                if (luiTab != null)
+                if (page.Controls[0] is LuiTab luiTab)
                 {
                     luiTab.Load += (se, ev) => CalibrateControl.CalibrationChanged += luiTab.HandleCalibrationChanged;
                     FormClosing += luiTab.HandleExit;
@@ -253,7 +252,7 @@ namespace LUI
             {
                 foreach (var page in tabs) page.Enabled = false;
                 Tabs.Invalidate();
-            } 
+            }
         }
 
         private void EnableTabs(params TabPage[] tabs)
@@ -286,8 +285,10 @@ namespace LUI
 
         private void HandleTabSelected(object sender, TabControlEventArgs e)
         {
-            var luiTab = e.TabPage.Controls[0] as LuiTab;
-            if (luiTab != null) luiTab.HandleContainingTabSelected(sender, e);
+            if ((e.TabPage.Controls[0] as LuiTab) != null)
+            {
+                (e.TabPage.Controls[0] as LuiTab).HandleContainingTabSelected(sender, e);
+            }
         }
 
         void HandleTabSelecting(object sender, TabControlCancelEventArgs e)

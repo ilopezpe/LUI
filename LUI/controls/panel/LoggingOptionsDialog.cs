@@ -1,10 +1,10 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-using log4net;
+﻿using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using LUI.config;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace LUI.controls
 {
@@ -20,7 +20,7 @@ namespace LUI.controls
             Init();
         }
 
-        public LoggingOptionsDialog(Size Size) : this(Size, true) {}
+        public LoggingOptionsDialog(Size Size) : this(Size, true) { }
 
         public LoggingOptionsDialog()
         {

@@ -27,7 +27,7 @@ namespace LUI.tabs
             set
             {
                 _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
-                if (CurvesView.SelectedCurve != null) 
+                if (CurvesView.SelectedCurve != null)
                     CountsDisplay.Text = CurvesView.SelectedCurve[_SelectedChannel].ToString("n4");
             }
         }
@@ -141,7 +141,7 @@ namespace LUI.tabs
             int N = args.N;
 
             int AcqSize = Commander.Camera.AcqSize;
-            int finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage ? 
+            int finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage ?
                 AcqSize / Commander.Camera.Image.Height : AcqSize;
 
             if (PauseCancelProgress(e, 0, Dialog.PROGRESS_DARK.ToString())) return;
@@ -154,7 +154,7 @@ namespace LUI.tabs
             {
                 TryAcquire(DataBuffer);
                 Data.ColumnSum(DarkBuffer, DataBuffer);
-                if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_DARK.ToString())) return;
+                if (PauseCancelProgress(e, i + 1, Dialog.PROGRESS_DARK.ToString())) return;
             }
 
             if (PauseCancelProgress(e, 0, Dialog.BLANK.ToString())) return;
@@ -170,11 +170,11 @@ namespace LUI.tabs
                 {
                     TryAcquire(DataBuffer);
                     Data.ColumnSum(BlankBuffer, DataBuffer);
-                    if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_BLANK.ToString())) return;
+                    if (PauseCancelProgress(e, i + 1, Dialog.PROGRESS_BLANK.ToString())) return;
                 }
 
                 Commander.BeamFlag.CloseLaserAndFlash();
-                
+
                 if (PauseCancelProgress(e, 0, Dialog.SAMPLE.ToString())) return;
 
                 Invoke(new Action(BlockingSampleDialog));
@@ -183,7 +183,7 @@ namespace LUI.tabs
             {
                 if (PauseCancelProgress(e, 0, Dialog.SAMPLE.ToString())) return;
             }
-            
+
             if (PauseCancelProgress(e, 0, Dialog.PROGRESS_DATA.ToString())) return;
 
             Commander.BeamFlag.OpenFlash();
@@ -198,7 +198,7 @@ namespace LUI.tabs
             {
                 TryAcquire(DataBuffer);
                 Data.ColumnSum(SampleBuffer, DataBuffer);
-                if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_DATA.ToString())) return;
+                if (PauseCancelProgress(e, i + 1, Dialog.PROGRESS_DATA.ToString())) return;
             }
             Commander.BeamFlag.CloseLaserAndFlash();
 
@@ -274,7 +274,7 @@ namespace LUI.tabs
         private void RedrawLines()
         {
             Graph.ClearAnnotation();
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], 
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0],
                 Commander.Camera.Calibration[SelectedChannel]);
             Graph.Invalidate();
         }
@@ -309,7 +309,7 @@ namespace LUI.tabs
             var curves = CurvesView.SaveCurves.ToList();
             csv.WriteField("Wavelength");
             csv.WriteField("Blank");
-            foreach(string header in headers) csv.WriteField(header);
+            foreach (string header in headers) csv.WriteField(header);
             csv.NextRecord();
             for (int i = 0; i < curves[0].Count; i++)
             {

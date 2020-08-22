@@ -1,5 +1,5 @@
-﻿using System;
-using lasercom.ddg;
+﻿using lasercom.ddg;
+using System;
 
 namespace LUI.controls
 {
@@ -19,7 +19,7 @@ namespace LUI.controls
 
         public override void CopyFrom(DelayGeneratorParameters other)
         {
-   
+
         }
 
         public override void CopyTo(DelayGeneratorParameters other)

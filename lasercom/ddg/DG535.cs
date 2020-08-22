@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using lasercom.objects;
+﻿using lasercom.objects;
 using log4net;
+using System;
+using System.Collections.Generic;
 
 namespace lasercom.ddg
 {
     /// <summary>
     /// Represents a Stanford Instruments DDG 535.
     /// </summary>
-    public class DG535:StanfordDigitalDelayGenerator
+    public class DG535 : StanfordDigitalDelayGenerator
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -32,7 +32,7 @@ namespace lasercom.ddg
 
         public const byte DefaultGPIBAddress = 15;
 
-        private static Dictionary<string, string> _DelayMap = new Dictionary<string,string>
+        private static Dictionary<string, string> _DelayMap = new Dictionary<string, string>
         { 
             // Forward lookup
             { TName,  TOutput  },

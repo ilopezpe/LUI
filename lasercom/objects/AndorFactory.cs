@@ -15,7 +15,7 @@ namespace lasercom.objects
         private static object ShamrockSdklock = new object();
         private static object AndorSdkLock = new object();
 
-        private AndorFactory() {}
+        private AndorFactory() { }
 
         public static AndorSDK AndorSdkInstance
         {

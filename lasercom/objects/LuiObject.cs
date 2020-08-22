@@ -1,9 +1,9 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using log4net;
 
 namespace lasercom.objects
 {
@@ -22,7 +22,7 @@ namespace lasercom.objects
             GC.SuppressFinalize(this);
         }
 
-        public static ILuiObject Create<P>(LuiObjectParameters<P> p) where P:LuiObjectParameters<P>
+        public static ILuiObject Create<P>(LuiObjectParameters<P> p) where P : LuiObjectParameters<P>
         {
             return (ILuiObject)Activator.CreateInstance(p.Type, p);
         }
@@ -40,7 +40,7 @@ namespace lasercom.objects
                     BindingFlags.Public |
                     BindingFlags.Instance |
                     BindingFlags.OptionalParamBinding,
-                    null, 
+                    null,
                     args,
                     CultureInfo.CurrentCulture);
         }
@@ -48,7 +48,7 @@ namespace lasercom.objects
     }
 
     public abstract class LuiObject<P> : LuiObject where P : LuiObjectParameters<P>
-    {   
+    {
         public abstract void Update(P p);
     }
 }

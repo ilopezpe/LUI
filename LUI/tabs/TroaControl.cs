@@ -1,4 +1,11 @@
-﻿using System;
+﻿using lasercom;
+using lasercom.camera;
+using lasercom.control;
+using lasercom.ddg;
+using lasercom.io;
+using LUI.config;
+using LUI.controls;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,13 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using lasercom;
-using lasercom.camera;
-using lasercom.control;
-using lasercom.ddg;
-using lasercom.io;
-using LUI.config;
-using LUI.controls;
 
 namespace LUI.tabs
 {
@@ -40,11 +40,7 @@ namespace LUI.tabs
 
             private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
             {
-                var handler = PropertyChanged;
-                if (handler != null)
-                {
-                    handler(this, new PropertyChangedEventArgs(propertyName));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
 
             public static explicit operator TimesRow(DataRow dr)
@@ -87,7 +83,7 @@ namespace LUI.tabs
             public readonly IList<double> Times;
             public readonly string PrimaryDelayName;
             public readonly string TriggerName;
-            public readonly Tuple<char,char> GateName;
+            public readonly Tuple<char, char> GateName;
             public readonly char GateTriggerName;
             public readonly double GateDelay;
             public readonly double Gate;
@@ -124,7 +120,7 @@ namespace LUI.tabs
 
         public enum Dialog
         {
-            INITIALIZE, PROGRESS, PROGRESS_DARK, PROGRESS_TIME, 
+            INITIALIZE, PROGRESS, PROGRESS_DARK, PROGRESS_TIME,
             PROGRESS_TIME_COMPLETE, PROGRESS_FLASH, PROGRESS_TRANS,
             CALCULATE, TEMPERATURE
         }
@@ -149,7 +145,7 @@ namespace LUI.tabs
             TimesView.DataSource = new BindingSource(TimesList, null);
             TimesView.CellValidating += TimesView_CellValidating;
             TimesView.CellEndEdit += TimesView_CellEndEdit;
-            
+
             SaveData.Click += (sender, e) => SaveOutput();
 
             DdgConfigBox.Config = Config;
@@ -204,7 +200,7 @@ namespace LUI.tabs
             {
                 PumpBox.Enabled = false;
             }
-            
+
         }
 
         public override void HandleContainingTabSelected(object sender, EventArgs e)
@@ -223,18 +219,22 @@ namespace LUI.tabs
         {
             base.LoadSettings();
             var Settings = Config.TabSettings[this.GetType().Name];
-            string value;
-            if (Settings.TryGetValue("PrimaryDelayDdg", out value) && value != null && value != "")
+            if (Settings.TryGetValue("PrimaryDelayDdg", out string value) && value != null && value != "")
+            {
                 DdgConfigBox.PrimaryDelayDdg = (DelayGeneratorParameters)Config.GetFirstParameters(
                     typeof(DelayGeneratorParameters), value);
+            }
+
             if (Settings.TryGetValue("PrimaryDelayDelay", out value) && value != null && value != "")
+            {
                 DdgConfigBox.PrimaryDelayDelay = value;
+            }
         }
 
         protected override void SaveSettings()
         {
             base.SaveSettings();
-            var Settings = Config.TabSettings[this.GetType().Name];
+            var Settings = Config.TabSettings[GetType().Name];
             Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg?.Name;
             Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay ?? null;
         }
@@ -321,7 +321,7 @@ namespace LUI.tabs
         protected void DoWorkOld(object sender, DoWorkEventArgs e)
         {
             ProgressObject progress;
-            
+
             progress = new ProgressObject(null, 0, Dialog.TEMPERATURE);
             DoTempCheck(() => PauseCancelProgress(e, 0, progress));
 
@@ -337,7 +337,7 @@ namespace LUI.tabs
                 AcqSize / Commander.Camera.Image.Height : AcqSize;
 
             // Total scans = dark scans + ground state scans + plus time series scans.
-            int TotalScans = 2*N + Times.Count * N;
+            int TotalScans = 2 * N + Times.Count * N;
 
             // Create the data store.
             InitDataFile(finalSize, TotalScans, Times.Count);
@@ -424,7 +424,7 @@ namespace LUI.tabs
                 for (int j = 0; j < N; j++)
                 {
                     Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
-                    
+
                     TryAcquire(DataBuffer);
                     Data.ColumnSum(DataRow, DataBuffer);
                     RawData.WriteNext(DataRow, 0);
@@ -433,7 +433,7 @@ namespace LUI.tabs
                     progress = new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS);
                     if (PauseCancelProgress(e, (N + half + (i + 1) * (j + 1)) * 99 / TotalScans, progress)) return; // Handle new data.
                 }
-                
+
                 Data.DivideArray(Excited, N); // Average ES for time point.
                 Data.Dissipate(Excited, Dark); // Subtract average dark from time point average.
                 double[] Difference = Data.DeltaOD(Ground, Excited); // Time point diff. spec. w/ current GS average.
@@ -441,7 +441,7 @@ namespace LUI.tabs
                 progress = new ProgressObject(Difference, Delay, Dialog.PROGRESS_TIME_COMPLETE);
                 if (PauseCancelProgress(e, (N + half + N * Times.Count) * 99 / TotalScans, progress)) return;
             }
-            
+
             Commander.BeamFlag.CloseLaserAndFlash();
 
             // Set delays for GS.
@@ -484,7 +484,7 @@ namespace LUI.tabs
             // Write times.
             long[] ColSize = { Times.Count, 1 };
             LuiData.Write(Times.ToArray(), new long[] { 1, 0 }, ColSize);
-            
+
             // Read ground state values and average.
             Array.Clear(Ground, 0, Ground.Length); // Zero ground state buffer.
             // Read 1st half
@@ -504,7 +504,7 @@ namespace LUI.tabs
 
             // Read excited state values, average and compute delta OD.
             Array.Clear(Excited, 0, Excited.Length); // Zero excited state buffer.
-            for (int i = 0; i < Times.Count; i++ )
+            for (int i = 0; i < Times.Count; i++)
             {
                 for (int j = 0; j < N; j++)
                 {
@@ -547,7 +547,7 @@ namespace LUI.tabs
         /// <param name="SumBuffer">Array for accumulated binned data.</param>
         /// <param name="N"></param>
         /// <param name="Breakout"></param>
-        private void DoAcq(int[] AcqBuffer, int[] DataBuffer, int[] SumBuffer, int N, Func<int,bool> Breakout)
+        private void DoAcq(int[] AcqBuffer, int[] DataBuffer, int[] SumBuffer, int N, Func<int, bool> Breakout)
         {
             Array.Clear(SumBuffer, 0, SumBuffer.Length);
             for (int i = 0; i < N; i++)
@@ -745,8 +745,7 @@ namespace LUI.tabs
         {
             if (TimesView.Columns[e.ColumnIndex].Name == "Value")
             {
-                double value;
-                if (!double.TryParse(e.FormattedValue.ToString(), out value))
+                if (!double.TryParse(e.FormattedValue.ToString(), out double value))
                 {
                     TimesView.Rows[e.RowIndex].ErrorText = "Time must be a number";
                     e.Cancel = true;
@@ -789,7 +788,7 @@ namespace LUI.tabs
                 Log.Error(ex);
                 MessageBox.Show("Couldn't parse file: " + ex.Message);
             }
-                
+
         }
 
         private void SaveOutput()

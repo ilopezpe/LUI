@@ -1,6 +1,6 @@
-﻿using System;
+﻿using lasercom.objects;
+using System;
 using System.Linq;
-using lasercom.objects;
 
 namespace lasercom.ddg
 {

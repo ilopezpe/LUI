@@ -1,9 +1,9 @@
-﻿using System;
+﻿using lasercom.objects;
+using System;
 using System.IO;
 using System.IO.Ports;
 using System.Text;
 using System.Threading;
-using lasercom.objects;
 
 namespace lasercom.gpib
 {
@@ -24,14 +24,14 @@ namespace lasercom.gpib
         const string ReadCommand = "read";
         const string ReadTimeoutCommand = "read_tmo_ms";
 
-        const string DeviceMode =       "0";
-        const string ControllerMode =   "1";
-        const string DisableEOI =       "0";
-        const string EnableEOI =        "1";
-        const string EOSCRLF =          "0";
-        const string EOSCR =            "1";
-        const string EOSLF =            "2";
-        const string EOSNone =          "3";
+        const string DeviceMode = "0";
+        const string ControllerMode = "1";
+        const string DisableEOI = "0";
+        const string EnableEOI = "1";
+        const string EOSCRLF = "0";
+        const string EOSCR = "1";
+        const string EOSLF = "2";
+        const string EOSNone = "3";
         #endregion
 
         SerialPort _port;
@@ -234,7 +234,7 @@ namespace lasercom.gpib
             {
                 if (s[i] == (char)10 || s[i] == (char)13 || s[i] == (char)27 || s[i] == (char)43)
                 {
-                    builder.Append(ControllerEscape);   
+                    builder.Append(ControllerEscape);
                 }
                 builder.Append(s[i]);
                 builder.Append('\0'); // Workaround for every-other-character problem.

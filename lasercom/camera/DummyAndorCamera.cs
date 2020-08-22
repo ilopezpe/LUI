@@ -2,13 +2,13 @@
 #if x64
 using ATMCD64CS;
 #else
+using ATMCD32CS;
+using lasercom.objects;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ATMCD32CS;
-using lasercom.objects;
 
 
 #endif
@@ -246,7 +246,7 @@ namespace lasercom.camera
 
         public DummyAndorCamera(CameraParameters p)
         {
-            if (p == null) 
+            if (p == null)
                 throw new ArgumentException("Non-null CameraParameters instance required");
 
             _MinTemp = -100;
@@ -270,7 +270,7 @@ namespace lasercom.camera
                 while (true)
                 {
                     if (Cts.IsCancellationRequested) break;
-                    _Temperature = _Temperature + 0.01F * (_TargetTemperature - _Temperature);
+                    _Temperature += 0.01F * (_TargetTemperature - _Temperature);
                     Thread.Sleep(10);
                 }
             }, Cts.Token);
@@ -306,7 +306,7 @@ namespace lasercom.camera
             caller = (new StackFrame(frame, true)).GetMethod().Name;
             while (caller == "DoAcq" || caller == "TryAcquire") caller = (new StackFrame(++frame, true)).GetMethod().Name;
             caller = (new StackFrame(frame, true)).GetFileName();
-            int line = (new StackFrame(frame,true)).GetFileLineNumber();
+            int line = (new StackFrame(frame, true)).GetFileLineNumber();
             int[] data = null;
             if (caller.Contains("SpecControl"))
             {

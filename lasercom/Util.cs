@@ -1,8 +1,8 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Runtime.InteropServices;
-using log4net;
 
 namespace lasercom
 {
@@ -22,8 +22,7 @@ namespace lasercom
         /// <returns></returns>
         public static string GetPropertyName<T>(Expression<Func<T>> property)
         {
-            var me = property.Body as MemberExpression;
-            if (me == null)
+            if (!(property.Body is MemberExpression me))
             {
                 throw new ArgumentException();
             }
@@ -131,7 +130,8 @@ namespace lasercom
             if (o1 == null && o2 == null)
             {
                 return 0;
-            } else if (o1 != null)
+            }
+            else if (o1 != null)
             {
                 return o1.GetHashCode();
             }

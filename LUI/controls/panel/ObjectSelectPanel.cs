@@ -1,8 +1,8 @@
-﻿using System;
-using System.Windows.Forms;
-using Extensions;
+﻿using Extensions;
 using lasercom.camera;
 using lasercom.control;
+using System;
+using System.Windows.Forms;
 
 namespace LUI.controls
 {
@@ -63,7 +63,7 @@ namespace LUI.controls
             _Cameras = new LabeledControl<ComboBox>(new ComboBox(), "Camera:");
             Cameras.DropDownStyle = ComboBoxStyle.DropDownList;
             Cameras.DisplayMember = "Name";
-            Cameras.SelectedIndexChanged += (s,e) => CameraChanged.Raise(s,e);
+            Cameras.SelectedIndexChanged += (s, e) => CameraChanged.Raise(s, e);
             Controls.Add(_Cameras);
 
             _BeamFlags = new LabeledControl<ComboBox>(new ComboBox(), "Beam Flags:");

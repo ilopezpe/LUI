@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using lasercom.gpib;
+﻿using lasercom.gpib;
 using lasercom.objects;
 using log4net;
+using System.Linq;
 
 //  <summary>
 //      Represents a Stanford DDG.
@@ -12,15 +12,16 @@ namespace lasercom.ddg
     /// <summary>
     /// Base class for Stanford Instruments DDGs.
     /// </summary>
-    public abstract class StanfordDigitalDelayGenerator:AbstractDigitalDelayGenerator
+    public abstract class StanfordDigitalDelayGenerator : AbstractDigitalDelayGenerator
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IGpibProvider GPIBProvider { get; set; }
         public byte GPIBAddress { get; set; }
 
-        public StanfordDigitalDelayGenerator(LuiObjectParameters p, params ILuiObject[] dependencies) : 
-            this(p as DelayGeneratorParameters, dependencies) { } //TODO just take IGpibProvider instead of params array.
+        public StanfordDigitalDelayGenerator(LuiObjectParameters p, params ILuiObject[] dependencies) :
+            this(p as DelayGeneratorParameters, dependencies)
+        { } //TODO just take IGpibProvider instead of params array.
 
         public StanfordDigitalDelayGenerator(DelayGeneratorParameters p, params ILuiObject[] dependencies)
         {

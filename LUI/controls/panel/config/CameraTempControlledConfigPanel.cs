@@ -1,6 +1,6 @@
-﻿using System;
+﻿using lasercom.camera;
+using System;
 using System.Windows.Forms;
-using lasercom.camera;
 
 namespace LUI.controls
 {
@@ -21,7 +21,7 @@ namespace LUI.controls
             Temperature.Control.Minimum = -30;
             Temperature.Control.Maximum = 25;
             Temperature.Control.Value = lasercom.Constants.DefaultTemperature;
-            Temperature.Control.ValueChanged += (s, e) => OnOptionsChanged(s,e);
+            Temperature.Control.ValueChanged += (s, e) => OnOptionsChanged(s, e);
             this.Controls.Add(Temperature);
         }
 

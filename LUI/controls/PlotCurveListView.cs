@@ -41,7 +41,7 @@ namespace LUI.controls
         {
             get
             {
-                foreach (DataGridViewRow row in 
+                foreach (DataGridViewRow row in
                     Rows.Where((row) => (bool)row.Cells[CurveSave.Index].Value))
                 {
                     yield return row.Tag as double[];
@@ -53,7 +53,7 @@ namespace LUI.controls
         {
             get
             {
-                foreach (DataGridViewRow row in 
+                foreach (DataGridViewRow row in
                     Rows.Where((row) => (bool)row.Cells[CurveVisible.Index].Value))
                 {
                     yield return row.Tag as double[];
@@ -65,7 +65,7 @@ namespace LUI.controls
         {
             get
             {
-                return Rows.Select((row) => 
+                return Rows.Select((row) =>
                     row.Cells[CurveName.Index].Value as string);
             }
         }
@@ -74,7 +74,7 @@ namespace LUI.controls
         {
             get
             {
-                foreach (DataGridViewRow row in 
+                foreach (DataGridViewRow row in
                     Rows.Where((row) => (bool)row.Cells[CurveSave.Index].Value))
                 {
                     yield return row.Cells[CurveName.Index].Value as string;
@@ -86,7 +86,7 @@ namespace LUI.controls
         {
             get
             {
-                foreach (DataGridViewRow row in 
+                foreach (DataGridViewRow row in
                     Rows.Where((row) => (bool)row.Cells[CurveVisible.Index].Value))
                 {
                     yield return row.Cells[CurveName.Index].Value as string;
@@ -163,7 +163,7 @@ namespace LUI.controls
             DataGrid.Rows[RowIndex].Cells[CurveColor.Index].Value = color.IsNamedColor ? color.Name : "Unkown";
             DataGrid.Rows[RowIndex].Cells[CurveVisible.Index].Value = true;
             DataGrid.Rows[RowIndex].Cells[CurveSave.Index].Value = true;
-            
+
             DataGrid.ClearSelection();
             DataGrid.Rows[RowIndex].Selected = true;
             PlotRow(RowIndex);

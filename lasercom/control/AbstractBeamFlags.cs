@@ -1,12 +1,12 @@
-﻿using System;
-using lasercom.objects;
+﻿using lasercom.objects;
+using System;
 
 namespace lasercom.control
 {
     /// <summary>
     /// Base class for all beam flag classes.
     /// </summary>
-    public abstract class AbstractBeamFlags: LuiObject<BeamFlagsParameters>, IBeamFlags
+    public abstract class AbstractBeamFlags : LuiObject<BeamFlagsParameters>, IBeamFlags
     {
         public BeamFlagState FlashState { get; set; }
         public BeamFlagState LaserState { get; set; }

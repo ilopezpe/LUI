@@ -14,7 +14,7 @@ namespace lasercom.control
 
         public override bool NeedsReinstantiation(SpectrographParameters other)
         {
- 	        bool needs = base.NeedsReinstantiation(other);
+            bool needs = base.NeedsReinstantiation(other);
             if (needs) return true;
             if (Type == typeof(Shamrock))
             {

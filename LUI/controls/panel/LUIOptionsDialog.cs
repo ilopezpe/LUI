@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Extensions;
+using LUI.config;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Extensions;
-using LUI.config;
 
 namespace LUI.controls
 {
@@ -23,7 +23,7 @@ namespace LUI.controls
         /// // Indicates piece of dialog content changed.
         /// </summary>
         public event EventHandler OptionsChanged;
-        
+
 
         private LuiConfig _Config;
         /// <summary>
@@ -39,14 +39,13 @@ namespace LUI.controls
             set
             {
                 _Config = value;
-                EventHandler handler = ConfigChanged;
-                if (handler != null) handler(this, EventArgs.Empty);
+                ConfigChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
         public LuiOptionsDialog()
         {
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+            AutoScaleMode = AutoScaleMode.Inherit;
         }
 
         public LuiOptionsDialog(Size Size, bool Visibility) : this()
@@ -68,8 +67,7 @@ namespace LUI.controls
         public void MatchConfig(LuiConfig config)
         {
             CopyConfigState(config);
-            EventHandler handler = ConfigMatched;
-            if (handler != null) handler(this, EventArgs.Empty);
+            ConfigMatched?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

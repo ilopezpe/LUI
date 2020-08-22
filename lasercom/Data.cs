@@ -251,7 +251,7 @@ namespace lasercom
             for (int i = 0; i < g.Length; i++)
             {
                 double x = (double)i * 1024 / n;
-                g[i] = (int)( scale * Math.Exp(-Math.Pow(x - mean, 2) / (2 * Math.Pow(sigma, 2))) );
+                g[i] = (int)(scale * Math.Exp(-Math.Pow(x - mean, 2) / (2 * Math.Pow(sigma, 2))));
             }
             return g;
         }
@@ -271,7 +271,7 @@ namespace lasercom
             double[] cal = new double[n];
             for (int i = 0; i < n; i++)
             {
-                cal[i] = slope * (i+1) + intercept;
+                cal[i] = slope * (i + 1) + intercept;
             }
             return cal;
         }
@@ -310,9 +310,9 @@ namespace lasercom
 
             double slope = cov / xvar;
             double yint = yhat - slope * xhat;
-            double rsq = Math.Pow( cov / Math.Sqrt(xvar * yvar), 2);
+            double rsq = Math.Pow(cov / Math.Sqrt(xvar * yvar), 2);
 
-            return Tuple.Create<double,double,double>(slope, yint, rsq);
+            return Tuple.Create<double, double, double>(slope, yint, rsq);
         }
 
         public static int[] Uniform(int n, int scale)

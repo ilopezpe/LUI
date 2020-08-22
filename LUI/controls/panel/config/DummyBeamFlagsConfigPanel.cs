@@ -1,5 +1,5 @@
-﻿using System;
-using lasercom.control;
+﻿using lasercom.control;
+using System;
 
 namespace LUI.controls
 {
@@ -19,12 +19,12 @@ namespace LUI.controls
 
         public override void CopyTo(BeamFlagsParameters other)
         {
-            
+
         }
 
         public override void CopyFrom(BeamFlagsParameters other)
         {
-            
+
         }
     }
 }

@@ -1,4 +1,11 @@
-﻿using System;
+﻿using Extensions;
+using lasercom;
+using lasercom.camera;
+using lasercom.io;
+using lasercom.objects;
+using LUI.config;
+using LUI.controls;
+using System;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -6,13 +13,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using Extensions;
-using lasercom;
-using lasercom.camera;
-using lasercom.io;
-using lasercom.objects;
-using LUI.config;
-using LUI.controls;
 
 namespace LUI.tabs
 {
@@ -84,10 +84,7 @@ namespace LUI.tabs
             public event PropertyChangedEventHandler PropertyChanged;
             private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
             {
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
 
             public static explicit operator CalibrationPoint(DataRow dr)
@@ -107,7 +104,7 @@ namespace LUI.tabs
                     Wavelength = (double)row.Cells["Channel"].Value
                 };
             }
-            public static explicit operator Tuple<int,double>(CalibrationPoint p)
+            public static explicit operator Tuple<int, double>(CalibrationPoint p)
             {
                 return Tuple.Create<int, double>(p.Channel, p.Wavelength);
             }
@@ -137,7 +134,7 @@ namespace LUI.tabs
         {
 
             InitializeComponent();
-            
+
             CalibrationList.AllowEdit = true;
             CalibrationListView.DefaultValuesNeeded += CalibrationListView_DefaultValuesNeeded;
             CalibrationListView.EditingControlShowing += CalibrationListView_EditingControlShowing;
@@ -212,7 +209,7 @@ namespace LUI.tabs
             {
                 TryAcquire(DataBuffer);
                 Data.ColumnSum(DarkBuffer, DataBuffer);
-                if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_DARK.ToString())) return;
+                if (PauseCancelProgress(e, i + 1, Dialog.PROGRESS_DARK.ToString())) return;
             }
 
             if (PauseCancelProgress(e, 0, Dialog.BLANK.ToString())) return;
@@ -228,7 +225,7 @@ namespace LUI.tabs
                 {
                     TryAcquire(DataBuffer);
                     Data.ColumnSum(BlankBuffer, DataBuffer);
-                    if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_BLANK.ToString())) return;
+                    if (PauseCancelProgress(e, i + 1, Dialog.PROGRESS_BLANK.ToString())) return;
                 }
 
                 Commander.BeamFlag.CloseLaserAndFlash();
@@ -251,7 +248,7 @@ namespace LUI.tabs
             {
                 TryAcquire(DataBuffer);
                 Data.ColumnSum(SampleBuffer, DataBuffer);
-                if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_DATA.ToString())) return;
+                if (PauseCancelProgress(e, i + 1, Dialog.PROGRESS_DATA.ToString())) return;
             }
             Commander.BeamFlag.CloseLaserAndFlash();
             if (PauseCancelProgress(e, -1, Dialog.PROGRESS_CALC.ToString())) return;
@@ -281,7 +278,7 @@ namespace LUI.tabs
         {
             Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), (string)e.UserState);
             if (e.ProgressPercentage != -1)
-                ScanProgress.Text = e.ProgressPercentage.ToString() +"/" + NScan.Value.ToString();
+                ScanProgress.Text = e.ProgressPercentage.ToString() + "/" + NScan.Value.ToString();
             switch (operation)
             {
                 case Dialog.BLANK:
@@ -358,7 +355,7 @@ namespace LUI.tabs
         {
             Graph.ClearAnnotation();
             int i;
-            for (i=0; i<CalibrationList.Count; i++)
+            for (i = 0; i < CalibrationList.Count; i++)
             {
                 if (i > CalibrationListView.Rows.Count) break;
                 CalibrationPoint p = CalibrationList[i];
@@ -497,12 +494,14 @@ namespace LUI.tabs
             switch (saveFile.FilterIndex)
             {
                 case 3:
-                    // All files, fall through to CAL.
+                // All files, fall through to CAL.
                 case 1:
                     // CAL
-                    try {
+                    try
+                    {
                         FileIO.WriteVector<double>(saveFile.FileName, Commander.Camera.Calibration);
-                    } catch (IOException ex)
+                    }
+                    catch (IOException ex)
                     {
                         MessageBox.Show(ex.ToString());
                     }
@@ -547,7 +546,7 @@ namespace LUI.tabs
 
         void ClearBlank_Click(object sender, EventArgs e)
         {
- 	        BlankBuffer = null;
+            BlankBuffer = null;
             ClearBlank.Enabled = false;
         }
     }

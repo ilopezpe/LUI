@@ -526,7 +526,7 @@ namespace LUI.controls
                         float XVal = i / NXTicks * (float)XRangeRound;
                         string TickLabel = XAscending ? (XLeft + XVal).ToString(XLabelFormat) : (XLeft - XVal).ToString();
                         SizeF TickLabelOffset = G.MeasureString(TickLabel, AxesFont);
-                        float X = Axes.Left + Axes.Width * XVal/XRange - TickLabelOffset.Width / 2;
+                        float X = Axes.Left + Axes.Width * XVal / XRange - TickLabelOffset.Width / 2;
                         float Y = AxesPadding.Bottom + TickLabelOffset.Height;
                         G.DrawString(TickLabel, AxesFont, B, new PointF(X, Y));
                     }

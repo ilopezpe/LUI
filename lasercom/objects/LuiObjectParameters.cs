@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Extensions;
+using System;
 using System.Runtime.Serialization;
-using Extensions;
 
 
 namespace lasercom.objects
@@ -83,7 +83,7 @@ namespace lasercom.objects
     /// </summary>
     /// <typeparam name="P"></typeparam>
     [DataContract]
-    public abstract class LuiObjectParameters<P> : LuiObjectParameters, 
+    public abstract class LuiObjectParameters<P> : LuiObjectParameters,
         IEquatable<P> where P : LuiObjectParameters<P>
     {
 

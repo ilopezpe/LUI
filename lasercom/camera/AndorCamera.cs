@@ -15,7 +15,7 @@ namespace lasercom.camera
     /// Class representing a generic Andor camera.
     /// Specific Andor camera types should inherit from this class.
     /// </summary>
-    public class AndorCamera:AbstractCamera
+    public class AndorCamera : AbstractCamera
     {
         // Andor constants and commands
         public const int ReadModeFVB = 0;
@@ -196,10 +196,10 @@ namespace lasercom.camera
         public override ImageArea Image
         {
             get { return _Image; }
-            set 
+            set
             {
                 int hbin, vbin, hstart, hcount, vstart, vcount;
-                
+
                 if (value.hcount == -1)
                 {
                     hcount = _Image.hcount;
@@ -263,7 +263,7 @@ namespace lasercom.camera
                 _Image = new ImageArea(hbin, vbin,
                     hstart, hcount,
                     vstart, vcount);
-                
+
                 uint ret = AndorSdk.SetImage(
                     _Image.hbin, _Image.vbin,
                     _Image.hstart + 1, _Image.hstart + _Image.hcount,
@@ -283,15 +283,15 @@ namespace lasercom.camera
 
         protected int _Width;
         override public int Width
-        { 
+        {
             get
             {
-                return _Width; 
-            } 
+                return _Width;
+            }
         }
 
         private int _BitDepth;
-        public int BitDepth 
+        public int BitDepth
         {
             get
             {
@@ -408,7 +408,7 @@ namespace lasercom.camera
             }
             set
             {
-                if (value >= Math.Pow(2, BitDepth)) 
+                if (value >= Math.Pow(2, BitDepth))
                     throw new ArgumentException("Saturation level may not exceed 2^BitDepth - 1.");
                 _SaturationLevel = value;
             }
@@ -416,13 +416,14 @@ namespace lasercom.camera
 
         public AndorCamera() { }
 
-        public AndorCamera(LuiObjectParameters p) : 
-            this(p as CameraParameters) { }
+        public AndorCamera(LuiObjectParameters p) :
+            this(p as CameraParameters)
+        { }
 
         public AndorCamera(CameraParameters p)
         {
             if (p == null) throw new ArgumentException();
-            
+
             if (p.Dir != null)
             {
                 InitVal = AndorSdk.Initialize(p.Dir);
@@ -436,7 +437,7 @@ namespace lasercom.camera
 
                 AndorSdk.GetMaximumBinning(ReadModeImage, 0, ref _MaxHorizontalBinSize);
                 AndorSdk.GetMaximumBinning(ReadModeImage, 1, ref _MaxVerticalBinSize);
-                
+
                 _Image = new ImageArea(1, 1, 0, Width, 0, Height);
                 Image = p.Image;
 
@@ -453,9 +454,9 @@ namespace lasercom.camera
                 DDGTriggerMode = DDGTriggerModeExternal;
                 ReadMode = p.ReadMode;
             }
-            
+
             LoadCalibration(p.CalFile);
-            
+
             p.Image = Image;
             p.ReadMode = ReadMode;
         }

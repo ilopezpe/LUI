@@ -1,6 +1,6 @@
-﻿using System;
-using lasercom.objects;
+﻿using lasercom.objects;
 using NationalInstruments.NI4882;
+using System;
 
 namespace lasercom.gpib
 {

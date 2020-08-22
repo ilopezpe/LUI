@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Extensions;
+﻿using Extensions;
 using lasercom.camera;
 using lasercom.ddg;
 using lasercom.gpib;
 using lasercom.objects;
 using LUI.config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LUI_Unit_Tests
 {
@@ -85,7 +85,7 @@ namespace LUI_Unit_Tests
             //    testConfig = (LuiConfig)serializer.Deserialize(reader);
             //}
             LuiConfig testConfig = LuiConfig.FromFile(ConfigFile);
-            
+
             Assert.AreEqual(testConfig.ConfigFile, Config.ConfigFile);
             Assert.AreEqual(testConfig.LogFile, Config.LogFile);
             Assert.AreEqual(testConfig.LogLevel, Config.LogLevel);
@@ -100,7 +100,7 @@ namespace LUI_Unit_Tests
 
             GpibProviderParameters dependency = null;
             GpibProviderParameters testParameters = null;
-            foreach(var kvp in testConfig.LuiObjectTableIndex[ddgParameters.GetType()])
+            foreach (var kvp in testConfig.LuiObjectTableIndex[ddgParameters.GetType()])
             {
                 if (kvp.Key.Name == ddgParameters.Name)
                 {
@@ -118,10 +118,10 @@ namespace LUI_Unit_Tests
 
             Assert.AreEqual(dependency, testParameters);
             Assert.IsTrue(
-                testConfig.LuiObjectTableIndex[dependency.GetType()][dependency] == 
+                testConfig.LuiObjectTableIndex[dependency.GetType()][dependency] ==
                 testConfig.LuiObjectTableIndex[testParameters.GetType()][testParameters]
                 );
-            Assert.IsTrue( Object.ReferenceEquals(
+            Assert.IsTrue(Object.ReferenceEquals(
                     testConfig.LuiObjectTableIndex[dependency.GetType()][dependency],
                     testConfig.LuiObjectTableIndex[testParameters.GetType()][testParameters]
                     ));

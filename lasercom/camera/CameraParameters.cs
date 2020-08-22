@@ -1,6 +1,6 @@
-﻿using System;
+﻿using lasercom.objects;
+using System;
 using System.Runtime.Serialization;
-using lasercom.objects;
 
 namespace lasercom.camera
 {
@@ -72,10 +72,10 @@ namespace lasercom.camera
         public CameraParameters()
             : base()
         {
-            
+
         }
 
-        public CameraParameters(CameraParameters other) 
+        public CameraParameters(CameraParameters other)
             : base(other)
         {
 

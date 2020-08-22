@@ -1,7 +1,7 @@
-﻿using System;
+﻿using HDF5DotNet;
+using System;
 using System.Linq;
 using System.Text;
-using HDF5DotNet;
 
 namespace lasercom.io
 {
@@ -102,8 +102,7 @@ namespace lasercom.io
         /// <param name="_Dims"></param>
         protected internal MatVar(string _Name, H5FileOrGroupId _FileOrGroupId, params long[] _Dims)
         {
-            string MatlabClass;
-            InitTypeId(out MatlabClass);
+            InitTypeId(out string MatlabClass);
 
             Name = _Name;
             FileOrGroupId = _FileOrGroupId;
@@ -142,8 +141,7 @@ namespace lasercom.io
         /// <param name="_FileOrGroupId"></param>
         protected internal MatVar(string _Name, H5FileOrGroupId _FileOrGroupId)
         {
-            string MatlabClass;
-            InitTypeId(out MatlabClass);
+            InitTypeId(out string MatlabClass);
 
             Name = _Name;
             FileOrGroupId = _FileOrGroupId;
@@ -219,9 +217,9 @@ namespace lasercom.io
         /// <param name="position"></param>
         public void Write(T data, long[] position)
         {
-            H5S.selectHyperslab(SpaceId, H5S.SelectOperator.SET, position, new long[] {1, 1});
+            H5S.selectHyperslab(SpaceId, H5S.SelectOperator.SET, position, new long[] { 1, 1 });
             H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
-            H5DataSpaceId memSpaceId = H5S.create_simple(1,new long[]{1});
+            H5DataSpaceId memSpaceId = H5S.create_simple(1, new long[] { 1 });
             H5D.writeScalar(DataSetId, TypeId, memSpaceId, SpaceId, propListId, ref data);
             H5S.close(memSpaceId);
         }

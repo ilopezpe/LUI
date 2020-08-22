@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Extensions;
+using lasercom.objects;
+using LUI.config;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Extensions;
-using lasercom.objects;
-using LUI.config;
 
 namespace LUI.controls
 {
-    public class LuiOptionsListDialog<T,P> : LuiOptionsDialog where P:LuiObjectParameters<P>
+    public class LuiOptionsListDialog<T, P> : LuiOptionsDialog where P : LuiObjectParameters<P>
     {
         LabeledControl<ComboBox> ObjectTypes;
         LabeledControl<TextBox> ObjectName;
@@ -76,7 +76,7 @@ namespace LUI.controls
             Init();
         }
 
-        public LuiOptionsListDialog(Size size) : this(size, true) {}
+        public LuiOptionsListDialog(Size size) : this(size, true) { }
 
         private void Init()
         {
@@ -155,8 +155,9 @@ namespace LUI.controls
             ObjectTypes.Control.DisplayMember = "Name";
 
             List<Type> AvailableTypes = typeof(T).GetSubclasses(true);
-            AvailableTypes.Sort((x,y) => x.Name.CompareTo(y.Name));
-            AvailableTypes.ForEach(x => {
+            AvailableTypes.Sort((x, y) => x.Name.CompareTo(y.Name));
+            AvailableTypes.ForEach(x =>
+            {
                 ObjectTypes.Control.Items.Add(x);
             });
             ObjectTypes.Control.SelectedIndex = 0;
@@ -215,7 +216,7 @@ namespace LUI.controls
 
         private void SelectedObjectChanged(object sender, EventArgs e)
         {
-            if (ObjectView.SelectedIndices.Count == 0) 
+            if (ObjectView.SelectedIndices.Count == 0)
                 return;
 
             LuiObjectItem selectedItem = (LuiObjectItem)ObjectView.SelectedItems[0];
@@ -235,7 +236,7 @@ namespace LUI.controls
                 Remove.Enabled = true;
                 Add.Enabled = false;
             }
-            
+
             P p = (P)selectedItem.Transient;
             ConfigPanels[p.Type].TriggerEvents = false; // Deactivate LuiConfigPanel's OnOptionsChanged.
             ConfigPanels[p.Type].CopyFrom(p); // No OnOptionsChanged => Apply button not enabled.
@@ -332,7 +333,7 @@ namespace LUI.controls
             if (dummyRow.Selected && sender != Remove)
             {
                 return;
-            }            
+            }
             base.OnOptionsChanged(sender, e);
         }
     }

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using Extensions;
+﻿using Extensions;
 using lasercom;
 using lasercom.camera;
 using lasercom.control;
@@ -16,6 +9,13 @@ using log4net.Appender;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using LUI.tabs;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 //  <summary>
 //      Class for managing LUI XML config files.
@@ -23,7 +23,7 @@ using LUI.tabs;
 
 namespace LUI.config
 {
-    [XmlRoot( "LuiConfig" )]
+    [XmlRoot("LuiConfig")]
     public class LuiConfig : IXmlSerializable, IDisposable
     {
         protected static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -166,12 +166,12 @@ namespace LUI.config
             get
             {
                 foreach (var subtable in LuiObjectTableIndex.Values) // List of subtables
+                {
+                    foreach (var kvp in subtable) // parameter/object pair
                     {
-                        foreach (var kvp in subtable) // parameter/object pair
-                        {
-                            yield return kvp.Key;
-                        }
+                        yield return kvp.Key;
                     }
+                }
             }
         }
 
@@ -197,7 +197,7 @@ namespace LUI.config
             {
                 TabSettings.Add(type.Name, new Dictionary<string, string>());
             }
-            
+
             LuiObjectTableIndex = new Dictionary<Type, Dictionary<LuiObjectParameters, ILuiObject>>();
 
             // Prepopulate parameter lists using all concrete LuiObjectParameters subclasses.
@@ -261,7 +261,7 @@ namespace LUI.config
         /// </summary>
         /// <typeparam name="P"></typeparam>
         /// <returns></returns>
-        public IEnumerable<P> GetParameters<P>() where P:LuiObjectParameters<P>
+        public IEnumerable<P> GetParameters<P>() where P : LuiObjectParameters<P>
         {
             return LuiObjectTableIndex[typeof(P)].Keys.AsEnumerable().Cast<P>();
         }
@@ -302,7 +302,7 @@ namespace LUI.config
             LuiObjectTableIndex[p.GetType()].Add(p, null);
         }
 
-        public void ReplaceParameters<P>(IEnumerable<P> NewParameters) where P:LuiObjectParameters<P>
+        public void ReplaceParameters<P>(IEnumerable<P> NewParameters) where P : LuiObjectParameters<P>
         {
             IEnumerable<P> OldParameters = LuiObjectTableIndex[typeof(P)].Keys.AsEnumerable().Cast<P>();
 
@@ -329,8 +329,8 @@ namespace LUI.config
 
             // Find old parameters with same name as new parameters using LINQ.
             var sameNames = (from p in OldParameters
-                            join q in NewParameters on p.Name equals q.Name
-                            select new { Old = p, New = q }).ToList(); // Same ToList() copy trick.
+                             join q in NewParameters on p.Name equals q.Name
+                             select new { Old = p, New = q }).ToList(); // Same ToList() copy trick.
 
             foreach (var pair in sameNames)
             {
@@ -346,7 +346,7 @@ namespace LUI.config
                 }
                 else if (pair.Old.NeedsUpdate(pair.New))
                 {
-                    LuiObject<P> luiObject = (LuiObject<P>) LuiObjectTableIndex[pair.Old.GetType()][pair.Old];
+                    LuiObject<P> luiObject = (LuiObject<P>)LuiObjectTableIndex[pair.Old.GetType()][pair.Old];
                     if (luiObject != null) luiObject.Update(pair.New);
                     LuiObjectTableIndex[pair.Old.GetType()].Remove(pair.Old);
                     LuiObjectTableIndex[pair.New.GetType()].Add(pair.New, luiObject);
@@ -401,37 +401,37 @@ namespace LUI.config
                             LuiObjectParameters p = (LuiObjectParameters)serializer.ReadObject(subtree.ReadSubtree());
                             AddParameters(p);
                         }
-                        
+
                     }
                 }
 
                 // Tab settings.
-                
-                    reader.ReadToFollowing("TabSettings");
-                    using (var subtree = reader.ReadSubtree())
+
+                reader.ReadToFollowing("TabSettings");
+                using (var subtree = reader.ReadSubtree())
+                {
+                    subtree.MoveToContent();
+                    ISet<string> TabNames = new HashSet<string>(typeof(LuiTab).GetSubclasses(true).Select(x => x.Name));
+                    string Tab = null;
+                    while (subtree.Read())
                     {
                         subtree.MoveToContent();
-                        ISet<string> TabNames = new HashSet<string>(typeof(LuiTab).GetSubclasses(true).Select(x => x.Name));
-                        string Tab = null;
-                        while (subtree.Read())
+                        if (subtree.IsStartElement())
                         {
-                            subtree.MoveToContent();
-                            if (subtree.IsStartElement())
+                            if (TabNames.Contains(subtree.Name))
                             {
-                                if (TabNames.Contains(subtree.Name))
-                                {
-                                    Tab = subtree.Name;
-                                }
-                                else
-                                {
-                                    string Name = subtree.Name;
-                                    subtree.Read();
-                                    TabSettings[Tab].Add(Name, subtree.Value);
-                                }
-                            
+                                Tab = subtree.Name;
                             }
+                            else
+                            {
+                                string Name = subtree.Name;
+                                subtree.Read();
+                                TabSettings[Tab].Add(Name, subtree.Value);
+                            }
+
                         }
                     }
+                }
 
                 //reader.ReadEndElement(); // End root.
             }

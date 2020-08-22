@@ -1,7 +1,7 @@
-﻿using System.IO;
-using System.Linq;
-using lasercom.io;
+﻿using lasercom.io;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
+using System.Linq;
 
 namespace LUI_Unit_Tests
 {

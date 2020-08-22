@@ -1,12 +1,12 @@
-﻿using System;
+﻿using HDF5DotNet;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using HDF5DotNet;
 
 namespace lasercom.io
 {
-    public class MatFile:IDisposable
+    public class MatFile : IDisposable
     {
         private readonly string _FileName;
         public string FileName
@@ -49,8 +49,7 @@ namespace lasercom.io
         {
             get
             {
-                MatVar V;
-                Variables.TryGetValue(Name, out V);
+                Variables.TryGetValue(Name, out MatVar V);
                 return V;
             }
         }

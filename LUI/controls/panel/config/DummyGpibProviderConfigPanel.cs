@@ -1,5 +1,5 @@
-﻿using System;
-using lasercom.gpib;
+﻿using lasercom.gpib;
+using System;
 
 namespace LUI.controls
 {
@@ -18,12 +18,12 @@ namespace LUI.controls
 
         public override void CopyTo(GpibProviderParameters other)
         {
-            
+
         }
 
         public override void CopyFrom(GpibProviderParameters other)
         {
-            
+
         }
     }
 }

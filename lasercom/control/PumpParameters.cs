@@ -1,6 +1,6 @@
-﻿using System;
+﻿using lasercom.objects;
+using System;
 using System.Runtime.Serialization;
-using lasercom.objects;
 
 namespace lasercom.control
 {
@@ -66,7 +66,7 @@ namespace lasercom.control
 
         public override bool NeedsReinstantiation(PumpParameters other)
         {
-            bool needs =  base.NeedsReinstantiation(other);
+            bool needs = base.NeedsReinstantiation(other);
             if (needs) return true;
 
             if (Type == typeof(HarvardPump) || Type.IsSubclassOf(typeof(HarvardPump)))

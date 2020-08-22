@@ -1,6 +1,6 @@
-﻿using System;
+﻿using lasercom.gpib;
+using System;
 using System.Windows.Forms;
-using lasercom.gpib;
 
 namespace LUI.controls
 {
@@ -16,17 +16,17 @@ namespace LUI.controls
                 return typeof(PrologixGpibProvider);
             }
         }
-        
+
         public PrologixConfigPanel()
             : base()
         {
             PrologixCOMPort = new LabeledControl<ComboBox>(new ComboBox(), "COM Port:");
             lasercom.Util.EnumerateSerialPorts().ForEach(x => PrologixCOMPort.Control.Items.Add(x));
-            PrologixCOMPort.Control.SelectedIndexChanged += (s, e) => OnOptionsChanged(s,e);
+            PrologixCOMPort.Control.SelectedIndexChanged += (s, e) => OnOptionsChanged(s, e);
             PrologixTimeout = new LabeledControl<NumericUpDown>(new NumericUpDown(), "Timeout (ms):");
             PrologixTimeout.Control.Maximum = 999;
             PrologixTimeout.Control.Increment = 1;
-            PrologixTimeout.Control.ValueChanged += (s, e) => OnOptionsChanged(s,e);
+            PrologixTimeout.Control.ValueChanged += (s, e) => OnOptionsChanged(s, e);
             this.Controls.Add(PrologixCOMPort);
             this.Controls.Add(PrologixTimeout);
         }
