@@ -15,15 +15,15 @@ namespace LUI.tabs
     {
         struct WorkArgs
         {
-            public WorkArgs(int N, PumpMode Pump, int Discard)
+            public WorkArgs(int N, PumpMode Pump, bool DiscardFirst)
             {
                 this.N = N;
                 this.Pump = Pump;
-                this.Discard = Discard;
+                this.DiscardFirst = DiscardFirst;
             }
             public readonly int N;
             public readonly PumpMode Pump;
-            public readonly int Discard;
+            public readonly bool DiscardFirst;
         }
 
         double[] Light = null;
@@ -104,7 +104,7 @@ namespace LUI.tabs
             worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(new WorkArgs(N, Pump, (int)Discard.Value));
+            worker.RunWorkerAsync(new WorkArgs(N, Pump, Discard.Checked));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -154,7 +154,7 @@ namespace LUI.tabs
             // Flow-flash.
             if (args.Pump == PumpMode.ALWAYS)
             {
-                OpenPump(args.Discard);
+                OpenPump(args.DiscardFirst);
                 if (PauseCancelProgress(e, -1, Dialog.PROGRESS)) return;
             }
 
@@ -177,7 +177,7 @@ namespace LUI.tabs
             // Flow-flash.
             if (args.Pump == PumpMode.TRANS)
             {
-                OpenPump(args.Discard);
+                OpenPump(args.DiscardFirst);
                 if (PauseCancelProgress(e, -1, Dialog.PROGRESS)) return;
             }
 

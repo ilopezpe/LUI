@@ -64,7 +64,7 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger, PumpMode Pump, int Discard, double GsDelay)
+            public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger, PumpMode Pump, int Discard)
             {
                 this.N = N;
                 this.Times = new List<double>(Times);
@@ -80,19 +80,17 @@ namespace LUI.tabs
                 this.GateDelay = double.NaN;
                 this.Pump = Pump;
                 this.Discard = Discard;
-                this.GsDelay = GsDelay;
             }
             public readonly int N;
             public readonly IList<double> Times;
             public readonly string PrimaryDelayName;
             public readonly string TriggerName;
-            public readonly Tuple<char, char> GateName;
+            public readonly Tuple<char,char> GateName;
             public readonly char GateTriggerName;
             public readonly double GateDelay;
             public readonly double Gate;
             public readonly PumpMode Pump;
             public readonly int Discard;
-            public readonly double GsDelay;
         }
 
         struct ProgressObject
@@ -124,7 +122,7 @@ namespace LUI.tabs
 
         public enum Dialog
         {
-            INITIALIZE, PROGRESS, PROGRESS_DARK, PROGRESS_TIME,
+            INITIALIZE, PROGRESS, PROGRESS_DARK, PROGRESS_TIME, 
             PROGRESS_TIME_COMPLETE, PROGRESS_FLASH, PROGRESS_TRANS,
             CALCULATE, TEMPERATURE
         }
@@ -139,8 +137,6 @@ namespace LUI.tabs
         MatVar<int> RawData;
         MatVar<double> LuiData;
 
-        public const double DefaultGsDelay = 3.2E-8;
-
         public TroaControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
@@ -151,17 +147,13 @@ namespace LUI.tabs
             TimesView.DataSource = new BindingSource(TimesList, null);
             TimesView.CellValidating += TimesView_CellValidating;
             TimesView.CellEndEdit += TimesView_CellEndEdit;
-
+            
             SaveData.Click += (sender, e) => SaveOutput();
 
             DdgConfigBox.Config = Config;
             DdgConfigBox.Commander = Commander;
             DdgConfigBox.AllowZero = false;
             DdgConfigBox.HandleParametersChanged(this, EventArgs.Empty);
-
-            GsDelay.TextChanged += GsDelay_TextChanged;
-            GsDelay.LostFocus += GsDelay_LostFocus;
-            GsDelay.KeyPress += GsDelay_KeyPress;
         }
 
         private void Init()
@@ -179,8 +171,6 @@ namespace LUI.tabs
             };
 
             SaveData.Enabled = false;
-
-            GsDelay.Text = DefaultGsDelay.ToString("E3");
 
             ResumeLayout();
         }
@@ -212,7 +202,7 @@ namespace LUI.tabs
             {
                 PumpBox.Enabled = false;
             }
-
+            
         }
 
         public override void HandleContainingTabSelected(object sender, EventArgs e)
@@ -237,8 +227,6 @@ namespace LUI.tabs
                     typeof(DelayGeneratorParameters), value);
             if (Settings.TryGetValue("PrimaryDelayDelay", out value) && value != null && value != "")
                 DdgConfigBox.PrimaryDelayDelay = value;
-            if (Settings.TryGetValue("GsDelay", out value) && value != null && value != "")
-                GsDelay.Text = value;
         }
 
         protected override void SaveSettings()
@@ -247,7 +235,6 @@ namespace LUI.tabs
             var Settings = Config.TabSettings[this.GetType().Name];
             Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg != null ? DdgConfigBox.PrimaryDelayDdg.Name : null;
             Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay != null ? DdgConfigBox.PrimaryDelayDelay : null;
-            Settings["GsDelay"] = GsDelay.Text;
         }
 
         /// <summary>
@@ -306,8 +293,7 @@ namespace LUI.tabs
             Commander.BeamFlag.CloseLaserAndFlash();
 
             SetupWorker();
-            worker.RunWorkerAsync(new WorkArgs(N, Times, DdgConfigBox.PrimaryDelayDelay, DdgConfigBox.PrimaryDelayTrigger,
-                Mode, (int)Discard.Value, double.Parse(GsDelay.Text)));
+            worker.RunWorkerAsync(new WorkArgs(N, Times, DdgConfigBox.PrimaryDelayDelay, DdgConfigBox.PrimaryDelayTrigger, Mode, (int)Discard.Value));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -316,7 +302,6 @@ namespace LUI.tabs
             base.OnTaskStarted(e);
             DdgConfigBox.Enabled = false;
             PumpBox.Enabled = false;
-            ExperimentConfigBox.Enabled = false;
             LoadTimes.Enabled = SaveData.Enabled = false;
             ScanProgress.Text = "0";
             TimeProgress.Text = "0";
@@ -327,7 +312,6 @@ namespace LUI.tabs
             base.OnTaskFinished(e);
             DdgConfigBox.Enabled = true;
             PumpBox.Enabled = true;
-            ExperimentConfigBox.Enabled = true;
             LoadTimes.Enabled = SaveData.Enabled = true;
         }
 
@@ -355,7 +339,7 @@ namespace LUI.tabs
         /// <param name="SumBuffer">Array for accumulated binned data.</param>
         /// <param name="N"></param>
         /// <param name="Breakout"></param>
-        private void DoAcq(int[] AcqBuffer, int[] DataBuffer, int[] SumBuffer, int N, Func<int, bool> Breakout)
+        private void DoAcq(int[] AcqBuffer, int[] DataBuffer, int[] SumBuffer, int N, Func<int,bool> Breakout)
         {
             Array.Clear(SumBuffer, 0, SumBuffer.Length);
             for (int i = 0; i < N; i++)
@@ -408,11 +392,7 @@ namespace LUI.tabs
             double[] Excited = new double[AcqWidth];
             double[] Dark = new double[AcqWidth];
 
-            // Set delay for GS before dark in case old delay still on DG.
-            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay);
-
             // Collect dark.
-            if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS_DARK))) return;
             Commander.BeamFlag.CloseLaserAndFlash();
             DoAcq(AcqBuffer, AcqRow, Drk, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_DARK)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
@@ -420,26 +400,27 @@ namespace LUI.tabs
             Data.DivideArray(Dark, N);
 
             // Run data collection scheme.
-            if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH))) return;
-            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Set delay for GS.
             if (args.Pump == PumpMode.ALWAYS) OpenPump(args.Discard);
+            // probe light only
             Commander.BeamFlag.OpenFlash();
+            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay for GS (avoids laser tail).
             DoAcq(AcqBuffer, AcqRow, Gnd1, half, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
 
             for (int i = 0; i < Times.Count; i++)
             {
                 double Delay = Times[i];
-                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
                 if (args.Pump == PumpMode.TRANS) OpenPump(args.Discard);
-                Commander.BeamFlag.OpenLaserAndFlash();
+                //Commander.BeamFlag.OpenLaserAndFlash();
+                Commander.BeamFlag.OpenLaser();
+                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, Delay, Dialog.PROGRESS_TIME))) return;
                 DoAcq(AcqBuffer, AcqRow, Exc, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
                 if (args.Pump == PumpMode.TRANS) Commander.Pump.SetClosed();
-                if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH))) return;
-                Commander.BeamFlag.OpenFlash();
-                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Set delay for GS.
+                //Commander.BeamFlag.OpenFlash();
+                Commander.BeamFlag.CloseLaser();
+                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay for GS (avoids laser tail).
                 if (i % 2 == 0) // Alternate between Gnd1 and Gnd2.
                 {
                     DoAcq(AcqBuffer, AcqRow, Gnd2, half, (p) => PauseCancelProgress(e, p % half + half, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
@@ -463,7 +444,6 @@ namespace LUI.tabs
             }
             if (args.Pump != PumpMode.NEVER) Commander.Pump.SetClosed();
             Commander.BeamFlag.CloseLaserAndFlash();
-            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Don't leave last delay on DG.
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
@@ -599,7 +579,7 @@ namespace LUI.tabs
                 Log.Error(ex);
                 MessageBox.Show("Couldn't parse file: " + ex.Message);
             }
-
+                
         }
 
         private void SaveOutput()
@@ -658,44 +638,6 @@ namespace LUI.tabs
                 return true;
             }
             return false;
-        }
-
-        void GsDelay_LostFocus(object sender, EventArgs e)
-        {
-            double value;
-            if (!double.TryParse(GsDelay.Text, out value))
-            {
-                GsDelay.Text = GsDelay.Tag != null ? (string)GsDelay.Tag : DefaultGsDelay.ToString("E3");
-            }
-        }
-
-        void GsDelay_TextChanged(object sender, EventArgs e)
-        {
-            double value;
-            if (!double.TryParse(GsDelay.Text, out value))
-            {
-                GsDelay.ForeColor = Color.Red;
-            }
-            else
-            {
-                GsDelay.ForeColor = Color.Black;
-                GsDelay.Tag = value.ToString("E3");
-            }
-        }
-
-        void GsDelay_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            Keys key = (Keys)e.KeyChar;
-            if (key == Keys.Enter)
-            {
-                GsDelay.Text = GsDelay.Tag != null ? (string)GsDelay.Tag : DefaultGsDelay.ToString("E3");
-                e.Handled = true;
-            }
-            if (key == Keys.Escape)
-            {
-                GsDelay.Text = GsDelay.Tag != null ? (string)GsDelay.Tag : DefaultGsDelay.ToString("E3");
-                e.Handled = true;
-            }
         }
 
     }

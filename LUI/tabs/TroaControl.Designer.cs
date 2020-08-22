@@ -31,7 +31,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LoadTimes = new System.Windows.Forms.Button();
             this.TimesView = new System.Windows.Forms.DataGridView();
-            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SaveData = new System.Windows.Forms.Button();
             this.DdgConfigBox = new LUI.controls.DdgCommandPanel();
             this.PumpBox = new LUI.controls.ObjectCommandPanel();
@@ -39,15 +38,11 @@
             this.PumpAlways = new System.Windows.Forms.RadioButton();
             this.PumpTs = new System.Windows.Forms.RadioButton();
             this.PumpNever = new System.Windows.Forms.RadioButton();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.Discard = new System.Windows.Forms.NumericUpDown();
-            this.label4 = new System.Windows.Forms.Label();
+            this.Discard = new System.Windows.Forms.CheckBox();
             this.TimeProgress = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
-            this.ExperimentConfigBox = new System.Windows.Forms.GroupBox();
-            this.GsDelay = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -60,10 +55,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.TimesView)).BeginInit();
             this.PumpBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Discard)).BeginInit();
             this.panel2.SuspendLayout();
-            this.ExperimentConfigBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // StatusBox
@@ -99,7 +91,6 @@
             // 
             // LeftChildArea
             // 
-            this.LeftChildArea.Controls.Add(this.ExperimentConfigBox);
             this.LeftChildArea.Controls.Add(this.panel2);
             this.LeftChildArea.Controls.Add(this.DdgConfigBox);
             this.LeftChildArea.Location = new System.Drawing.Point(0, 583);
@@ -142,16 +133,6 @@
             this.TimesView.Size = new System.Drawing.Size(136, 150);
             this.TimesView.TabIndex = 11;
             // 
-            // Value
-            // 
-            this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Value.HeaderText = "Delay (s)";
-            this.Value.Name = "Value";
-            this.Value.ReadOnly = true;
-            this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
             // SaveData
             // 
             this.SaveData.Location = new System.Drawing.Point(3, 196);
@@ -183,17 +164,17 @@
             this.PumpBox.Flow.AutoSize = true;
             this.PumpBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PumpBox.Flow.Controls.Add(this.panel1);
-            this.PumpBox.Flow.Controls.Add(this.panel3);
+            this.PumpBox.Flow.Controls.Add(this.Discard);
             this.PumpBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PumpBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.PumpBox.Flow.Location = new System.Drawing.Point(3, 16);
             this.PumpBox.Flow.Name = "Flow";
-            this.PumpBox.Flow.Size = new System.Drawing.Size(294, 101);
+            this.PumpBox.Flow.Size = new System.Drawing.Size(294, 92);
             this.PumpBox.Flow.TabIndex = 0;
             this.PumpBox.Location = new System.Drawing.Point(0, 0);
             this.PumpBox.Name = "PumpBox";
             this.PumpBox.SelectedObject = null;
-            this.PumpBox.Size = new System.Drawing.Size(300, 120);
+            this.PumpBox.Size = new System.Drawing.Size(300, 111);
             this.PumpBox.TabIndex = 0;
             this.PumpBox.Text = "Syringe Pump";
             // 
@@ -242,37 +223,15 @@
             this.PumpNever.Text = "Never";
             this.PumpNever.UseVisualStyleBackColor = true;
             // 
-            // panel3
-            // 
-            this.panel3.AutoSize = true;
-            this.panel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.panel3.Controls.Add(this.Discard);
-            this.panel3.Controls.Add(this.label4);
-            this.panel3.Location = new System.Drawing.Point(3, 72);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(109, 26);
-            this.panel3.TabIndex = 3;
-            // 
             // Discard
             // 
-            this.Discard.Location = new System.Drawing.Point(71, 3);
-            this.Discard.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
+            this.Discard.AutoSize = true;
+            this.Discard.Location = new System.Drawing.Point(3, 72);
             this.Discard.Name = "Discard";
-            this.Discard.Size = new System.Drawing.Size(35, 20);
-            this.Discard.TabIndex = 1;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 5);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(62, 13);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "Discard first";
+            this.Discard.Size = new System.Drawing.Size(84, 17);
+            this.Discard.TabIndex = 2;
+            this.Discard.Text = "Discard First";
+            this.Discard.UseVisualStyleBackColor = true;
             // 
             // TimeProgress
             // 
@@ -305,34 +264,15 @@
             this.label2.TabIndex = 15;
             this.label2.Text = "Times";
             // 
-            // ExperimentConfigBox
+            // Value
             // 
-            this.ExperimentConfigBox.AutoSize = true;
-            this.ExperimentConfigBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ExperimentConfigBox.Controls.Add(this.GsDelay);
-            this.ExperimentConfigBox.Controls.Add(this.label3);
-            this.ExperimentConfigBox.Location = new System.Drawing.Point(370, 3);
-            this.ExperimentConfigBox.Name = "ExperimentConfigBox";
-            this.ExperimentConfigBox.Size = new System.Drawing.Size(197, 58);
-            this.ExperimentConfigBox.TabIndex = 17;
-            this.ExperimentConfigBox.TabStop = false;
-            this.ExperimentConfigBox.Text = "Experiment Configuraton";
-            // 
-            // GsDelay
-            // 
-            this.GsDelay.Location = new System.Drawing.Point(126, 19);
-            this.GsDelay.Name = "GsDelay";
-            this.GsDelay.Size = new System.Drawing.Size(65, 20);
-            this.GsDelay.TabIndex = 0;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 22);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(114, 13);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "Ground State Delay (s)";
+            this.Value.DataPropertyName = "Value";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Value.HeaderText = "Delay (s)";
+            this.Value.Name = "Value";
+            this.Value.ReadOnly = true;
+            this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // TroaControl
             // 
@@ -359,12 +299,7 @@
             this.PumpBox.Flow.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Discard)).EndInit();
             this.panel2.ResumeLayout(false);
-            this.ExperimentConfigBox.ResumeLayout(false);
-            this.ExperimentConfigBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -380,16 +315,11 @@
         private System.Windows.Forms.RadioButton PumpAlways;
         private System.Windows.Forms.RadioButton PumpTs;
         private System.Windows.Forms.RadioButton PumpNever;
+        private System.Windows.Forms.CheckBox Discard;
         protected System.Windows.Forms.TextBox TimeProgress;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;
-        private System.Windows.Forms.GroupBox ExperimentConfigBox;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox GsDelay;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.NumericUpDown Discard;
-        private System.Windows.Forms.Label label4;
 
     }
 }

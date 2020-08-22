@@ -34,15 +34,15 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, PumpMode Pump, int Discard)
+            public WorkArgs(int N, PumpMode Pump, bool DiscardFirst)
             {
                 this.N = N;
                 this.Pump = Pump;
-                this.Discard = Discard;
+                this.DiscardFirst = DiscardFirst;
             }
             public readonly int N;
             public readonly PumpMode Pump;
-            public readonly int Discard;
+            public readonly bool DiscardFirst;
         }
 
         public enum PumpMode
@@ -131,7 +131,7 @@ namespace LUI.tabs
             Commander.BeamFlag.CloseLaserAndFlash();
 
             SetupWorker();
-            worker.RunWorkerAsync(new WorkArgs(N, Mode, (int)Discard.Value));
+            worker.RunWorkerAsync(new WorkArgs(N, Mode, Discard.Checked));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -190,7 +190,7 @@ namespace LUI.tabs
 
             if (args.Pump == PumpMode.ALWAYS)
             {
-                OpenPump(args.Discard);
+                OpenPump(args.DiscardFirst);
             }
 
             int[] SampleBuffer = new int[finalSize];

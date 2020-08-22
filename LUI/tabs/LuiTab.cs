@@ -413,10 +413,10 @@ namespace LUI.tabs
             wait = false;
         }
 
-        protected void OpenPump(int discard)
+        protected void OpenPump(bool discard)
         {
             Commander.Pump.SetOpen();
-            for (int i = 0; i < discard; i++)
+            if (discard)
             {
                 TryAcquire();
             }
