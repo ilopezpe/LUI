@@ -212,17 +212,21 @@ namespace LUI.config
             var tracer = new TraceAppender();
             Hierarchy hierarchy = (Hierarchy)LogManager.GetRepository();
             hierarchy.Root.AddAppender(tracer);
-            
-            PatternLayout patternLayout = new PatternLayout();
-            patternLayout.ConversionPattern = "%date [%thread] %-5level %logger - %message%newline";
+
+            PatternLayout patternLayout = new PatternLayout
+            {
+                ConversionPattern = "%date [%thread] %-5level %logger - %message%newline"
+            };
             patternLayout.ActivateOptions();
             tracer.Layout = patternLayout;
 
-            FileAppender fileAppender = new FileAppender();
-            fileAppender.AppendToFile = true;
-            fileAppender.File = LogFile;
-            fileAppender.Layout = patternLayout;
-            fileAppender.LockingModel = new FileAppender.ExclusiveLock();
+            FileAppender fileAppender = new FileAppender
+            {
+                AppendToFile = true,
+                File = LogFile,
+                Layout = patternLayout,
+                LockingModel = new FileAppender.ExclusiveLock()
+            };
             fileAppender.ActivateOptions();
             hierarchy.Root.AddAppender(fileAppender);
 
@@ -378,9 +382,11 @@ namespace LUI.config
                     }
                 }
                 // LuiObjectParamters lists.
-                var settings = new DataContractSerializerSettings();
-                settings.PreserveObjectReferences = true;
-                settings.KnownTypes = typeof(LuiObjectParameters).GetSubclasses(true);
+                var settings = new DataContractSerializerSettings
+                {
+                    PreserveObjectReferences = true,
+                    KnownTypes = typeof(LuiObjectParameters).GetSubclasses(true)
+                };
                 var serializer = new DataContractSerializer(typeof(LuiObjectParameters), settings);
 
                 reader.ReadToFollowing("LuiObjectParametersList");
@@ -444,9 +450,11 @@ namespace LUI.config
             writer.WriteEndElement();
 
             // Write the LuiObjectParameters.
-            var settings = new DataContractSerializerSettings();
-            settings.PreserveObjectReferences = true;
-            settings.KnownTypes = typeof(LuiObjectParameters).GetSubclasses(true);
+            var settings = new DataContractSerializerSettings
+            {
+                PreserveObjectReferences = true,
+                KnownTypes = typeof(LuiObjectParameters).GetSubclasses(true)
+            };
             var serializer = new DataContractSerializer(typeof(LuiObjectParameters), settings);
 
             writer.WriteStartElement("LuiObjectParametersList");
@@ -609,12 +617,18 @@ namespace LUI.config
         public static LuiConfig DummyConfig()
         {
             var config = new LuiConfig();
-            var bf = new BeamFlagsParameters(typeof(DummyBeamFlags));
-            bf.Name = "Dummy";
-            var cam = new CameraParameters(typeof(DummyAndorCamera));
-            cam.Name = "Dummy";
-            var dg = new DelayGeneratorParameters(typeof(DummyDigitalDelayGenerator));
-            dg.Name = "Dummy";
+            var bf = new BeamFlagsParameters(typeof(DummyBeamFlags))
+            {
+                Name = "Dummy"
+            };
+            var cam = new CameraParameters(typeof(DummyAndorCamera))
+            {
+                Name = "Dummy"
+            };
+            var dg = new DelayGeneratorParameters(typeof(DummyDigitalDelayGenerator))
+            {
+                Name = "Dummy"
+            };
             config.AddParameters(bf);
             config.AddParameters(cam);
             config.AddParameters(dg);

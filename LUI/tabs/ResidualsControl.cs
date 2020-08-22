@@ -223,8 +223,8 @@ namespace LUI.tabs
         {
             base.SaveSettings();
             var Settings = Config.TabSettings[this.GetType().Name];
-            Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg != null ? DdgConfigBox.PrimaryDelayDdg.Name : null;
-            Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay != null ? DdgConfigBox.PrimaryDelayDelay : null;
+            Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg?.Name;
+            Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay ?? null;
         }
 
         protected override void Collect_Click(object sender, EventArgs e)
@@ -524,9 +524,11 @@ namespace LUI.tabs
 
         private void LoadProfile_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFile = new OpenFileDialog();
-            openFile.Filter = "Alignment File|*.aln|Text File|*.txt|All Files|*.*";
-            openFile.Title = "Load Alignment Profile";
+            OpenFileDialog openFile = new OpenFileDialog
+            {
+                Filter = "Alignment File|*.aln|Text File|*.txt|All Files|*.*",
+                Title = "Load Alignment Profile"
+            };
             openFile.ShowDialog();
 
             if (openFile.FileName == "") return;
@@ -657,10 +659,12 @@ namespace LUI.tabs
 
         private void SaveProfile_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFile = new SaveFileDialog();
-            saveFile.Filter = "ALN File|*.aln|MAT File|*.mat|All Files|*.*";
-            saveFile.Title = "Save As";
-            
+            SaveFileDialog saveFile = new SaveFileDialog
+            {
+                Filter = "ALN File|*.aln|MAT File|*.mat|All Files|*.*",
+                Title = "Save As"
+            };
+
             var result = saveFile.ShowDialog();
 
             if (result != DialogResult.OK || saveFile.FileName == "") return;
@@ -877,9 +881,11 @@ namespace LUI.tabs
 
         private void SaveData_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFile = new SaveFileDialog();
-            saveFile.Filter = "MAT File|*.mat|CSV File|*.csv";
-            saveFile.Title = "Save As";
+            SaveFileDialog saveFile = new SaveFileDialog
+            {
+                Filter = "MAT File|*.mat|CSV File|*.csv",
+                Title = "Save As"
+            };
             var result = saveFile.ShowDialog();
 
             if (result != DialogResult.OK || saveFile.FileName == "") return;

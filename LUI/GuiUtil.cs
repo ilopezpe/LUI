@@ -6,8 +6,10 @@ namespace LUI
     {
         public static string SimpleFileNameDialog(string Filter)
         {
-            var ofd = new OpenFileDialog();
-            ofd.Filter = Filter;
+            var ofd = new OpenFileDialog
+            {
+                Filter = Filter
+            };
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 return ofd.FileName;

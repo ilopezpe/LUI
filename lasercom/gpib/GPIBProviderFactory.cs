@@ -14,12 +14,14 @@ namespace lasercom.gpib
 
         public static GpibProviderParameters CreateGPIBProviderParameters(GpibProviderParameters p)
         {
-            GpibProviderParameters q = new GpibProviderParameters();
-            q.Type = p.Type;
-            q.Name = p.Name;
-            q.PortName = p.PortName;
-            q.Timeout = p.Timeout;
-            q.BoardNumber = p.BoardNumber;
+            GpibProviderParameters q = new GpibProviderParameters
+            {
+                Type = p.Type,
+                Name = p.Name,
+                PortName = p.PortName,
+                Timeout = p.Timeout,
+                BoardNumber = p.BoardNumber
+            };
             return q;
         }
 

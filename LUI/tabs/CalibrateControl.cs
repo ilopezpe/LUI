@@ -92,9 +92,11 @@ namespace LUI.tabs
 
             public static explicit operator CalibrationPoint(DataRow dr)
             {
-                CalibrationPoint p = new CalibrationPoint();
-                p.Channel = (int)dr.ItemArray[0];
-                p.Wavelength = (double)dr.ItemArray[1];
+                CalibrationPoint p = new CalibrationPoint
+                {
+                    Channel = (int)dr.ItemArray[0],
+                    Wavelength = (double)dr.ItemArray[1]
+                };
                 return p;
             }
             public static explicit operator CalibrationPoint(DataGridViewRow row)
@@ -480,10 +482,12 @@ namespace LUI.tabs
 
         private void SaveCal_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFile = new SaveFileDialog();
-            saveFile.Filter = "CAL File|*.cal|All Files|*.*";
-            saveFile.Title = "Save As";
-            saveFile.OverwritePrompt = true;
+            SaveFileDialog saveFile = new SaveFileDialog
+            {
+                Filter = "CAL File|*.cal|All Files|*.*",
+                Title = "Save As",
+                OverwritePrompt = true
+            };
             var result = saveFile.ShowDialog();
 
             if (result != DialogResult.OK || saveFile.FileName == "") return;

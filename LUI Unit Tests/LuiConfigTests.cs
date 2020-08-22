@@ -25,33 +25,43 @@ namespace LUI_Unit_Tests
         [TestInitialize]
         public void SetupLuiConfig()
         {
-            Config = new LuiConfig();
-            Config.ConfigFile = ConfigFile;
-            Config.LogFile = "./log.txt";
-            Config.LogLevel = "DEBUG";
+            Config = new LuiConfig
+            {
+                ConfigFile = ConfigFile,
+                LogFile = "./log.txt",
+                LogLevel = "DEBUG"
+            };
 
-            gpibParameters1 = new GpibProviderParameters();
-            gpibParameters1.TypeName = "lasercom.gpib.NIGpibProvider";
-            gpibParameters1.Name = "NI PCI Card";
-            gpibParameters1.BoardNumber = 0;
+            gpibParameters1 = new GpibProviderParameters
+            {
+                TypeName = "lasercom.gpib.NIGpibProvider",
+                Name = "NI PCI Card",
+                BoardNumber = 0
+            };
 
-            gpibParameters2 = new GpibProviderParameters();
-            gpibParameters2.TypeName = "lasercom.gpib.PrologixGpibProvider";
-            gpibParameters2.Name = "USB GPIB Controller";
-            gpibParameters2.PortName = "COM1";
-            gpibParameters2.Timeout = 300;
+            gpibParameters2 = new GpibProviderParameters
+            {
+                TypeName = "lasercom.gpib.PrologixGpibProvider",
+                Name = "USB GPIB Controller",
+                PortName = "COM1",
+                Timeout = 300
+            };
 
-            cameraParameters = new CameraParameters();
-            cameraParameters.TypeName = "lasercom.camera.CameraTempControlled";
-            cameraParameters.Name = "Andor USB CCD";
-            cameraParameters.Dir = "./";
-            cameraParameters.Temperature = 20;
+            cameraParameters = new CameraParameters
+            {
+                TypeName = "lasercom.camera.CameraTempControlled",
+                Name = "Andor USB CCD",
+                Dir = "./",
+                Temperature = 20
+            };
 
-            ddgParameters = new DelayGeneratorParameters();
-            ddgParameters.TypeName = "lasercom.ddg.DDG535";
-            ddgParameters.Name = "Primary DDG";
-            ddgParameters.GpibAddress = 15;
-            ddgParameters.GpibProvider = gpibParameters1;
+            ddgParameters = new DelayGeneratorParameters
+            {
+                TypeName = "lasercom.ddg.DDG535",
+                Name = "Primary DDG",
+                GpibAddress = 15,
+                GpibProvider = gpibParameters1
+            };
 
             Config.AddParameters(gpibParameters1);
             Config.AddParameters(gpibParameters2);

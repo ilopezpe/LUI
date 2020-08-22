@@ -75,14 +75,12 @@ namespace Extensions
 
         public static void Raise(this EventHandler eventHandler, object sender, EventArgs e)
         {
-            var handler = eventHandler;
-            if (handler != null) handler(sender, e);
+            eventHandler?.Invoke(sender, e);
         }
 
         public static void Raise<T>(this EventHandler<T> eventHandler, object sender, T e) where T : EventArgs
         {
-            var handler = eventHandler;
-            if (handler != null) handler(sender, e);
+            eventHandler?.Invoke(sender, e);
         }
 
         public static void Zip<T, TSecond>(this IEnumerable<T> First, IEnumerable<TSecond> Second, Action<T, TSecond> action)

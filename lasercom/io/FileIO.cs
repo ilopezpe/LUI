@@ -42,9 +42,11 @@ namespace lasercom.io
         public static T[] ReadVector<T>(string FileName) 
         {
             T[] vector;
-            var config = new CsvConfiguration();
-            config.AllowComments = true;
-            config.HasHeaderRecord = false;
+            var config = new CsvConfiguration
+            {
+                AllowComments = true,
+                HasHeaderRecord = false
+            };
             using (TextReader reader = File.OpenText(FileName))
             using(CsvReader csv = new CsvReader(reader, config))
                 vector = csv.GetRecords<T>().ToArray<T>();

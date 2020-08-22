@@ -83,40 +83,52 @@ namespace LUI.controls
             SuspendLayout();
 
             #region Object list and configuration panel setup
-            Panel ConfigPanel = new Panel();
-            ConfigPanel.Dock = DockStyle.Fill;
+            Panel ConfigPanel = new Panel
+            {
+                Dock = DockStyle.Fill
+            };
             Controls.Add(ConfigPanel);
 
-            Panel ListPanel = new Panel();
-            ListPanel.Dock = DockStyle.Left;
+            Panel ListPanel = new Panel
+            {
+                Dock = DockStyle.Left
+            };
             Controls.Add(ListPanel);
 
-            ObjectView = new OptionsListView();
-            ObjectView.HeaderStyle = ColumnHeaderStyle.None;
+            ObjectView = new OptionsListView
+            {
+                HeaderStyle = ColumnHeaderStyle.None,
+                View = View.Details,
+                ShowGroups = false,
+                Dock = DockStyle.Top,
+                HideSelection = false,
+                MultiSelect = false
+            };
             ObjectView.Columns.Add(new ColumnHeader());
             ObjectView.Columns[0].Width = ObjectView.Width;
-            ObjectView.View = View.Details;
-            ObjectView.ShowGroups = false;
-            ObjectView.Dock = DockStyle.Top;
-            ObjectView.HideSelection = false;
-            ObjectView.MultiSelect = false;
             ObjectView.SelectedIndexChanged += SelectedObjectChanged;
             //ObjectView.ItemSelectionChanged += SelectedObjectChanged;
             AddDummyItem(); // Add the "New..." row.
 
-            Panel ListControlsPanel = new Panel();
-            ListControlsPanel.Dock = DockStyle.Top;
+            Panel ListControlsPanel = new Panel
+            {
+                Dock = DockStyle.Top
+            };
 
             #region Buttons
-            Add = new Button();
-            Add.Dock = DockStyle.Left;
-            Add.Text = "Add";
+            Add = new Button
+            {
+                Dock = DockStyle.Left,
+                Text = "Add"
+            };
             Add.Click += Add_Click;
             Add.Click += (s, e) => OnOptionsChanged(s, e);
 
-            Remove = new Button();
-            Remove.Dock = DockStyle.Left;
-            Remove.Text = "Remove";
+            Remove = new Button
+            {
+                Dock = DockStyle.Left,
+                Text = "Remove"
+            };
             Remove.Click += Remove_Click;
             Remove.Click += (s, e) => OnOptionsChanged(s, e);
 
@@ -129,14 +141,19 @@ namespace LUI.controls
             #endregion
 
             #region Configuration panel
-            ConfigSubPanel = new Panel();
-            ConfigSubPanel.Dock = DockStyle.Fill;
+            ConfigSubPanel = new Panel
+            {
+                Dock = DockStyle.Fill
+            };
             ConfigPanel.Controls.Add(ConfigSubPanel);
 
-            ObjectTypes = new LabeledControl<ComboBox>(new ComboBox(), "Type:");
-            ObjectTypes.Dock = DockStyle.Top;
+            ObjectTypes = new LabeledControl<ComboBox>(new ComboBox(), "Type:")
+            {
+                Dock = DockStyle.Top
+            };
             ObjectTypes.Control.DropDownStyle = ComboBoxStyle.DropDownList;
             ObjectTypes.Control.DisplayMember = "Name";
+
             List<Type> AvailableTypes = typeof(T).GetSubclasses(true);
             AvailableTypes.Sort((x,y) => x.Name.CompareTo(y.Name));
             AvailableTypes.ForEach(x => {
@@ -145,9 +162,11 @@ namespace LUI.controls
             ObjectTypes.Control.SelectedIndex = 0;
             ObjectTypes.Control.SelectedIndexChanged += SelectedObjectTypeChanged;
             ObjectTypes.Control.SelectionChangeCommitted += OnOptionsChanged; // Caused by user input.
-            
-            ObjectName = new LabeledControl<TextBox>(new TextBox(), "Name:");
-            ObjectName.Dock = DockStyle.Top;
+
+            ObjectName = new LabeledControl<TextBox>(new TextBox(), "Name:")
+            {
+                Dock = DockStyle.Top
+            };
             ObjectName.Control.TextChanged += SelectedObjectNameChanged;
             ObjectName.Control.KeyDown += OnOptionsChanged; // Caused by user input.
             ConfigPanel.Controls.Add(ObjectName);
@@ -272,9 +291,11 @@ namespace LUI.controls
 
         public void AddObject(P p)
         {
-            LuiObjectItem newItem = new LuiObjectItem(p.Name);
-            newItem.Transient = Activator.CreateInstance(typeof(P), p) as P;
-            newItem.Persistent = p;
+            LuiObjectItem newItem = new LuiObjectItem(p.Name)
+            {
+                Transient = Activator.CreateInstance(typeof(P), p) as P,
+                Persistent = p
+            };
             ObjectView.Items.Insert(ObjectView.Items.Count - 1, newItem);
         }
 

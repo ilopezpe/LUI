@@ -147,8 +147,10 @@ namespace LUI
             Tabs.Selected += HandleTabSelected;
             #endregion
 
-            OptionsControl = new OptionsControl(Config);
-            OptionsControl.Dock = DockStyle.Fill;
+            OptionsControl = new OptionsControl(Config)
+            {
+                Dock = DockStyle.Fill
+            };
             OptionsPage.Controls.Add(OptionsControl);
             OptionsControl.OptionsApplied += HandleOptionsApplied;
 

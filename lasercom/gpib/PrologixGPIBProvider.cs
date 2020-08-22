@@ -66,20 +66,22 @@ namespace lasercom.gpib
         private void Init(string PortName, int Timeout)
         {
             #region Serial port configuration
-            
-            _port = new SerialPort(PortName);
-            _port.BaudRate = 1200;
-            _port.DataBits = 8;
-            _port.Parity = Parity.None;
-            _port.StopBits = StopBits.One;
 
-            // RTS/CTS handshakings
-            _port.Handshake = Handshake.RequestToSend;
-            _port.DtrEnable = true;
+            _port = new SerialPort(PortName)
+            {
+                BaudRate = 1200,
+                DataBits = 8,
+                Parity = Parity.None,
+                StopBits = StopBits.One,
 
-            // Error handling
-            _port.DiscardNull = false;
-            _port.ParityReplace = 0;
+                // RTS/CTS handshakings
+                Handshake = Handshake.RequestToSend,
+                DtrEnable = true,
+
+                // Error handling
+                DiscardNull = false,
+                ParityReplace = 0
+            };
 
             #endregion
 

@@ -201,8 +201,8 @@ namespace LUI.tabs
         protected virtual void SaveSettings()
         {
             var Settings = Config.TabSettings[this.GetType().Name];
-            Settings["Camera"] = CameraBox.SelectedObject != null ? CameraBox.SelectedObject.Name : null;
-            Settings["BeamFlag"] = BeamFlagBox.SelectedObject != null ? BeamFlagBox.SelectedObject.Name : null;
+            Settings["Camera"] = CameraBox.SelectedObject?.Name;
+            Settings["BeamFlag"] = BeamFlagBox.SelectedObject?.Name;
         }
 
         protected bool PauseCancelProgress(DoWorkEventArgs e, int percentProgress, object progress)

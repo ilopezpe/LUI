@@ -15,16 +15,18 @@ namespace LUI.controls
 
         public CameraConfigPanel() : base()
         {
-            this.SuspendLayout();
+            SuspendLayout();
             CalFile = new LabeledControl<TextBox>(new TextBox(), "Calibration file:");
+            CalFile.Control.MinimumSize = new System.Drawing.Size(40, 0);
+            CalFile.Control.Text = "";
             CalFile.Control.TextChanged += OnOptionsChanged;
             CalFile.Control.TextChanged += (s, e) => CalFile.Control.AutoResize();
-            CalFile.Control.MinimumSize = new System.Drawing.Size(40,0);
-            CalFile.Control.Text = "";
-            var Browse = new Button();
-            Browse.Text = "...";
-            Browse.AutoSize = true;
-            Browse.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            var Browse = new Button
+            {
+                Text = "...",
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink
+            };
             Browse.Click += Browse_Click;
             CalFile.Controls.Add(Browse);
             this.Controls.Add(CalFile);
@@ -35,10 +37,12 @@ namespace LUI.controls
             SaturationLevel.Control.ValueChanged += OnOptionsChanged;
             this.Controls.Add(SaturationLevel);
 
-            var ImagePanel = new FlowLayoutPanel();
-            ImagePanel.FlowDirection = FlowDirection.LeftToRight;
-            ImagePanel.AutoSize = true;
-            ImagePanel.WrapContents = false;
+            var ImagePanel = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize = true,
+                WrapContents = false
+            };
             VBin = new LabeledControl<NumericUpDown>(new NumericUpDown(), "Vertical bin size:");
             VBin.Control.Minimum = -1;
             VBin.Control.Width = 54;

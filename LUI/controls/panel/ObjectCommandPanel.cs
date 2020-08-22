@@ -70,10 +70,12 @@ namespace LUI.controls
             this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 
-            Group = new GroupBox();
-            Group.AutoSize = true;
-            Group.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            Group.Dock = DockStyle.Fill;
+            Group = new GroupBox
+            {
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Dock = DockStyle.Fill
+            };
 
             _Flow = new FlowLayoutPanel();
             Flow.FlowDirection = FlowDirection.TopDown;

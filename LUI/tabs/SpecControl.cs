@@ -332,9 +332,11 @@ namespace LUI.tabs
                 return;
             }
 
-            SaveFileDialog saveFile = new SaveFileDialog();
-            saveFile.Filter = "MAT File|*.mat|CSV File|*.csv";
-            saveFile.Title = "Save As";
+            SaveFileDialog saveFile = new SaveFileDialog
+            {
+                Filter = "MAT File|*.mat|CSV File|*.csv",
+                Title = "Save As"
+            };
             var result = saveFile.ShowDialog();
 
             if (result != DialogResult.OK || saveFile.FileName == "") return;

@@ -59,8 +59,10 @@ namespace lasercom.control
         private void Init(string portName)
         {
             Delay = DefaultDelay;
-            _port = new SerialPort(portName);
-            _port.BaudRate = 9600;
+            _port = new SerialPort(portName)
+            {
+                BaudRate = 9600
+            };
             if (!_port.IsOpen)
                 _port.Open();
 

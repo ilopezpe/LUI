@@ -34,25 +34,28 @@ namespace LUI.tabs
             Name = "OptionsControl";
 
             #region Panels and list of options dialogs
-            Panel OptionsPanel = new Panel(); // Container for options dialogs.
-            OptionsPanel.Dock = DockStyle.Fill; // Panel will fill all left-over space.
+            Panel OptionsPanel = new Panel
+            {
+                Dock = DockStyle.Fill // Panel will fill all left-over space.
+            }; // Container for options dialogs.
             Controls.Add(OptionsPanel); // Must add the DockStyle.Fill control first.
 
-            Panel ListPanel = new Panel(); // Container for listview of options dialogs.
-            ListPanel.Dock = DockStyle.Left; // Panel will dock to the left.
+            Panel ListPanel = new Panel
+            {
+                Dock = DockStyle.Left // Panel will dock to the left.
+            }; 
             Controls.Add(ListPanel);
 
-            OptionsListView = new OptionsListView();
-            OptionsListView.Dock = DockStyle.Fill; // Fill available space.
-            OptionsListView.HideSelection = false; // Maintain highlighting if user changes control focus.
-            OptionsListView.MultiSelect = false; // Only select one item at a time.
-            //OptionsListView.LabelWrap = false;
-            // A dummy column header and details view are needed to get the grouped style
-            // we want for the list of options dialogs.
-            OptionsListView.HeaderStyle = ColumnHeaderStyle.None;
+            OptionsListView = new OptionsListView
+            {
+                Dock = DockStyle.Fill, // Fill available space.
+                HideSelection = false, // Maintain highlighting if user changes control focus.
+                MultiSelect = false, // Only select one item at a time.
+                HeaderStyle = ColumnHeaderStyle.None,
+                View = View.Details,
+                ShowGroups = true
+            };
             OptionsListView.Columns.Add(new ColumnHeader());
-            OptionsListView.View = View.Details;
-            OptionsListView.ShowGroups = true;
             OptionsListView.SelectedIndexChanged += HandleSelectedOptionsDialogChanged;
             ListPanel.Controls.Add(OptionsListView);
             #endregion
@@ -63,10 +66,14 @@ namespace LUI.tabs
             ListViewGroup Instruments = new ListViewGroup("Instruments", HorizontalAlignment.Left);
             OptionsListView.Groups.Add(Instruments);
 
-            LoggingOptionsDialog LoggingOptionsDialog = new LoggingOptionsDialog(OptionsPanel.Size);
-            LoggingOptionsDialog.Dock = DockStyle.Fill;
-            ListViewItem LoggingOptionsItem = new ListViewItem("Logging", General);
-            LoggingOptionsItem.Tag = LoggingOptionsDialog;
+            LoggingOptionsDialog LoggingOptionsDialog = new LoggingOptionsDialog(OptionsPanel.Size)
+            {
+                Dock = DockStyle.Fill
+            };
+            ListViewItem LoggingOptionsItem = new ListViewItem("Logging", General)
+            {
+                Tag = LoggingOptionsDialog
+            };
             OptionsListView.Items.Add(LoggingOptionsItem);
             OptionsPanel.Controls.Add(LoggingOptionsDialog);
 
@@ -76,12 +83,14 @@ namespace LUI.tabs
             BeamFlagOptionsDialog.AddConfigPanel(new DummyBeamFlagsConfigPanel());
             BeamFlagOptionsDialog.SetDefaultSelectedItems();
             BeamFlagOptionsDialog.Dock = DockStyle.Fill;
-            ListViewItem BeamFlagOptionsItem = new ListViewItem("Beam Flags", Instruments);
-            BeamFlagOptionsItem.Tag = BeamFlagOptionsDialog;
+            ListViewItem BeamFlagOptionsItem = new ListViewItem("Beam Flags", Instruments)
+            {
+                Tag = BeamFlagOptionsDialog
+            };
             OptionsListView.Items.Add(BeamFlagOptionsItem);
             OptionsPanel.Controls.Add(BeamFlagOptionsDialog);
 
-            LuiOptionsListDialog<ICamera, CameraParameters> CameraOptionsDialog = 
+            LuiOptionsListDialog<ICamera, CameraParameters> CameraOptionsDialog =
                 new LuiOptionsListDialog<ICamera, CameraParameters>(OptionsPanel.Size);
             CameraOptionsDialog.AddConfigPanel(new AndorCameraConfigPanel());
             CameraOptionsDialog.AddConfigPanel(new CameraTempControlledConfigPanel());
@@ -89,42 +98,47 @@ namespace LUI.tabs
             CameraOptionsDialog.AddConfigPanel(new DummyCameraConfigPanel());
             CameraOptionsDialog.SetDefaultSelectedItems();
             CameraOptionsDialog.Dock = DockStyle.Fill;
-            ListViewItem CameraOptionsItem = new ListViewItem("Camera", Instruments);
-            CameraOptionsItem.Tag = CameraOptionsDialog;
+            ListViewItem CameraOptionsItem = new ListViewItem("Camera", Instruments)
+            {
+                Tag = CameraOptionsDialog
+            };
             OptionsListView.Items.Add(CameraOptionsItem);
             OptionsPanel.Controls.Add(CameraOptionsDialog);
 
-            LuiOptionsListDialog<IGpibProvider, GpibProviderParameters> GPIBOptionsDialog =
-                new LuiOptionsListDialog<IGpibProvider, GpibProviderParameters>(OptionsPanel.Size);
+            var GPIBOptionsDialog = new LuiOptionsListDialog<IGpibProvider, GpibProviderParameters>(OptionsPanel.Size);
             GPIBOptionsDialog.AddConfigPanel(new NIConfigPanel());
             GPIBOptionsDialog.AddConfigPanel(new PrologixConfigPanel());
             GPIBOptionsDialog.AddConfigPanel(new DummyGpibProviderConfigPanel());
             GPIBOptionsDialog.SetDefaultSelectedItems();
             GPIBOptionsDialog.Dock = DockStyle.Fill;
-            ListViewItem GPIBOptionsItem = new ListViewItem("GPIB Controllers", Instruments);
-            GPIBOptionsItem.Tag = GPIBOptionsDialog;
+            ListViewItem GPIBOptionsItem = new ListViewItem("GPIB Controllers", Instruments)
+            {
+                Tag = GPIBOptionsDialog
+            };
             OptionsListView.Items.Add(GPIBOptionsItem);
             OptionsPanel.Controls.Add(GPIBOptionsDialog);
 
-            LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters> DDGOptionsDialog = 
-                new LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters>(OptionsPanel.Size);
+            var DDGOptionsDialog = new LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters>(OptionsPanel.Size);
             DDGOptionsDialog.AddConfigPanel(new DG535ConfigPanel(GPIBOptionsDialog));
             DDGOptionsDialog.AddConfigPanel(new DummyDigitalDelayGeneratorConfigPanel());
             DDGOptionsDialog.SetDefaultSelectedItems();
             DDGOptionsDialog.Dock = DockStyle.Fill;
-            ListViewItem DDGOptionsItem = new ListViewItem("Digital Delay Generators", Instruments);
-            DDGOptionsItem.Tag = DDGOptionsDialog;
+            ListViewItem DDGOptionsItem = new ListViewItem("Digital Delay Generators", Instruments)
+            {
+                Tag = DDGOptionsDialog
+            };
             OptionsListView.Items.Add(DDGOptionsItem);
             OptionsPanel.Controls.Add(DDGOptionsDialog);
 
-            LuiOptionsListDialog<IPump, PumpParameters> PumpOptionsDialog =
-                new LuiOptionsListDialog<IPump, PumpParameters>(OptionsPanel.Size);
+            var PumpOptionsDialog = new LuiOptionsListDialog<IPump, PumpParameters>(OptionsPanel.Size);
             PumpOptionsDialog.AddConfigPanel(new HarvardPumpConfigPanel());
             PumpOptionsDialog.AddConfigPanel(new DummyPumpConfigPanel());
             PumpOptionsDialog.SetDefaultSelectedItems();
             PumpOptionsDialog.Dock = DockStyle.Fill;
-            ListViewItem PumpOptionsItem = new ListViewItem("Syringe Pumps", Instruments);
-            PumpOptionsItem.Tag = PumpOptionsDialog;
+            ListViewItem PumpOptionsItem = new ListViewItem("Syringe Pumps", Instruments)
+            {
+                Tag = PumpOptionsDialog
+            };
             OptionsListView.Items.Add(PumpOptionsItem);
             OptionsPanel.Controls.Add(PumpOptionsDialog);
 
@@ -137,30 +151,36 @@ namespace LUI.tabs
             SetChildConfig(Config); // Sets options dialogs to reference & match this config.
 
             #region Buttons
-            FlowLayoutPanel ButtonPanel = new FlowLayoutPanel(); // Container for the buttons.
-            ButtonPanel.FlowDirection = FlowDirection.RightToLeft;
-            // Button panel will anchor to the bottom left of the whole control,
-            // and be Z-ordered on top of the OptionsPanel.
-            ButtonPanel.Anchor = ((System.Windows.Forms.AnchorStyles)
-                        ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            ButtonPanel.AutoSize = true; // Fit to the buttons.
-            ButtonPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            FlowLayoutPanel ButtonPanel = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.RightToLeft,
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
+                AutoSize = true, // Fit to the buttons.
+                AutoSizeMode = AutoSizeMode.GrowAndShrink
+            }; // Container for the buttons.
 
-            ApplyConfig = new Button();
-            ApplyConfig.Text = "Apply";
-            ApplyConfig.Size = new Size(91, 34);
+            ApplyConfig = new Button
+            {
+                Text = "Apply",
+                Size = new Size(91, 34),
+                Enabled = false
+            };
             ApplyConfig.Click += ApplyConfig_Click;
-            ApplyConfig.Enabled = false;
 
-            SaveConfig = new Button();
-            SaveConfig.Text = "Save";
-            SaveConfig.Size = new Size(91, 34);
-            SaveConfig.Enabled = false;
+
+            SaveConfig = new Button
+            {
+                Text = "Save",
+                Size = new Size(91, 34),
+                Enabled = false
+            };
             SaveConfig.Click += SaveConfig_Click;
 
-            LoadConfig = new Button();
-            LoadConfig.Text = "Load";
-            LoadConfig.Size = new Size(91, 34);
+            LoadConfig = new Button
+            {
+                Text = "Load",
+                Size = new Size(91, 34)
+            };
             LoadConfig.Click += LoadConfig_Click;
 
             ButtonPanel.Controls.Add(LoadConfig);
@@ -255,10 +275,11 @@ namespace LUI.tabs
 
         private void LoadConfig_Click(object sender, EventArgs e)
         {
-            var ofd = new OpenFileDialog();
-            //ofd.RestoreDirectory = true;
-            ofd.Filter = "XML Files|*.xml";
-            ofd.FileName = "config.xml";
+            var ofd = new OpenFileDialog
+            {
+                Filter = "XML Files|*.xml",
+                FileName = "config.xml"
+            };
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {

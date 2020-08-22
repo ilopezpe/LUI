@@ -22,10 +22,12 @@ namespace LUI.controls
             Dir.Control.TextChanged += (s, e) => Dir.Control.AutoResize();
             Dir.Control.MinimumSize = new System.Drawing.Size(40, 0);
             Dir.Control.Text = "./";
-            var Browse = new Button();
-            Browse.Text = "...";
-            Browse.AutoSize = true;
-            Browse.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            var Browse = new Button
+            {
+                Text = "...",
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink
+            };
             Browse.Click += BrowseDir_Click;
             Dir.Controls.Add(Browse);
             this.Controls.Add(Dir);

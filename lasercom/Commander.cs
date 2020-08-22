@@ -40,10 +40,10 @@ namespace lasercom
         public Commander(ICamera camera = null, IBeamFlags beamFlags = null, IDigitalDelayGenerator ddg = null, IPump pump = null)
         {
             // Set dummies instead of null values to save a *ton* of null checks elsewhere.
-            Camera = camera != null ? camera : new DummyCamera();
-            BeamFlag = beamFlags != null ? beamFlags : new DummyBeamFlags();
-            DDG = ddg != null ? ddg : new DummyDigitalDelayGenerator();
-            Pump = pump != null ? pump : new DummyPump();
+            Camera = camera ?? new DummyCamera();
+            BeamFlag = beamFlags ?? new DummyBeamFlags();
+            DDG = ddg ?? new DummyDigitalDelayGenerator();
+            Pump = pump ?? new DummyPump();
         }
 
         public void SetDelays(string file)

@@ -49,8 +49,10 @@ namespace LUI.tabs
 
             public static explicit operator TimesRow(DataRow dr)
             {
-                TimesRow p = new TimesRow();
-                p.Value = (double)dr.ItemArray[0];
+                TimesRow p = new TimesRow
+                {
+                    Value = (double)dr.ItemArray[0]
+                };
                 return p;
             }
             public static explicit operator TimesRow(DataGridViewRow row)
@@ -233,8 +235,8 @@ namespace LUI.tabs
         {
             base.SaveSettings();
             var Settings = Config.TabSettings[this.GetType().Name];
-            Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg != null ? DdgConfigBox.PrimaryDelayDdg.Name : null;
-            Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay != null ? DdgConfigBox.PrimaryDelayDelay : null;
+            Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg?.Name;
+            Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay ?? null;
         }
 
         /// <summary>
@@ -764,9 +766,11 @@ namespace LUI.tabs
         /// <param name="e"></param>
         private void LoadTimes_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFile = new OpenFileDialog();
-            openFile.Filter = "Text File|*.txt|All Files|*.*";
-            openFile.Title = "Load Time Series File";
+            OpenFileDialog openFile = new OpenFileDialog
+            {
+                Filter = "Text File|*.txt|All Files|*.*",
+                Title = "Load Time Series File"
+            };
             openFile.ShowDialog();
 
             if (openFile.FileName == "") return;
@@ -790,9 +794,11 @@ namespace LUI.tabs
 
         private void SaveOutput()
         {
-            SaveFileDialog saveFile = new SaveFileDialog();
-            saveFile.Filter = "MAT File|*.mat|CSV File|*.csv";
-            saveFile.Title = "Save As";
+            SaveFileDialog saveFile = new SaveFileDialog
+            {
+                Filter = "MAT File|*.mat|CSV File|*.csv",
+                Title = "Save As"
+            };
             var result = saveFile.ShowDialog();
 
             if (result != DialogResult.OK || saveFile.FileName == "") return;

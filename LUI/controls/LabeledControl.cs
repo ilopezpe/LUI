@@ -14,13 +14,15 @@ namespace LUI.controls
             AutoSize = true;
             WrapContents = false;
             this.Control = Control;
-            Label = new DisabledRichTextBox();
-            Label.ScrollBars = RichTextBoxScrollBars.None;
+            Label = new DisabledRichTextBox
+            {
+                ScrollBars = RichTextBoxScrollBars.None,
+                Text = Text,
+                BorderStyle = BorderStyle.None,
+                BackColor = BackColor,
+                Anchor = AnchorStyles.Left
+            };
             Label.Size = TextRenderer.MeasureText(Text, Label.Font);
-            Label.Text = Text;
-            Label.BorderStyle = BorderStyle.None;
-            Label.BackColor = BackColor;
-            Label.Anchor = AnchorStyles.Left;
 
             Controls.Add(Label);
             Controls.Add(Control);
