@@ -303,25 +303,33 @@ namespace LUI.tabs
 
         void ExportCurvesToCsv(string FileName)
         {
-            TextWriter writer = new StreamWriter(FileName);
-            CsvWriter csv = new CsvWriter(writer);
-            var headers = CurvesView.SaveCurveNames.ToList();
-            var curves = CurvesView.SaveCurves.ToList();
-            csv.WriteField("Wavelength");
-            csv.WriteField("Blank");
-            foreach (string header in headers) csv.WriteField(header);
-            csv.NextRecord();
-            for (int i = 0; i < curves[0].Count; i++)
+            using (var writer = new StreamWriter(FileName))
             {
-                csv.WriteField(Commander.Camera.Calibration[i]);
-                csv.WriteField(BlankBuffer[i]);
-                for (int j = 0; j < curves.Count; j++)
+                using(var csv = new CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture))
                 {
-                    csv.WriteField(curves[j][i]);
+                    var headers = CurvesView.SaveCurveNames.ToList();
+                    var curves = CurvesView.SaveCurves.ToList();
+                    csv.WriteField("Wavelength");
+                    csv.WriteField("Blank");
+                    foreach (string header in headers)
+                    {
+                        csv.WriteField(header);
+                    }
+                    csv.NextRecord();
+
+                    for (int i = 0; i < curves[0].Count; i++)
+                    {
+                        csv.WriteField(Commander.Camera.Calibration[i]);
+                        csv.WriteField(BlankBuffer[i]);
+                        for (int j = 0; j < curves.Count; j++)
+                        {
+                            csv.WriteField(curves[j][i]);
+                        }
+                        csv.NextRecord();
+                    }
                 }
-                csv.NextRecord();
-            }
             writer.Close();
+            }
         }
 
         private void SaveOutput()
