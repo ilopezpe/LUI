@@ -303,33 +303,25 @@ namespace LUI.tabs
 
         void ExportCurvesToCsv(string FileName)
         {
-            using (var writer = new StreamWriter(FileName))
+            TextWriter writer = new StreamWriter(FileName);
+            CsvWriter csv = new CsvWriter(writer);
+            var headers = CurvesView.SaveCurveNames.ToList();
+            var curves = CurvesView.SaveCurves.ToList();
+            csv.WriteField("Wavelength");
+            csv.WriteField("Blank");
+            foreach (string header in headers) csv.WriteField(header);
+            csv.NextRecord();
+            for (int i = 0; i < curves[0].Count; i++)
             {
-                using(var csv = new CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture))
+                csv.WriteField(Commander.Camera.Calibration[i]);
+                csv.WriteField(BlankBuffer[i]);
+                for (int j = 0; j < curves.Count; j++)
                 {
-                    var headers = CurvesView.SaveCurveNames.ToList();
-                    var curves = CurvesView.SaveCurves.ToList();
-                    csv.WriteField("Wavelength");
-                    csv.WriteField("Blank");
-                    foreach (string header in headers)
-                    {
-                        csv.WriteField(header);
-                    }
-                    csv.NextRecord();
-
-                    for (int i = 0; i < curves[0].Count; i++)
-                    {
-                        csv.WriteField(Commander.Camera.Calibration[i]);
-                        csv.WriteField(BlankBuffer[i]);
-                        for (int j = 0; j < curves.Count; j++)
-                        {
-                            csv.WriteField(curves[j][i]);
-                        }
-                        csv.NextRecord();
-                    }
+                    csv.WriteField(curves[j][i]);
                 }
-            writer.Close();
+                csv.NextRecord();
             }
+            writer.Close();
         }
 
         private void SaveOutput()

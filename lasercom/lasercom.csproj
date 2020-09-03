@@ -94,8 +94,12 @@
     <Reference Include="CsvHelper, Version=15.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
       <HintPath>..\packages\CsvHelper.15.0.5\lib\net45\CsvHelper.dll</HintPath>
     </Reference>
-    <Reference Include="HDF5DotNet, Version=1.8.9.0, Culture=neutral, PublicKeyToken=a4952c8df86d6e8c, processorArchitecture=AMD64">
-      <HintPath>..\packages\HDF5DotNet.x64.1.8.9\lib\Net40\HDF5DotNet.dll</HintPath>
+    <Reference Include="HDF5DotNet">
+      <HintPath>..\lib\HDF5DotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="HDF5DotNet-x64, Version=1.8.9.0, Culture=neutral, PublicKeyToken=a4952c8df86d6e8c, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib64\HDF5DotNet-x64.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -200,7 +204,7 @@
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y /S "$(SolutionDir)common\*" "$(TargetDir)"
 xcopy /Y /S "$(SolutionDir)lib64\*.dll" "$(TargetDir)"
-xcopy /Y /S "$(SolutionDir)lib\*.dll" "$(TargetDir)"xcopy /s /y "$(SolutionDir)packages\HDF5DotNet.x64.1.8.9\NativeBinaries\*.*" "$(TargetDir)"</PostBuildEvent>
+xcopy /Y /S "$(SolutionDir)lib\*.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
