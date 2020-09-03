@@ -42,46 +42,38 @@ namespace lasercom.io
         public static T[] ReadVector<T>(string FileName)
         {
             T[] vector;
-            using (TextReader reader = File.OpenText(FileName))
-            using (CsvReader csv = new CsvReader(reader, System.Globalization.CultureInfo.InvariantCulture))
+            var config = new CsvConfiguration
             {
-                csv.Configuration.AllowComments = true;
-                csv.Configuration.HasHeaderRecord = false;
+                AllowComments = true,
+                HasHeaderRecord = false
+            };
+            using (TextReader reader = File.OpenText(FileName))
+            using (CsvReader csv = new CsvReader(reader, config))
                 vector = csv.GetRecords<T>().ToArray<T>();
-            }
             return vector;
         }
 
         public static void WriteVector<T>(string FileName, IEnumerable<T> Vector)
         {
-            using (var writer = new StreamWriter(FileName))
-            {
-                using (var csv = new CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture))
-                {
-                    csv.WriteRecords(Vector);
-                }
-                writer.Close();
-            }
+            TextWriter writer = new StreamWriter(FileName);
+            CsvWriter csv = new CsvWriter(writer);
+            csv.WriteRecords(Vector);
+            writer.Close();
         }
 
         public static void WriteMatrix<T>(string FileName, T[,] Matrix)
         {
-            using (var writer = new StreamWriter(FileName))
+            TextWriter writer = new StreamWriter(FileName);
+            CsvWriter csv = new CsvWriter(writer);
+            for (int i = 0; i < Matrix.GetLength(0); i++)
             {
-                using (var csv = new CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture))
+                for (int j = 0; j < Matrix.GetLength(1); j++)
                 {
-                    for (int i = 0; i < Matrix.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < Matrix.GetLength(1); j++)
-                        {
-                            csv.WriteField(Matrix[i, j].ToString());
-                        }
-                        csv.NextRecord();
-                    }
+                    csv.WriteField(Matrix[i, j].ToString());
                 }
-                writer.Close();
+                csv.NextRecord();
             }
+            writer.Close();
         }
     }
 }
-
