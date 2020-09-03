@@ -1,12 +1,7 @@
 ﻿using System;
-
-
-#if x64
-using ATMCD64CS;
-#else
-using ATMCD32CS;
 using lasercom.objects;
-#endif
+
+using ATMCD32CS;
 
 
 namespace lasercom.camera

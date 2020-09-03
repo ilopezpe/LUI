@@ -1,13 +1,9 @@
 ﻿using System;
-
-#if x64
-using ATMCD64CS;
-#else
-using ATMCD32CS;
 using System.Threading.Tasks;
 using System.Threading;
 using lasercom.objects;
-#endif
+
+using ATMCD32CS;
 
 //  <summary>
 //      Temperature controlled camera.

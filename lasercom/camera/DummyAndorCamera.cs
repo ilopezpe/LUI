@@ -1,17 +1,11 @@
-﻿
-#if x64
-using ATMCD64CS;
-#else
-using ATMCD32CS;
-using lasercom.objects;
+﻿using lasercom.objects;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-
-#endif
+using ATMCD32CS;
 
 namespace lasercom.camera
 {

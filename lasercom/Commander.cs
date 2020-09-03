@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
-#if x64
-using ATMCD64CS;
-#else
-
-#endif
+using ATMCD32CS;
 
 using log4net;
 using lasercom.camera;

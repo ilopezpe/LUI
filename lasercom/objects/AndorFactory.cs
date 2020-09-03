@@ -1,10 +1,6 @@
 ﻿using ATSHAMROCKCS;
 
-#if x64
-using ATMCD64CS;
-#else
 using ATMCD32CS;
-#endif
 
 namespace lasercom.objects
 {
