@@ -1,9 +1,8 @@
-﻿using System;
+﻿using HDF5DotNet;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
-using HDF5DotNet;
 
 namespace lasercom.io
 {

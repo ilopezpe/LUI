@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Threading;
+﻿using ATMCD32CS;
 using lasercom.objects;
-
-using ATMCD32CS;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 //  <summary>
 //      Temperature controlled camera.

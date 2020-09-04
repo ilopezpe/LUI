@@ -1,14 +1,10 @@
-﻿using ATSHAMROCKCS;
-
-using ATMCD32CS;
+﻿using ATMCD32CS;
 
 namespace lasercom.objects
 {
     public sealed class AndorFactory
     {
         private static volatile AndorSDK _AndorSdkInstance;
-        private static volatile ShamrockSDK _ShamrockSdkInstance;
-        private static object ShamrockSdklock = new object();
         private static object AndorSdkLock = new object();
 
         private AndorFactory() { }
@@ -28,24 +24,6 @@ namespace lasercom.objects
                     }
                 }
                 return _AndorSdkInstance;
-            }
-        }
-
-        public static ShamrockSDK ShamrockSdkInstance
-        {
-            get
-            {
-                if (_ShamrockSdkInstance == null)
-                {
-                    lock (ShamrockSdklock)
-                    {
-                        if (_ShamrockSdkInstance == null)
-                        {
-                            _ShamrockSdkInstance = new ShamrockSDK();
-                        }
-                    }
-                }
-                return _ShamrockSdkInstance;
             }
         }
     }

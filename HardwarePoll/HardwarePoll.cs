@@ -1,9 +1,8 @@
-﻿using System;
+﻿using ATMCD32CS;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-
-using ATMCD32CS;
 
 namespace LUI
 {

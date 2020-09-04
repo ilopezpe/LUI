@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-using ATMCD32CS;
-
-using log4net;
-using lasercom.camera;
+﻿using lasercom.camera;
 using lasercom.control;
 using lasercom.ddg;
+using log4net;
+using System;
+using System.Collections.Generic;
 
 namespace lasercom
 {

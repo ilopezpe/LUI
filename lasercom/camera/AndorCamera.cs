@@ -1,7 +1,6 @@
-﻿using System;
+﻿using ATMCD32CS;
 using lasercom.objects;
-
-using ATMCD32CS;
+using System;
 
 
 namespace lasercom.camera

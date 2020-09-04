@@ -10,7 +10,9 @@ namespace lasercom.ddg
     /// </summary>
     public class DG535 : StanfordDigitalDelayGenerator
     {
+#pragma warning disable CS0108 // 'DG535.Log' hides inherited member 'LuiObject.Log'. Use the new keyword if hiding was intended.
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+#pragma warning restore CS0108 // 'DG535.Log' hides inherited member 'LuiObject.Log'. Use the new keyword if hiding was intended.
 
         public const string SetDelayTimeCommand = "DT ";
         public const string TriggerInput = "0";

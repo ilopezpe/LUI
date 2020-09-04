@@ -14,7 +14,9 @@ namespace lasercom.ddg
     /// </summary>
     public abstract class StanfordDigitalDelayGenerator : AbstractDigitalDelayGenerator
     {
+#pragma warning disable CS0108 // 'StanfordDigitalDelayGenerator.Log' hides inherited member 'LuiObject.Log'. Use the new keyword if hiding was intended.
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+#pragma warning restore CS0108 // 'StanfordDigitalDelayGenerator.Log' hides inherited member 'LuiObject.Log'. Use the new keyword if hiding was intended.
 
         public IGpibProvider GPIBProvider { get; set; }
         public byte GPIBAddress { get; set; }
