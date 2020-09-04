@@ -42,11 +42,11 @@ namespace LUI_Unit_Tests
                 for (i = 0; i < readbuf.Length; i++)
                     Assert.AreEqual(data10[i], readbuf[i]);
             }
-            catch (AssertFailedException ex)
+            catch (AssertFailedException)
             {
                 Assert.Fail("Read incorrect data from matrix at (" + 2 + "," + i + ")");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Assert.Fail("Trouble reading HDF5 file");
             }

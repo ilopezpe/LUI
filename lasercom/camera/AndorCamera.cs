@@ -285,22 +285,10 @@ namespace lasercom.camera
         }
 
         private int _BitDepth;
-        public int BitDepth
-        {
-            get
-            {
-                return _BitDepth;
-            }
-        }
+        public int BitDepth => _BitDepth;
 
         private int _NumberADChannels;
-        public int NumberADChannels
-        {
-            get
-            {
-                return _NumberADChannels;
-            }
-        }
+        public int NumberADChannels => _NumberADChannels;
 
         private int _CurrentADChannel;
         public int CurrentADChannel
@@ -470,7 +458,7 @@ namespace lasercom.camera
             int[] data = new int[npx];
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();
-            uint ret = AndorSdk.GetAcquiredData(data, npx);
+            AndorSdk.GetAcquiredData(data, npx);
             Image = image;
             ReadMode = readMode;
             return data;
@@ -484,7 +472,7 @@ namespace lasercom.camera
             int[] data = new int[npx];
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();
-            uint ret = AndorSdk.GetAcquiredData(data, npx);
+            AndorSdk.GetAcquiredData(data, npx);
             ReadMode = readMode;
             return data;
         }
@@ -493,7 +481,7 @@ namespace lasercom.camera
         {
             uint npx = (uint)AcqSize;
             int[] data = new int[npx];
-            uint ret = Acquire(data);
+            Acquire(data);
             return data;
         }
 

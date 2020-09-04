@@ -13,25 +13,14 @@ namespace lasercom.gpib
     public class PrologixGpibProvider : AbstractGpibProvider
     {
         #region Constants
-        const string USBTerminator = "\r\n";
-        const char ControllerEscape = (char)27; // ESC character
-        const string ControllerCommandInitiator = "++";
-        const string AddressCommand = "addr";
-        const string AssertControllerInChargeCommand = "ifc";
-        const string ModeCommand = "mode";
-        const string EOICommand = "eoi";
-        const string EOSCommand = "eos";
-        const string ReadCommand = "read";
-        const string ReadTimeoutCommand = "read_tmo_ms";
-
-        const string DeviceMode = "0";
-        const string ControllerMode = "1";
-        const string DisableEOI = "0";
-        const string EnableEOI = "1";
-        const string EOSCRLF = "0";
-        const string EOSCR = "1";
-        const string EOSLF = "2";
-        const string EOSNone = "3";
+        private const string PrologixInitiator = "++";
+        private const string PrologixAddress = "addr";
+        private const string PrologixIFC = "ifc";
+        private const string PrologixMode = "mode 1";
+        private const string PrologixEOI = "eoi 1";
+        private const string PrologixEOS = "eos 0"; // 0 = CRLF termination
+        private const string PrologixRead = "read";
+        private const string ReadTimeoutCommand = "read_tmo_ms";
         #endregion
 
         SerialPort _port;
@@ -43,8 +32,6 @@ namespace lasercom.gpib
                 return _port.PortName;
             }
         }
-
-        private Encoding AsciiEncoding = Encoding.ASCII;
 
         int Timeout { get; set; }
         const int DefaultTimeout = 500;
@@ -59,37 +46,38 @@ namespace lasercom.gpib
         public PrologixGpibProvider(GpibProviderParameters p)
         {
             if (p == null || p.PortName == null)
+            {
                 throw new ArgumentException("PortName must be defined.");
+            }
+
             Init(p.PortName, p.Timeout);
         }
 
         private void Init(string PortName, int Timeout)
         {
             #region Serial port configuration
-
             _port = new SerialPort(PortName)
             {
-                BaudRate = 1200,
-                DataBits = 8,
+                BaudRate = 1200, //9600 ???
                 Parity = Parity.None,
+                DataBits = 8,
                 StopBits = StopBits.One,
-
-                // RTS/CTS handshakings
                 Handshake = Handshake.RequestToSend,
+                RtsEnable = true,
                 DtrEnable = true,
-
-                // Error handling
+                Encoding = Encoding.ASCII,
                 DiscardNull = false,
-                ParityReplace = 0
+                ParityReplace = 0,
+                ReadTimeout = Timeout,
+                WriteTimeout = Timeout
             };
-
             #endregion
 
             this.Timeout = Timeout;
-            ControllerCommand(AssertControllerInChargeCommand); // Assert Controller-in-Charge.
-            ControllerCommand(ModeCommand, ControllerMode); // Disable listen-only mode.
-            ControllerCommand(EOICommand, EnableEOI); // Assert EOI after transmit GPIB data.
-            ControllerCommand(EOSCommand, EOSCRLF); // Use CRLF as GPIB terminator.
+            ControllerCommand(PrologixIFC); // Assert Controller-in-Charge.
+            ControllerCommand(PrologixMode); // Disable listen-only mode.
+            ControllerCommand(PrologixEOI); // Assert EOI after transmit GPIB data.
+            ControllerCommand(PrologixEOS); // Use CRLF as GPIB terminator.
         }
 
         void Open()
@@ -114,12 +102,12 @@ namespace lasercom.gpib
 
         void ControllerCommand(string command)
         {
-            string data = ControllerCommandInitiator + command + USBTerminator;
+            string data = PrologixInitiator + command + "\r\n";
             Log.Debug("USB GPIB Controller Command: " + data);
             try
             {
                 if (!_port.IsOpen) _port.Open();
-                WriteAsciiBytes(data);
+                _port.Write(data);
             }
             catch (IOException ex)
             {
@@ -130,12 +118,12 @@ namespace lasercom.gpib
         void ControllerCommand(string command, params string[] args)
         {
             string arglist = String.Join(" ", args);
-            string data = ControllerCommandInitiator + command + " " + arglist + USBTerminator;
+            string data = PrologixInitiator + command + " " + arglist + "\r\n";
             Log.Debug("USB GPIB Controller Command: " + data);
             try
             {
                 if (!_port.IsOpen) _port.Open();
-                WriteAsciiBytes(data);
+                _port.Write(data);
             }
             catch (IOException ex)
             {
@@ -146,11 +134,13 @@ namespace lasercom.gpib
         override public void LoggedWrite(byte address, string command)
         {
             Log.Debug("GPIB Command: " + command);
+            string TX = EscapeString(command) + "\r\n"; // send to instrument
             try
             {
                 if (!_port.IsOpen) _port.Open();
-                ControllerCommand(AddressCommand, address.ToString());
-                WriteAsciiBytes(EscapeAndTerminate(command));
+                ControllerCommand(PrologixAddress, address.ToString());
+
+                _port.Write(TX + "\r\n");
             }
             catch (IOException ex)
             {
@@ -161,12 +151,13 @@ namespace lasercom.gpib
         override public string LoggedQuery(byte address, string command)
         {
             Log.Debug("GPIB Command: " + command);
+            string TX = EscapeString(command) + "\r\n"; // send to instrument
             string buffer = null;
             try
             {
                 if (!_port.IsOpen) _port.Open();
-                ControllerCommand(AddressCommand, address.ToString());
-                WriteAsciiBytes(EscapeAndTerminate(command));
+                ControllerCommand(PrologixAddress, address.ToString());
+                _port.Write(TX);
                 buffer = ReadWithTimeout();
                 buffer = buffer.TrimEnd("\r\n".ToCharArray());
             }
@@ -196,7 +187,7 @@ namespace lasercom.gpib
             if (!_port.IsOpen) throw new InvalidOperationException("The specified port is not open");
 
             ControllerCommand(ReadTimeoutCommand, (Timeout + 1).ToString()); // Allow 1 ms for GPIB -> USB.
-            ControllerCommand(ReadCommand, "eoi"); // Read from GPIB until eoi or timeout.
+            ControllerCommand(PrologixRead, "eoi"); // Read from GPIB until eoi or timeout.
 
             StringBuilder builder = new StringBuilder();
             DateTime lastRead = DateTime.Now;
@@ -234,22 +225,12 @@ namespace lasercom.gpib
             {
                 if (s[i] == (char)10 || s[i] == (char)13 || s[i] == (char)27 || s[i] == (char)43)
                 {
-                    builder.Append(ControllerEscape);
+                    builder.Append((char)27); //escape
                 }
                 builder.Append(s[i]);
                 builder.Append('\0'); // Workaround for every-other-character problem.
             }
             return builder.ToString();
-        }
-
-        static string EscapeAndTerminate(string s)
-        {
-            return EscapeString(s) + USBTerminator;
-        }
-
-        private void WriteAsciiBytes(string data)
-        {
-            _port.Write(AsciiEncoding.GetBytes(data), 0, AsciiEncoding.GetByteCount(data));
         }
 
         public override void Update(GpibProviderParameters p)
