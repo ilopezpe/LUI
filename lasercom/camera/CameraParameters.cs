@@ -7,47 +7,42 @@ namespace lasercom.camera
     [DataContract]
     public class CameraParameters : LuiObjectParameters<CameraParameters>
     {
-        private string _CalFile;
-        [DataMember]
-        public string CalFile
+        public int HBin = -1;
+        public int HCount = -1;
+        public int HStart = -1;
+        public int VBin = -1;
+        public int VCount = -1;
+        public int VStart = -1;
+
+        public CameraParameters(Type Type)
+            : base(Type)
         {
-            get
-            {
-                return _CalFile;
-            }
-            set
-            {
-                _CalFile = value;
-            }
         }
 
-        [DataMember]
-        public string Dir { get; set; }
+        public CameraParameters()
+        {
+        }
 
-        [DataMember]
-        public int Temperature { get; set; }
+        public CameraParameters(CameraParameters other)
+            : base(other)
+        {
+        }
 
-        [DataMember]
-        public int InitialGain { get; set; }
+        [DataMember] public string CalFile { get; set; }
 
-        [DataMember]
-        public int SaturationLevel { get; set; }
+        [DataMember] public string Dir { get; set; }
 
-        public int HBin = -1;
-        public int VBin = -1;
-        public int HStart = -1;
-        public int HCount = -1;
-        public int VStart = -1;
-        public int VCount = -1;
+        [DataMember] public int Temperature { get; set; }
+
+        [DataMember] public int InitialGain { get; set; }
+
+        [DataMember] public int SaturationLevel { get; set; }
 
         [DataMember]
         //private ImageArea _Image = new ImageArea(-1, -1, -1, -1, -1, -1);
         public ImageArea Image
         {
-            get
-            {
-                return new ImageArea(HBin, VBin, HStart, HCount, VStart, VCount);
-            }
+            get => new ImageArea(HBin, VBin, HStart, HCount, VStart, VCount);
             set
             {
                 //_Image = value;
@@ -60,57 +55,36 @@ namespace lasercom.camera
             }
         }
 
-        [DataMember]
-        public int ReadMode { get; set; }
-
-        public CameraParameters(Type Type)
-            : base(Type)
-        {
-
-        }
-
-        public CameraParameters()
-            : base()
-        {
-
-        }
-
-        public CameraParameters(CameraParameters other)
-            : base(other)
-        {
-
-        }
+        [DataMember] public int ReadMode { get; set; }
 
         public override void Copy(CameraParameters other)
         {
             base.Copy(other);
             //this.Type = other.Type;
             //this.Name = other.Name;
-            this.CalFile = other.CalFile;
-            this.Dir = other.Dir;
-            this.Temperature = other.Temperature;
-            this.InitialGain = other.InitialGain;
-            this.Image = other.Image;
-            this.ReadMode = other.ReadMode;
-            this.SaturationLevel = other.SaturationLevel;
+            CalFile = other.CalFile;
+            Dir = other.Dir;
+            Temperature = other.Temperature;
+            InitialGain = other.InitialGain;
+            Image = other.Image;
+            ReadMode = other.ReadMode;
+            SaturationLevel = other.SaturationLevel;
         }
 
         public override bool NeedsReinstantiation(CameraParameters other)
         {
-            bool needs = base.NeedsReinstantiation(other); // Type is different.
+            var needs = base.NeedsReinstantiation(other); // Type is different.
             if (needs) return true;
 
             if (Type == typeof(AndorCamera) || Type.IsSubclassOf(typeof(AndorCamera)))
-            {
                 needs |= other.Dir != Dir; // Or if Dir is different.
-            }
 
             return needs;
         }
 
         public override bool NeedsUpdate(CameraParameters other)
         {
-            bool iseq = this.CalFile == other.CalFile;
+            var iseq = CalFile == other.CalFile;
 
             if (Type == typeof(AndorCamera) || Type.IsSubclassOf(typeof(AndorCamera)))
             {
@@ -124,12 +98,9 @@ namespace lasercom.camera
                 iseq &= other.VCount == VCount;
                 iseq &= other.SaturationLevel == SaturationLevel;
             }
-            if (Type == typeof(CameraTempControlled))
-            {
-                iseq &= Temperature == other.Temperature;
-            }
+
+            if (Type == typeof(CameraTempControlled)) iseq &= Temperature == other.Temperature;
             return !iseq; // True if any of these field differ.
         }
-
     }
 }

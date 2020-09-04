@@ -5,17 +5,7 @@ namespace LUI.controls
 {
     class DummyCameraConfigPanel : CameraConfigPanel
     {
-
-        public override Type Target
-        {
-            get { return typeof(DummyCamera); }
-        }
-
-        public DummyCameraConfigPanel()
-            : base()
-        {
-
-        }
+        public override Type Target => typeof(DummyCamera);
 
         public override void CopyFrom(CameraParameters other)
         {

@@ -1,19 +1,19 @@
-﻿using System;
-
-namespace lasercom
+﻿namespace lasercom
 {
     /// <summary>
-    /// Constant values used in lasercom.
+    ///     Constant values used in lasercom.
     /// </summary>
     public static class Constants
     {
         // Library constants
-        public const Double GroundState = double.PositiveInfinity;
-        public const Double DarkState = double.NegativeInfinity;
+        public const double GroundState = double.PositiveInfinity;
+
+        public const double DarkState = double.NegativeInfinity;
         public const int SerialPortCloseDelay = 200;
 
         // Default option values
         public const float DefaultTemperatureF = 20F;
+
         public const int DefaultTemperature = 20;
         public const float TemperatureEps = 3F;
 
@@ -22,6 +22,7 @@ namespace lasercom
 
         // Andor constants and commands
         public const int ReadModeFVB = 0;
+
         public const int ReadModeMultiTrack = 1;
         public const int ReadModeRandomTrack = 2;
         public const int ReadModeSingleTrack = 3;

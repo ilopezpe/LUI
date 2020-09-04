@@ -13,48 +13,40 @@ namespace LUI.tabs
 {
     public partial class LaserPowerControl : LuiTab
     {
-        struct WorkArgs
+        public enum Dialog
         {
-            public WorkArgs(int N, PumpMode Pump, bool DiscardFirst)
-            {
-                this.N = N;
-                this.Pump = Pump;
-                this.DiscardFirst = DiscardFirst;
-            }
-            public readonly int N;
-            public readonly PumpMode Pump;
-            public readonly bool DiscardFirst;
+            INITIALIZE,
+            PROGRESS,
+            PROGRESS_DARK,
+            PROGRESS_FLASH,
+            PROGRESS_TRANS,
+            CALCULATE
         }
 
-        double[] Light = null;
+        public enum PumpMode
+        {
+            NEVER,
+            TRANS,
+            ALWAYS
+        }
 
         int _SelectedChannel = -1;
+
+        double[] Light;
+
+        public LaserPowerControl(LuiConfig Config) : base(Config)
+        {
+            InitializeComponent();
+        }
+
         int SelectedChannel
         {
-            get
-            {
-                return _SelectedChannel;
-            }
+            get => _SelectedChannel;
             set
             {
                 _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
                 if (Light != null) CountsDisplay.Text = Light[_SelectedChannel].ToString("n");
             }
-        }
-
-        public enum PumpMode
-        {
-            NEVER, TRANS, ALWAYS
-        }
-
-        public enum Dialog
-        {
-            INITIALIZE, PROGRESS, PROGRESS_DARK,
-            PROGRESS_FLASH, PROGRESS_TRANS, CALCULATE
-        }
-        public LaserPowerControl(LuiConfig Config) : base(Config)
-        {
-            InitializeComponent();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -92,16 +84,16 @@ namespace LUI.tabs
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
-            int N = (int)NScan.Value;
+            var N = (int)NScan.Value;
             PumpMode Pump;
             if (PumpNever.Checked) Pump = PumpMode.NEVER;
             else if (PumpTs.Checked) Pump = PumpMode.TRANS;
             else Pump = PumpMode.ALWAYS;
             Commander.BeamFlag.CloseLaserAndFlash();
             worker = new BackgroundWorker();
-            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
-            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
-            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
+            worker.DoWork += DoWork;
+            worker.ProgressChanged += WorkProgress;
+            worker.RunWorkerCompleted += WorkComplete;
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(new WorkArgs(N, Pump, Discard.Checked));
@@ -125,21 +117,22 @@ namespace LUI.tabs
             if (PauseCancelProgress(e, 0, Dialog.INITIALIZE)) return;
 
             var args = (WorkArgs)e.Argument;
-            int N = args.N;
+            var N = args.N;
 
-            int TotalScans = 3 * N;
+            var TotalScans = 3 * N;
 
-            int AcqSize = Commander.Camera.AcqSize;
-            int finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage ?
-                AcqSize / Commander.Camera.Image.Height : AcqSize;
+            var AcqSize = Commander.Camera.AcqSize;
+            var finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage
+                ? AcqSize / Commander.Camera.Image.Height
+                : AcqSize;
 
             if (PauseCancelProgress(e, 0, Dialog.PROGRESS_DARK)) return;
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
-            int[] DataBuffer = new int[AcqSize];
-            double[] Dark = new double[finalSize];
-            for (int i = 0; i < N; i++)
+            var DataBuffer = new int[AcqSize];
+            var Dark = new double[finalSize];
+            for (var i = 0; i < N; i++)
             {
                 TryAcquire(DataBuffer);
 
@@ -147,6 +140,7 @@ namespace LUI.tabs
 
                 if (PauseCancelProgress(e, i + 1, Dialog.PROGRESS_DARK)) return;
             }
+
             Data.DivideArray(Dark, N);
 
             if (PauseCancelProgress(e, 0, Dialog.PROGRESS_FLASH)) return;
@@ -160,8 +154,8 @@ namespace LUI.tabs
 
             Commander.BeamFlag.OpenFlash();
 
-            double[] Ground = new double[finalSize];
-            for (int i = 0; i < N; i++)
+            var Ground = new double[finalSize];
+            for (var i = 0; i < N; i++)
             {
                 TryAcquire(DataBuffer);
 
@@ -169,6 +163,7 @@ namespace LUI.tabs
 
                 if (PauseCancelProgress(e, i + 1, Dialog.PROGRESS_FLASH)) return;
             }
+
             Data.DivideArray(Ground, N);
             Data.Dissipate(Ground, Dark);
 
@@ -183,8 +178,8 @@ namespace LUI.tabs
 
             Commander.BeamFlag.OpenLaserAndFlash();
 
-            double[] Excited = new double[finalSize];
-            for (int i = 0; i < N; i++)
+            var Excited = new double[finalSize];
+            for (var i = 0; i < N; i++)
             {
                 TryAcquire(DataBuffer);
 
@@ -197,9 +192,7 @@ namespace LUI.tabs
 
             // Flow-flash.
             if (args.Pump == PumpMode.TRANS || args.Pump == PumpMode.ALWAYS) // Could close pump before last collect.
-            {
                 Commander.Pump.SetClosed();
-            }
 
             Data.DivideArray(Excited, N);
             Data.Dissipate(Excited, Dark);
@@ -211,25 +204,30 @@ namespace LUI.tabs
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
-            Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), e.UserState.ToString());
+            var operation = (Dialog)Enum.Parse(typeof(Dialog), e.UserState.ToString());
             if (e.ProgressPercentage != -1)
-                ScanProgress.Text = e.ProgressPercentage.ToString() + "/" + NScan.Value.ToString();
+                ScanProgress.Text = e.ProgressPercentage + "/" + NScan.Value;
             switch (operation)
             {
                 case Dialog.INITIALIZE:
                     ProgressLabel.Text = "Initializing";
                     break;
+
                 case Dialog.PROGRESS:
                     break;
+
                 case Dialog.PROGRESS_DARK:
                     ProgressLabel.Text = "Collecting dark";
                     break;
+
                 case Dialog.PROGRESS_FLASH:
                     ProgressLabel.Text = "Collecting ground";
                     break;
+
                 case Dialog.PROGRESS_TRANS:
                     ProgressLabel.Text = "Collecting excited";
                     break;
+
                 case Dialog.CALCULATE:
                     ProgressLabel.Text = "Calculating";
                     break;
@@ -251,23 +249,26 @@ namespace LUI.tabs
             {
                 ProgressLabel.Text = "Aborted";
             }
+
             OnTaskFinished(EventArgs.Empty);
         }
 
         protected override void Graph_Click(object sender, MouseEventArgs e)
         {
             // Selects a *physical channel* on the camera.
-            SelectedChannel = Commander.Camera.CalibrationAscending ?
-                (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1))
-                :
-                (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X) * (Commander.Camera.Width - 1));
+            SelectedChannel = Commander.Camera.CalibrationAscending
+                ? (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X *
+                                   (Commander.Camera.Width - 1))
+                : (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X) *
+                                   (Commander.Camera.Width - 1));
             RedrawLines();
         }
 
-        private void RedrawLines()
+        void RedrawLines()
         {
             Graph.ClearAnnotation();
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], Commander.Camera.Calibration[SelectedChannel]);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0],
+                Commander.Camera.Calibration[SelectedChannel]);
             Graph.Invalidate();
         }
 
@@ -281,47 +282,60 @@ namespace LUI.tabs
                         if (Commander.Camera.CalibrationAscending) SelectedChannel--;
                         else SelectedChannel++;
                     }
+
                     RedrawLines();
                     break;
+
                 case Keys.Right:
                     if (SelectedChannel > -1)
                     {
                         if (Commander.Camera.CalibrationAscending) SelectedChannel--;
                         else SelectedChannel++;
                     }
+
                     RedrawLines();
                     break;
+
                 case Keys.Enter:
                     //TODO add calibration point
                     break;
             }
+
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
         void TBKeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!(char.IsDigit(e.KeyChar)))
+            if (!char.IsDigit(e.KeyChar))
             {
-                Keys key = (Keys)e.KeyChar;
+                var key = (Keys)e.KeyChar;
 
-                if (!(key == Keys.Back || key == Keys.Delete))
-                {
-                    e.Handled = true;
-                }
+                if (!(key == Keys.Back || key == Keys.Delete)) e.Handled = true;
             }
         }
 
-        private void Display()
+        void Display()
         {
             Graph.ClearData();
             Graph.Invalidate();
 
-            if (Light != null)
-            {
-                Graph.DrawPoints(Commander.Camera.Calibration, Light);
-            }
+            if (Light != null) Graph.DrawPoints(Commander.Camera.Calibration, Light);
 
             Graph.Invalidate();
+        }
+
+        struct WorkArgs
+        {
+            public WorkArgs(int N, PumpMode Pump, bool DiscardFirst)
+            {
+                this.N = N;
+                this.Pump = Pump;
+                this.DiscardFirst = DiscardFirst;
+            }
+
+            public readonly int N;
+            public readonly PumpMode Pump;
+            public readonly bool DiscardFirst;
         }
     }
 }

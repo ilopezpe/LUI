@@ -6,32 +6,26 @@ namespace LUI.controls
 {
     class NIConfigPanel : LuiObjectConfigPanel<GpibProviderParameters>
     {
-        LabeledControl<ComboBox> NIBoardNumber;
-
-        override public Type Target
-        {
-            get
-            {
-                return typeof(NIGpibProvider);
-            }
-        }
+        readonly LabeledControl<ComboBox> NIBoardNumber;
 
         public NIConfigPanel()
-            : base()
         {
             NIBoardNumber = new LabeledControl<ComboBox>(new ComboBox(), "Board:");
             NIBoardNumber.Control.DropDownStyle = ComboBoxStyle.DropDownList;
             NIBoardNumber.Control.Items.Add(0);
             NIBoardNumber.Control.SelectedIndexChanged += (s, e) => OnOptionsChanged(s, e);
-            this.Controls.Add(NIBoardNumber);
+            Controls.Add(NIBoardNumber);
         }
 
-        override public void CopyTo(GpibProviderParameters other)
+        public override Type Target => typeof(NIGpibProvider);
+
+        public override void CopyTo(GpibProviderParameters other)
         {
-            other.BoardNumber = (int)NIBoardNumber.Control.SelectedItem; ;
+            other.BoardNumber = (int)NIBoardNumber.Control.SelectedItem;
+            ;
         }
 
-        override public void CopyFrom(GpibProviderParameters other)
+        public override void CopyFrom(GpibProviderParameters other)
         {
             NIBoardNumber.Control.SelectedItem = other.BoardNumber;
         }

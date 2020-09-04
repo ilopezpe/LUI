@@ -2,6 +2,7 @@
 using lasercom.objects;
 using log4net;
 using System.Linq;
+using System.Reflection;
 
 //  <summary>
 //      Represents a Stanford DDG.
@@ -10,27 +11,28 @@ using System.Linq;
 namespace lasercom.ddg
 {
     /// <summary>
-    /// Base class for Stanford Instruments DDGs.
+    ///     Base class for Stanford Instruments DDGs.
     /// </summary>
     public abstract class StanfordDigitalDelayGenerator : AbstractDigitalDelayGenerator
     {
 #pragma warning disable CS0108 // 'StanfordDigitalDelayGenerator.Log' hides inherited member 'LuiObject.Log'. Use the new keyword if hiding was intended.
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #pragma warning restore CS0108 // 'StanfordDigitalDelayGenerator.Log' hides inherited member 'LuiObject.Log'. Use the new keyword if hiding was intended.
-
-        public IGpibProvider GPIBProvider { get; set; }
-        public byte GPIBAddress { get; set; }
 
         public StanfordDigitalDelayGenerator(LuiObjectParameters p, params ILuiObject[] dependencies) :
             this(p as DelayGeneratorParameters, dependencies)
-        { } //TODO just take IGpibProvider instead of params array.
+        {
+        } //TODO just take IGpibProvider instead of params array.
 
         public StanfordDigitalDelayGenerator(DelayGeneratorParameters p, params ILuiObject[] dependencies)
         {
             Init(p.GpibAddress, dependencies);
         }
 
-        private void Init(byte _GpibAddress, params ILuiObject[] dependencies)
+        public IGpibProvider GPIBProvider { get; set; }
+        public byte GPIBAddress { get; set; }
+
+        void Init(byte _GpibAddress, params ILuiObject[] dependencies)
         {
             GPIBProvider = (IGpibProvider)dependencies.First(d => d is IGpibProvider);
             GPIBAddress = _GpibAddress;
@@ -48,6 +50,5 @@ namespace lasercom.ddg
         {
             GPIBAddress = p.GpibAddress;
         }
-
     }
 }

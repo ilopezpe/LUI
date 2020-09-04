@@ -6,43 +6,39 @@ using System.Threading;
 namespace lasercom.control
 {
     /// <summary>
-    /// Class representing BeamFlags operated by numato usbgpio16 controller.
+    ///     Class representing BeamFlags operated by numato usbgpio16 controller.
     /// </summary>
     public class BeamFlags : AbstractBeamFlags
     {
         //use masks to send commands simultaneously
         public const string gpioOutputs = "00ff";
+
         public const string gpioMask = "c000";
 
         //probe light shutter
         //reverse logic, i.e. high = close shutters. low = open shutters.
         public const string OpenFlashCommand = "gpio clear E\r";
+
         public const string CloseFlashCommand = "gpio set E\r";
 
         //laser shutter
         public const string OpenLaserCommand = "gpio clear F\r";
+
         public const string CloseLaserCommand = "gpio set F\r";
 
         // the following allows switching both io14 and io15 simultaneously.
         public const string OpenLaserAndFlashCommand = "gpio writeall 0000\r";
+
         public const string CloseLaserAndFlashCommand = "gpio writeall ffff\r";
 
         // Approximate time in ms for solenoid to switch.
         public const int DefaultDelay = 300;
 
-        public int Delay { get; set; } // Time in miliseconds to sleep between commands.
+        SerialPort _port;
 
-        public string PortName
+        public BeamFlags(LuiObjectParameters p) : this(p as BeamFlagsParameters)
         {
-            get
-            {
-                return _port.PortName;
-            }
         }
-
-        private SerialPort _port;
-
-        public BeamFlags(LuiObjectParameters p) : this(p as BeamFlagsParameters) { }
 
         public BeamFlags(BeamFlagsParameters p)
         {
@@ -51,12 +47,16 @@ namespace lasercom.control
             Init(p.PortName);
         }
 
-        public BeamFlags(String portName)
+        public BeamFlags(string portName)
         {
             Init(portName);
         }
 
-        private void Init(string portName)
+        public int Delay { get; set; } // Time in miliseconds to sleep between commands.
+
+        public string PortName => _port.PortName;
+
+        void Init(string portName)
         {
             Delay = DefaultDelay;
             _port = new SerialPort(portName)
@@ -82,11 +82,11 @@ namespace lasercom.control
         }
 
         /// <summary>
-        /// Opens the laser flag, optionally sleeping to ensure the flag has opened completely.
-        /// LaserState is updated only after sleeping in case of monitoring by another thread.
+        ///     Opens the laser flag, optionally sleeping to ensure the flag has opened completely.
+        ///     LaserState is updated only after sleeping in case of monitoring by another thread.
         /// </summary>
         /// <param name="wait"></param>
-        private void OpenLaser(bool wait)
+        void OpenLaser(bool wait)
         {
             _port.DiscardInBuffer();
             _port.Write(OpenLaserCommand);
@@ -100,7 +100,7 @@ namespace lasercom.control
             OpenFlash(true);
         }
 
-        private void OpenFlash(bool wait)
+        void OpenFlash(bool wait)
         {
             _port.DiscardInBuffer();
             _port.Write(OpenFlashCommand);
@@ -114,7 +114,7 @@ namespace lasercom.control
             OpenLaserAndFlash(true);
         }
 
-        private void OpenLaserAndFlash(bool wait)
+        void OpenLaserAndFlash(bool wait)
         {
             _port.DiscardInBuffer();
             _port.Write(OpenLaserAndFlashCommand);
@@ -129,7 +129,7 @@ namespace lasercom.control
             CloseLaser(true);
         }
 
-        private void CloseLaser(bool wait)
+        void CloseLaser(bool wait)
         {
             _port.DiscardInBuffer();
             _port.Write(CloseLaserCommand);
@@ -143,7 +143,7 @@ namespace lasercom.control
             CloseFlash(true);
         }
 
-        private void CloseFlash(bool wait)
+        void CloseFlash(bool wait)
         {
             _port.DiscardInBuffer();
             _port.Write(CloseFlashCommand);
@@ -157,7 +157,7 @@ namespace lasercom.control
             CloseLaserAndFlash(true);
         }
 
-        private void CloseLaserAndFlash(bool wait)
+        void CloseLaserAndFlash(bool wait)
         {
             _port.DiscardInBuffer();
             _port.Write(CloseLaserAndFlashCommand);
@@ -167,7 +167,7 @@ namespace lasercom.control
             _port.DiscardOutBuffer();
         }
 
-        private void EnsurePortDisposed()
+        void EnsurePortDisposed()
         {
             if (_port != null)
             {

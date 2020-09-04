@@ -6,10 +6,6 @@ namespace lasercom.control
 {
     public class PumpParameters : LuiObjectParameters<PumpParameters>
     {
-
-        [DataMember]
-        public string PortName { get; set; }
-
         public PumpParameters(Type Type, string PortName) : base(Type)
         {
             this.PortName = PortName;
@@ -18,25 +14,23 @@ namespace lasercom.control
         public PumpParameters(Type Type)
             : base(Type)
         {
-
         }
 
         public PumpParameters()
-            : base()
         {
-
         }
 
         public PumpParameters(PumpParameters other)
             : base(other)
         {
-
         }
+
+        [DataMember] public string PortName { get; set; }
 
         public override void Copy(PumpParameters other)
         {
             base.Copy(other);
-            this.PortName = other.PortName;
+            PortName = other.PortName;
         }
 
         //public override bool Equals(PumpParameters other)
@@ -66,13 +60,11 @@ namespace lasercom.control
 
         public override bool NeedsReinstantiation(PumpParameters other)
         {
-            bool needs = base.NeedsReinstantiation(other);
+            var needs = base.NeedsReinstantiation(other);
             if (needs) return true;
 
             if (Type == typeof(HarvardPump) || Type.IsSubclassOf(typeof(HarvardPump)))
-            {
                 needs |= other.PortName != PortName;
-            }
             return needs;
         }
 

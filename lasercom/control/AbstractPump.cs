@@ -1,24 +1,14 @@
 ﻿using lasercom.objects;
+using System;
 
 namespace lasercom.control
 {
     /// <summary>
-    /// Base class for all pumps.
+    ///     Base class for all pumps.
     /// </summary>
     public abstract class AbstractPump : LuiObject<PumpParameters>, IPump
     {
-        private PumpState _CurrentState;
-        public PumpState CurrentState
-        {
-            get
-            {
-                return _CurrentState;
-            }
-            protected set
-            {
-                _CurrentState = value;
-            }
-        }
+        public PumpState CurrentState { get; protected set; }
 
         public virtual PumpState Toggle()
         {
@@ -27,10 +17,12 @@ namespace lasercom.control
                 case PumpState.Open:
                     SetClosed();
                     break;
+
                 case PumpState.Closed:
                     SetOpen();
                     break;
             }
+
             return CurrentState;
         }
 
@@ -52,8 +44,7 @@ namespace lasercom.control
 
         public override void Update(PumpParameters p)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
-
     }
 }

@@ -4,12 +4,13 @@ using System;
 namespace lasercom.ddg
 {
     /// <summary>
-    /// Dummy DDG implementing required methods as no-ops.
+    ///     Dummy DDG implementing required methods as no-ops.
     /// </summary>
     public class DummyDigitalDelayGenerator : AbstractDigitalDelayGenerator
     {
-
-        public DummyDigitalDelayGenerator(LuiObjectParameters p) : this() { }
+        public DummyDigitalDelayGenerator(LuiObjectParameters p) : this()
+        {
+        }
 
         public DummyDigitalDelayGenerator()
         {
@@ -19,26 +20,17 @@ namespace lasercom.ddg
 
         public override string[] Delays
         {
-            get
-            {
-                return new string[] { "A", "B" };
-            }
+            get { return new[] { "A", "B" }; }
         }
 
         public override string[] Triggers
         {
-            get
-            {
-                return new string[] { "T", "A" };
-            }
+            get { return new[] { "T", "A" }; }
         }
 
         public override string[] DelayPairs
         {
-            get
-            {
-                return new string[] { "AB" };
-            }
+            get { return new[] { "AB" }; }
         }
 
         public string ADelay { get; set; }
@@ -47,12 +39,12 @@ namespace lasercom.ddg
 
         public void SetADelay(string Trigger, double delay)
         {
-            ADelay = Trigger + "," + delay.ToString();
+            ADelay = Trigger + "," + delay;
         }
 
         public void SetBDelay(string Trigger, double delay)
         {
-            BDelay = Trigger + "," + delay.ToString();
+            BDelay = Trigger + "," + delay;
         }
 
         public string GetADelay()
@@ -77,15 +69,18 @@ namespace lasercom.ddg
                 case "A":
                     SetADelay(TriggerName, Delay);
                     break;
+
                 case "B":
                     SetBDelay(TriggerName, Delay);
                     break;
+
                 default:
                     throw new ArgumentException("Illegal delay output given.");
             }
         }
 
-        public override void SetDelayPulse(Tuple<string, string> DelayPair, string TriggerName, double Delay, double Width)
+        public override void SetDelayPulse(Tuple<string, string> DelayPair, string TriggerName, double Delay,
+            double Width)
         {
             SetDelay(DelayPair.Item1, TriggerName, Delay);
             SetDelay(DelayPair.Item2, DelayPair.Item1, Width);
@@ -97,8 +92,10 @@ namespace lasercom.ddg
             {
                 case "A":
                     return ADelay;
+
                 case "B":
                     return BDelay;
+
                 default:
                     throw new ArgumentException("Illegal delay specified");
             }
@@ -111,8 +108,7 @@ namespace lasercom.ddg
 
         public override double GetDelayValue(string DelayName)
         {
-            return Double.Parse(GetDelay(DelayName).Split(',')[1]);
+            return double.Parse(GetDelay(DelayName).Split(',')[1]);
         }
-
     }
 }

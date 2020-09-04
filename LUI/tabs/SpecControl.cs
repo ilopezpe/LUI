@@ -6,7 +6,9 @@ using lasercom.io;
 using LUI.config;
 using LUI.controls;
 using System;
+using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -15,46 +17,25 @@ namespace LUI.tabs
 {
     public partial class SpecControl : LuiTab
     {
-        int[] BlankBuffer = null;
-
-        int _SelectedChannel = -1;
-        int SelectedChannel
+        public enum Dialog
         {
-            get
-            {
-                return _SelectedChannel;
-            }
-            set
-            {
-                _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
-                if (CurvesView.SelectedCurve != null)
-                    CountsDisplay.Text = CurvesView.SelectedCurve[_SelectedChannel].ToString("n4");
-            }
-        }
-
-        struct WorkArgs
-        {
-            public WorkArgs(int N, PumpMode Pump, bool DiscardFirst)
-            {
-                this.N = N;
-                this.Pump = Pump;
-                this.DiscardFirst = DiscardFirst;
-            }
-            public readonly int N;
-            public readonly PumpMode Pump;
-            public readonly bool DiscardFirst;
+            BLANK,
+            SAMPLE,
+            PROGRESS,
+            PROGRESS_BLANK,
+            PROGRESS_DARK,
+            PROGRESS_DATA,
+            PROGRESS_CALC
         }
 
         public enum PumpMode
         {
-            ALWAYS, NEVER
+            ALWAYS,
+            NEVER
         }
 
-        public enum Dialog
-        {
-            BLANK, SAMPLE, PROGRESS, PROGRESS_BLANK, PROGRESS_DARK, PROGRESS_DATA,
-            PROGRESS_CALC
-        }
+        int _SelectedChannel = -1;
+        int[] BlankBuffer;
 
         public SpecControl(LuiConfig Config) : base(Config)
         {
@@ -67,6 +48,17 @@ namespace LUI.tabs
 
             ClearBlank.Click += ClearBlank_Click;
             ClearBlank.Enabled = false;
+        }
+
+        int SelectedChannel
+        {
+            get => _SelectedChannel;
+            set
+            {
+                _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
+                if (CurvesView.SelectedCurve != null)
+                    CountsDisplay.Text = CurvesView.SelectedCurve[_SelectedChannel].ToString("n4");
+            }
         }
 
         protected override void OnLoad(EventArgs e)
@@ -96,7 +88,6 @@ namespace LUI.tabs
             {
                 PumpBox.Enabled = false;
             }
-
         }
 
         public virtual void HandlePumpChanged(object sender, EventArgs e)
@@ -123,7 +114,7 @@ namespace LUI.tabs
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
-            int N = (int)NScan.Value;
+            var N = (int)NScan.Value;
             PumpMode Mode;
             if (PumpNever.Checked) Mode = PumpMode.NEVER;
             else Mode = PumpMode.ALWAYS;
@@ -135,22 +126,23 @@ namespace LUI.tabs
             OnTaskStarted(EventArgs.Empty);
         }
 
-        protected override void DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        protected override void DoWork(object sender, DoWorkEventArgs e)
         {
-            WorkArgs args = (WorkArgs)e.Argument;
-            int N = args.N;
+            var args = (WorkArgs)e.Argument;
+            var N = args.N;
 
-            int AcqSize = Commander.Camera.AcqSize;
-            int finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage ?
-                AcqSize / Commander.Camera.Image.Height : AcqSize;
+            var AcqSize = Commander.Camera.AcqSize;
+            var finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage
+                ? AcqSize / Commander.Camera.Image.Height
+                : AcqSize;
 
             if (PauseCancelProgress(e, 0, Dialog.PROGRESS_DARK.ToString())) return;
 
-            int[] DataBuffer = new int[AcqSize];
-            int[] DarkBuffer = new int[finalSize];
+            var DataBuffer = new int[AcqSize];
+            var DarkBuffer = new int[finalSize];
 
             Commander.BeamFlag.CloseLaserAndFlash();
-            for (int i = 0; i < N; i++)
+            for (var i = 0; i < N; i++)
             {
                 TryAcquire(DataBuffer);
                 Data.ColumnSum(DarkBuffer, DataBuffer);
@@ -166,7 +158,7 @@ namespace LUI.tabs
                 Commander.BeamFlag.OpenFlash();
 
                 BlankBuffer = new int[finalSize];
-                for (int i = 0; i < N; i++)
+                for (var i = 0; i < N; i++)
                 {
                     TryAcquire(DataBuffer);
                     Data.ColumnSum(BlankBuffer, DataBuffer);
@@ -188,61 +180,62 @@ namespace LUI.tabs
 
             Commander.BeamFlag.OpenFlash();
 
-            if (args.Pump == PumpMode.ALWAYS)
-            {
-                OpenPump(args.DiscardFirst);
-            }
+            if (args.Pump == PumpMode.ALWAYS) OpenPump(args.DiscardFirst);
 
-            int[] SampleBuffer = new int[finalSize];
-            for (int i = 0; i < N; i++)
+            var SampleBuffer = new int[finalSize];
+            for (var i = 0; i < N; i++)
             {
                 TryAcquire(DataBuffer);
                 Data.ColumnSum(SampleBuffer, DataBuffer);
                 if (PauseCancelProgress(e, i + 1, Dialog.PROGRESS_DATA.ToString())) return;
             }
+
             Commander.BeamFlag.CloseLaserAndFlash();
 
-            if (args.Pump == PumpMode.ALWAYS)
-            {
-                Commander.Pump.SetClosed();
-            }
+            if (args.Pump == PumpMode.ALWAYS) Commander.Pump.SetClosed();
 
             if (PauseCancelProgress(e, -1, Dialog.PROGRESS_CALC.ToString())) return;
             e.Result = Data.OpticalDensity(SampleBuffer, BlankBuffer, DarkBuffer);
         }
 
-        protected override void WorkProgress(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
-            Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), (string)e.UserState);
+            var operation = (Dialog)Enum.Parse(typeof(Dialog), (string)e.UserState);
             if (e.ProgressPercentage != -1)
-                ScanProgress.Text = e.ProgressPercentage.ToString() + "/" + NScan.Value.ToString();
+                ScanProgress.Text = e.ProgressPercentage + "/" + NScan.Value;
             switch (operation)
             {
                 case Dialog.BLANK:
                     ProgressLabel.Text = "Waiting";
                     break;
+
                 case Dialog.SAMPLE:
                     ProgressLabel.Text = "Waiting";
                     break;
+
                 case Dialog.PROGRESS:
                     ProgressLabel.Text = "Busy";
                     break;
+
                 case Dialog.PROGRESS_BLANK:
                     ProgressLabel.Text = "Collecting blank";
                     break;
+
                 case Dialog.PROGRESS_DARK:
                     ProgressLabel.Text = "Collecting dark";
                     break;
+
                 case Dialog.PROGRESS_DATA:
                     ProgressLabel.Text = "Collecting data";
                     break;
+
                 case Dialog.PROGRESS_CALC:
                     ProgressLabel.Text = "Calculating";
                     break;
             }
         }
 
-        protected override void WorkComplete(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
             Commander.BeamFlag.CloseLaserAndFlash();
             Commander.Pump.SetClosed();
@@ -256,22 +249,22 @@ namespace LUI.tabs
             {
                 ProgressLabel.Text = "Aborted";
             }
+
             OnTaskFinished(EventArgs.Empty);
         }
 
-        protected override void Graph_Click(object sender, System.Windows.Forms.MouseEventArgs e)
+        protected override void Graph_Click(object sender, MouseEventArgs e)
         {
             // Selects a *physical channel* on the camera.
-            SelectedChannel = Commander.Camera.CalibrationAscending ?
-                (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(
+            SelectedChannel = Commander.Camera.CalibrationAscending
+                ? (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(
                     new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1))
-                :
-                (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(
+                : (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(
                     new Point(e.X, e.Y))).X) * (Commander.Camera.Width - 1));
             RedrawLines();
         }
 
-        private void RedrawLines()
+        void RedrawLines()
         {
             Graph.ClearAnnotation();
             Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0],
@@ -287,13 +280,14 @@ namespace LUI.tabs
 
         void ExportCurvesToMat(string FileName)
         {
-            MatFile DataFile = new MatFile(FileName);
-            foreach (string CurveName in CurvesView.SaveCurveNames)
+            var DataFile = new MatFile(FileName);
+            foreach (var CurveName in CurvesView.SaveCurveNames)
             {
                 var curve = CurvesView.FindCurveByName(CurveName);
                 var V = DataFile.CreateVariable<double>(CurveName, 1, curve.Length);
                 V.WriteNext(curve, 0);
             }
+
             DataFile.CreateVariable<double>("Wavelength", 1, Commander.Camera.Calibration.Length)
                 .WriteNext(Commander.Camera.Calibration, 0);
             DataFile.CreateVariable<int>("Blank", 1, BlankBuffer.Length)
@@ -305,34 +299,29 @@ namespace LUI.tabs
         {
             using (var writer = new StreamWriter(FileName))
             {
-                using (var csv = new CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                 {
                     var headers = CurvesView.SaveCurveNames.ToList();
                     var curves = CurvesView.SaveCurves.ToList();
                     csv.WriteField("Wavelength");
                     csv.WriteField("Blank");
-                    foreach (string header in headers)
-                    {
-                        csv.WriteField(header);
-                    }
+                    foreach (var header in headers) csv.WriteField(header);
                     csv.NextRecord();
 
-                    for (int i = 0; i < curves[0].Count; i++)
+                    for (var i = 0; i < curves[0].Count; i++)
                     {
                         csv.WriteField(Commander.Camera.Calibration[i]);
                         csv.WriteField(BlankBuffer[i]);
-                        for (int j = 0; j < curves.Count; j++)
-                        {
-                            csv.WriteField(curves[j][i]);
-                        }
+                        for (var j = 0; j < curves.Count; j++) csv.WriteField(curves[j][i]);
                         csv.NextRecord();
                     }
                 }
+
                 writer.Close();
             }
         }
 
-        private void SaveOutput()
+        void SaveOutput()
         {
             if (CurvesView.Count == 0)
             {
@@ -340,7 +329,7 @@ namespace LUI.tabs
                 return;
             }
 
-            SaveFileDialog saveFile = new SaveFileDialog
+            var saveFile = new SaveFileDialog
             {
                 Filter = "MAT File|*.mat|CSV File|*.csv",
                 Title = "Save As"
@@ -356,6 +345,7 @@ namespace LUI.tabs
                 case 1: // MAT file.
                     ExportCurvesToMat(saveFile.FileName);
                     break;
+
                 case 2: // CSV file.
                     ExportCurvesToCsv(saveFile.FileName);
                     break;
@@ -366,6 +356,20 @@ namespace LUI.tabs
         {
             if (SelectedChannel != -1 && CurvesView.SelectedCurve != null)
                 CountsDisplay.Text = CurvesView.SelectedCurve[SelectedChannel].ToString("n4");
+        }
+
+        struct WorkArgs
+        {
+            public WorkArgs(int N, PumpMode Pump, bool DiscardFirst)
+            {
+                this.N = N;
+                this.Pump = Pump;
+                this.DiscardFirst = DiscardFirst;
+            }
+
+            public readonly int N;
+            public readonly PumpMode Pump;
+            public readonly bool DiscardFirst;
         }
     }
 }

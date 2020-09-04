@@ -8,111 +8,66 @@ namespace lasercom.io
 {
     public class MatFile : IDisposable
     {
-        private readonly string _FileName;
-        public string FileName
-        {
-            get
-            {
-                return _FileName;
-            }
-        }
+        bool PrependOnClose = true;
 
-        private H5FileId _FileId;
-        public H5FileId FileId
-        {
-            get
-            {
-                return _FileId;
-            }
-            private set
-            {
-                _FileId = value;
-            }
-        }
-
-        private H5GroupId _GroupId;
-        public H5GroupId GroupId
-        {
-            get
-            {
-                return _GroupId;
-            }
-            private set
-            {
-                _GroupId = value;
-            }
-        }
-
-        Dictionary<string, MatVar> Variables;
-
-        public MatVar this[string Name]
-        {
-            get
-            {
-                Variables.TryGetValue(Name, out MatVar V);
-                return V;
-            }
-        }
-
-        private bool _Disposed = false;
-        public bool Disposed
-        {
-            get
-            {
-                return _Disposed;
-            }
-            private set
-            {
-                _Disposed = value;
-            }
-        }
-
-        private bool _Closed = false;
-        public bool Closed
-        {
-            get
-            {
-                return _Closed;
-            }
-            private set
-            {
-                _Closed = value;
-            }
-        }
-
-        private bool PrependOnClose = true;
+        readonly Dictionary<string, MatVar> Variables;
 
         public MatFile(string fileName)
         {
-            _FileName = fileName;
+            FileName = fileName;
             FileId = H5F.create(FileName, H5F.CreateMode.ACC_TRUNC);
             GroupId = H5G.open(FileId, "/");
 
             Variables = new Dictionary<string, MatVar>();
         }
 
+        public string FileName { get; }
+
+        public H5FileId FileId { get; private set; }
+
+        public H5GroupId GroupId { get; private set; }
+
+        public MatVar this[string Name]
+        {
+            get
+            {
+                Variables.TryGetValue(Name, out var V);
+                return V;
+            }
+        }
+
+        public bool Disposed { get; private set; }
+
+        public bool Closed { get; private set; }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         public MatVar<T> CreateVariable<T>(string Name, params long[] Dims)
         {
-            MatVar<T> V = new MatVar<T>(Name, GroupId, Dims);
+            var V = new MatVar<T>(Name, GroupId, Dims);
             Variables.Add(Name, V);
             return V;
         }
 
-        private void PrependMatlabHeader(string filename)
+        void PrependMatlabHeader(string filename)
         {
-            byte[] header = new byte[512];
+            var header = new byte[512];
 
-            string headerText = "MATLAB 7.3 MAT-file";
-            byte[] headerTextBytes = Encoding.ASCII.GetBytes(headerText);
+            var headerText = "MATLAB 7.3 MAT-file";
+            var headerTextBytes = Encoding.ASCII.GetBytes(headerText);
 
-            for (int i = 0; i < headerText.Length; i++) header[i] = headerTextBytes[i];
+            for (var i = 0; i < headerText.Length; i++) header[i] = headerTextBytes[i];
 
             header[124] = 0;
             header[125] = 2;
             header[126] = Encoding.ASCII.GetBytes("I")[0];
             header[127] = Encoding.ASCII.GetBytes("M")[0];
 
-            string tempfile = Path.GetTempFileName();
+            var tempfile = Path.GetTempFileName();
             using (var newFile = new FileStream(tempfile, FileMode.OpenOrCreate, FileAccess.Write))
             {
                 newFile.Write(header, 0, header.Length);
@@ -122,6 +77,7 @@ namespace lasercom.io
                     oldFile.CopyTo(newFile);
                 }
             }
+
             File.Copy(tempfile, filename, true);
             File.Delete(tempfile);
             PrependOnClose = false;
@@ -137,7 +93,7 @@ namespace lasercom.io
                 H5F.close(FileId);
 
                 if (PrependOnClose)
-                    PrependMatlabHeader(_FileName);
+                    PrependMatlabHeader(FileName);
 
                 Closed = true;
             }
@@ -150,27 +106,15 @@ namespace lasercom.io
             {
                 FileId = H5F.open(FileName, H5F.OpenMode.ACC_RDWR);
                 GroupId = H5G.open(FileId, "/");
-                foreach (var V in Variables.Values)
-                {
-                    V.Open();
-                }
+                foreach (var V in Variables.Values) V.Open();
                 Closed = false;
             }
         }
 
-        private void Dispose(bool disposing)
+        void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                Close();
-            }
+            if (disposing) Close();
             Disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

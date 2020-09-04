@@ -9,100 +9,51 @@ namespace lasercom.io
     {
         public string Name;
 
-        private bool _Disposed = false;
-        public bool Disposed
-        {
-            get
-            {
-                return _Disposed;
-            }
-            protected set
-            {
-                _Disposed = value;
-            }
-        }
+        public bool Disposed { get; protected set; }
 
-        private bool _Closed = false;
-        public bool Closed
-        {
-            get
-            {
-                return _Closed;
-            }
-            protected set
-            {
-                _Closed = value;
-            }
-        }
-
-        public abstract void Close();
-
-        public abstract void Open();
-
-        private void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                Close();
-            }
-            Disposed = true;
-        }
+        public bool Closed { get; protected set; }
 
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        public abstract void Close();
+
+        public abstract void Open();
+
+        void Dispose(bool disposing)
+        {
+            if (disposing) Close();
+            Disposed = true;
+        }
     }
 
     /// <summary>
-    /// Represents a MATLAB array of specified type.
-    /// Note the array will be transposed from HDF5 row-major format
-    /// to MATLAB column major format automatically when loaded in MATLAB.
+    ///     Represents a MATLAB array of specified type.
+    ///     Note the array will be transposed from HDF5 row-major format
+    ///     to MATLAB column major format automatically when loaded in MATLAB.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class MatVar<T> : MatVar
     {
-        private H5DataTypeId TypeId;
-        private H5DataSpaceId SpaceId;
-        private H5DataSetId DataSetId;
-        private H5FileOrGroupId FileOrGroupId;
+        long[] _Dims;
 
-        private long[] _Dims;
-        public long[] Dims
-        {
-            get
-            {
-                return _Dims;
-            }
-            set
-            {
-                _Dims = value;
-                _Length = 1;
-                foreach (long N in _Dims) _Length *= N;
-            }
-        }
-
-        public long[] Cursor { get; set; }
-
-        private long _Length;
-        public long Length
-        {
-            get
-            {
-                return _Length;
-            }
-        }
+        H5DataSetId DataSetId;
+        readonly H5FileOrGroupId FileOrGroupId;
+        H5DataSpaceId SpaceId;
+        H5DataTypeId TypeId;
 
         /// <summary>
-        /// Create new variable in the file or group.
+        ///     Create new variable in the file or group.
         /// </summary>
         /// <param name="_Name"></param>
         /// <param name="_FileOrGroupId"></param>
         /// <param name="_Dims"></param>
         protected internal MatVar(string _Name, H5FileOrGroupId _FileOrGroupId, params long[] _Dims)
         {
-            InitTypeId(out string MatlabClass);
+            InitTypeId(out var MatlabClass);
 
             Name = _Name;
             FileOrGroupId = _FileOrGroupId;
@@ -111,10 +62,10 @@ namespace lasercom.io
 
             SpaceId = H5S.create_simple(Dims.Length, Dims);
             DataSetId = H5D.create(FileOrGroupId, "/" + Name, TypeId, SpaceId);
-            H5DataTypeId AttributeTypeId = H5T.create(H5T.CreateClass.STRING, MatlabClass.Length);
-            H5DataSpaceId AttributeSpaceId = H5S.create(H5S.H5SClass.SCALAR);
-            H5AttributeId AttributeId = H5A.create(DataSetId, "MATLAB_class", AttributeTypeId, AttributeSpaceId);
-            byte[] asciiBytes = Encoding.ASCII.GetBytes(MatlabClass);
+            var AttributeTypeId = H5T.create(H5T.CreateClass.STRING, MatlabClass.Length);
+            var AttributeSpaceId = H5S.create(H5S.H5SClass.SCALAR);
+            var AttributeId = H5A.create(DataSetId, "MATLAB_class", AttributeTypeId, AttributeSpaceId);
+            var asciiBytes = Encoding.ASCII.GetBytes(MatlabClass);
             H5A.write(AttributeId, AttributeTypeId, new H5Array<byte>(asciiBytes));
             H5A.close(AttributeId);
             H5S.close(AttributeSpaceId);
@@ -122,7 +73,7 @@ namespace lasercom.io
         }
 
         /// <summary>
-        /// Create new variable in file or group with existing data.
+        ///     Create new variable in file or group with existing data.
         /// </summary>
         /// <param name="_Name"></param>
         /// <param name="FileOrGroupId"></param>
@@ -131,17 +82,17 @@ namespace lasercom.io
         protected internal MatVar(string _Name, H5FileOrGroupId FileOrGroupId, long[] _Dims, T[] data) :
             this(_Name, FileOrGroupId, _Dims)
         {
-            this.Write(data, new long[Dims.Length], Dims);
+            Write(data, new long[Dims.Length], Dims);
         }
 
         /// <summary>
-        /// Variable already exists in file or group.
+        ///     Variable already exists in file or group.
         /// </summary>
         /// <param name="_Name"></param>
         /// <param name="_FileOrGroupId"></param>
         protected internal MatVar(string _Name, H5FileOrGroupId _FileOrGroupId)
         {
-            InitTypeId(out string MatlabClass);
+            InitTypeId(out var MatlabClass);
 
             Name = _Name;
             FileOrGroupId = _FileOrGroupId;
@@ -149,6 +100,21 @@ namespace lasercom.io
             Closed = true;
             Open();
         }
+
+        public long[] Dims
+        {
+            get => _Dims;
+            set
+            {
+                _Dims = value;
+                Length = 1;
+                foreach (var N in _Dims) Length *= N;
+            }
+        }
+
+        public long[] Cursor { get; set; }
+
+        public long Length { get; private set; }
 
         protected void InitTypeId(out string MatlabClass)
         {
@@ -169,34 +135,36 @@ namespace lasercom.io
         }
 
         /// <summary>
-        /// Write data along one dimension of the array using the cursor.
+        ///     Write data along one dimension of the array using the cursor.
         /// </summary>
         /// <param name="data"></param>
         /// <param name="dim"></param>
         public void WriteNext(T[] data, long dim)
         {
-            long[] count = Enumerable.Repeat(1L, Dims.Length).ToArray(); // Ones.
-            for (int i = 0; i < Dims.Length; i++)
-                if (i != dim) count[i] = Dims[i];
+            var count = Enumerable.Repeat(1L, Dims.Length).ToArray(); // Ones.
+            for (var i = 0; i < Dims.Length; i++)
+                if (i != dim)
+                    count[i] = Dims[i];
 
             long RequiredLength = 1;
-            foreach (long l in count) RequiredLength *= l;
+            foreach (var l in count) RequiredLength *= l;
 
             if (data.Length != RequiredLength)
                 throw new ArgumentException("Data size must match array dimension");
 
-            long[] start = new long[Dims.Length];
+            var start = new long[Dims.Length];
             start[dim] = Cursor[dim];
 
             Write(data, start, count);
 
             Cursor[dim]++;
-            for (int i = 0; i < Cursor.Length; i++)
-                if (i != dim) Cursor[i] = 0;
+            for (var i = 0; i < Cursor.Length; i++)
+                if (i != dim)
+                    Cursor[i] = 0;
         }
 
         /// <summary>
-        /// Write data into the variable's HDF5 data set in row-major order. 
+        ///     Write data into the variable's HDF5 data set in row-major order.
         /// </summary>
         /// <param name="data"></param>
         /// <param name="start"></param>
@@ -204,28 +172,28 @@ namespace lasercom.io
         public void Write(T[] data, long[] start, long[] count)
         {
             H5S.selectHyperslab(SpaceId, H5S.SelectOperator.SET, start, count);
-            H5DataSpaceId memSpaceId = H5S.create_simple(count.Length, count);
-            H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
+            var memSpaceId = H5S.create_simple(count.Length, count);
+            var propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
             H5D.write(DataSetId, TypeId, memSpaceId, SpaceId, propListId, new H5Array<T>(data));
             H5S.close(memSpaceId);
         }
 
         /// <summary>
-        /// Write single value in the HDF5 data set.
+        ///     Write single value in the HDF5 data set.
         /// </summary>
         /// <param name="data"></param>
         /// <param name="position"></param>
         public void Write(T data, long[] position)
         {
             H5S.selectHyperslab(SpaceId, H5S.SelectOperator.SET, position, new long[] { 1, 1 });
-            H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
-            H5DataSpaceId memSpaceId = H5S.create_simple(1, new long[] { 1 });
+            var propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
+            var memSpaceId = H5S.create_simple(1, new long[] { 1 });
             H5D.writeScalar(DataSetId, TypeId, memSpaceId, SpaceId, propListId, ref data);
             H5S.close(memSpaceId);
         }
 
         /// <summary>
-        /// Read data from the HDF5 data set directly into an array.
+        ///     Read data from the HDF5 data set directly into an array.
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="start"></param>
@@ -233,7 +201,7 @@ namespace lasercom.io
         public void Read(T[] buffer, long[] start, long[] count)
         {
             long RequiredLength = 1;
-            foreach (long l in count) RequiredLength *= l;
+            foreach (var l in count) RequiredLength *= l;
 
             if (buffer.Length != RequiredLength)
                 throw new ArgumentException("Buffer and data set must have same length");
@@ -241,7 +209,7 @@ namespace lasercom.io
         }
 
         /// <summary>
-        /// Read data from HDF5 data set directly into 2D array.
+        ///     Read data from HDF5 data set directly into 2D array.
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="start"></param>
@@ -250,7 +218,7 @@ namespace lasercom.io
         {
             if (buffer.Rank != Dims.Length) throw new ArgumentException("Buffer and data set must have same rank");
             long RequiredLength = 1;
-            foreach (long l in count) RequiredLength *= l;
+            foreach (var l in count) RequiredLength *= l;
 
             if (buffer.Length != RequiredLength)
                 throw new ArgumentException("Buffer and data set must have same length");
@@ -258,7 +226,7 @@ namespace lasercom.io
         }
 
         /// <summary>
-        /// Read data from HDF5 data set into H5Array.
+        ///     Read data from HDF5 data set into H5Array.
         /// </summary>
         /// <param name="wrappedBuffer"></param>
         /// <param name="start"></param>
@@ -266,8 +234,8 @@ namespace lasercom.io
         public void ReadH5(H5Array<T> wrappedBuffer, long[] start, long[] count)
         {
             H5S.selectHyperslab(SpaceId, H5S.SelectOperator.SET, start, count);
-            H5DataSpaceId memSpaceId = H5S.create_simple(count.Length, count);
-            H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
+            var memSpaceId = H5S.create_simple(count.Length, count);
+            var propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
             H5D.read(DataSetId, TypeId, memSpaceId, SpaceId, propListId, wrappedBuffer);
             H5S.close(memSpaceId);
         }

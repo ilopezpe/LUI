@@ -8,57 +8,15 @@ namespace LUI.controls
 {
     public class ObjectSelectPanel : FlowLayoutPanel
     {
-        public event EventHandler CameraChanged;
-        public event EventHandler BeamFlagsChanged;
+        readonly LabeledControl<ComboBox> _BeamFlags;
 
-        LabeledControl<ComboBox> _Cameras;
-        public ComboBox Cameras
-        {
-            get
-            {
-                return _Cameras.Control;
-            }
-        }
-
-        public CameraParameters SelectedCamera
-        {
-            get
-            {
-                return (CameraParameters)Cameras.SelectedItem;
-            }
-            set
-            {
-                Cameras.SelectedItem = value;
-            }
-        }
-
-        LabeledControl<ComboBox> _BeamFlags;
-        public ComboBox BeamFlags
-        {
-            get
-            {
-                return _BeamFlags.Control;
-            }
-        }
-
-        public BeamFlagsParameters SelectedBeamFlags
-        {
-            get
-            {
-                return (BeamFlagsParameters)BeamFlags.SelectedItem;
-            }
-            set
-            {
-                BeamFlags.SelectedItem = value;
-            }
-        }
-
+        readonly LabeledControl<ComboBox> _Cameras;
 
         public ObjectSelectPanel()
         {
-            this.FlowDirection = System.Windows.Forms.FlowDirection.LeftToRight;
-            this.AutoSize = true;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            FlowDirection = FlowDirection.LeftToRight;
+            AutoSize = true;
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
 
             _Cameras = new LabeledControl<ComboBox>(new ComboBox(), "Camera:");
             Cameras.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -72,5 +30,25 @@ namespace LUI.controls
             BeamFlags.SelectedIndexChanged += (s, e) => BeamFlagsChanged.Raise(s, e);
             Controls.Add(_BeamFlags);
         }
+
+        public ComboBox Cameras => _Cameras.Control;
+
+        public CameraParameters SelectedCamera
+        {
+            get => (CameraParameters)Cameras.SelectedItem;
+            set => Cameras.SelectedItem = value;
+        }
+
+        public ComboBox BeamFlags => _BeamFlags.Control;
+
+        public BeamFlagsParameters SelectedBeamFlags
+        {
+            get => (BeamFlagsParameters)BeamFlags.SelectedItem;
+            set => BeamFlags.SelectedItem = value;
+        }
+
+        public event EventHandler CameraChanged;
+
+        public event EventHandler BeamFlagsChanged;
     }
 }

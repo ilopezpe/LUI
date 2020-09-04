@@ -8,54 +8,38 @@ using System.Threading;
 namespace lasercom.gpib
 {
     /// <summary>
-    /// Provide GPIB using Prologix USB GPIB controller.
+    ///     Provide GPIB using Prologix USB GPIB controller.
     /// </summary>
     public class PrologixGpibProvider : AbstractGpibProvider
     {
-        #region Constants
-        private const string PrologixInitiator = "++";
-        private const string PrologixAddress = "addr";
-        private const string PrologixIFC = "ifc";
-        private const string PrologixMode = "mode 1";
-        private const string PrologixEOI = "eoi 1";
-        private const string PrologixEOS = "eos 0"; // 0 = CRLF termination
-        private const string PrologixRead = "read";
-        private const string ReadTimeoutCommand = "read_tmo_ms";
-        #endregion
+        const int DefaultTimeout = 500;
 
         SerialPort _port;
-
-        public string PortName
-        {
-            get
-            {
-                return _port.PortName;
-            }
-        }
-
-        int Timeout { get; set; }
-        const int DefaultTimeout = 500;
 
         public PrologixGpibProvider(string PortName)
         {
             Init(PortName, DefaultTimeout);
         }
 
-        public PrologixGpibProvider(LuiObjectParameters p) : this(p as GpibProviderParameters) { }
+        public PrologixGpibProvider(LuiObjectParameters p) : this(p as GpibProviderParameters)
+        {
+        }
 
         public PrologixGpibProvider(GpibProviderParameters p)
         {
-            if (p == null || p.PortName == null)
-            {
-                throw new ArgumentException("PortName must be defined.");
-            }
+            if (p == null || p.PortName == null) throw new ArgumentException("PortName must be defined.");
 
             Init(p.PortName, p.Timeout);
         }
 
-        private void Init(string PortName, int Timeout)
+        public string PortName => _port.PortName;
+
+        int Timeout { get; set; }
+
+        void Init(string PortName, int Timeout)
         {
             #region Serial port configuration
+
             _port = new SerialPort(PortName)
             {
                 BaudRate = 1200, //9600 ???
@@ -71,7 +55,8 @@ namespace lasercom.gpib
                 ReadTimeout = Timeout,
                 WriteTimeout = Timeout
             };
-            #endregion
+
+            #endregion Serial port configuration
 
             this.Timeout = Timeout;
             ControllerCommand(PrologixIFC); // Assert Controller-in-Charge.
@@ -102,7 +87,7 @@ namespace lasercom.gpib
 
         void ControllerCommand(string command)
         {
-            string data = PrologixInitiator + command + "\r\n";
+            var data = PrologixInitiator + command + "\r\n";
             Log.Debug("USB GPIB Controller Command: " + data);
             try
             {
@@ -117,8 +102,8 @@ namespace lasercom.gpib
 
         void ControllerCommand(string command, params string[] args)
         {
-            string arglist = String.Join(" ", args);
-            string data = PrologixInitiator + command + " " + arglist + "\r\n";
+            var arglist = string.Join(" ", args);
+            var data = PrologixInitiator + command + " " + arglist + "\r\n";
             Log.Debug("USB GPIB Controller Command: " + data);
             try
             {
@@ -131,10 +116,10 @@ namespace lasercom.gpib
             }
         }
 
-        override public void LoggedWrite(byte address, string command)
+        public override void LoggedWrite(byte address, string command)
         {
             Log.Debug("GPIB Command: " + command);
-            string TX = EscapeString(command) + "\r\n"; // send to instrument
+            var TX = EscapeString(command) + "\r\n"; // send to instrument
             try
             {
                 if (!_port.IsOpen) _port.Open();
@@ -148,10 +133,10 @@ namespace lasercom.gpib
             }
         }
 
-        override public string LoggedQuery(byte address, string command)
+        public override string LoggedQuery(byte address, string command)
         {
             Log.Debug("GPIB Command: " + command);
-            string TX = EscapeString(command) + "\r\n"; // send to instrument
+            var TX = EscapeString(command) + "\r\n"; // send to instrument
             string buffer = null;
             try
             {
@@ -165,6 +150,7 @@ namespace lasercom.gpib
             {
                 Log.Error(ex);
             }
+
             Log.Debug("GPIB Response: " + buffer);
             return buffer;
         }
@@ -175,10 +161,10 @@ namespace lasercom.gpib
         }
 
         /// <summary>
-        /// Read from addressed device until timeout reached between read characters.
-        /// Note GPIB data is stored in 1 character buffer, then sent to 4K USB buffer.
-        /// Thus there are two effective timeout required, one for reading GPIB and one
-        /// for reading from the serial port (USB buffer).
+        ///     Read from addressed device until timeout reached between read characters.
+        ///     Note GPIB data is stored in 1 character buffer, then sent to 4K USB buffer.
+        ///     Thus there are two effective timeout required, one for reading GPIB and one
+        ///     for reading from the serial port (USB buffer).
         /// </summary>
         /// <param name="Timeout"></param>
         /// <returns></returns>
@@ -189,47 +175,48 @@ namespace lasercom.gpib
             ControllerCommand(ReadTimeoutCommand, (Timeout + 1).ToString()); // Allow 1 ms for GPIB -> USB.
             ControllerCommand(PrologixRead, "eoi"); // Read from GPIB until eoi or timeout.
 
-            StringBuilder builder = new StringBuilder();
-            DateTime lastRead = DateTime.Now;
-            TimeSpan elapsedTime = new TimeSpan();
+            var builder = new StringBuilder();
+            var lastRead = DateTime.Now;
+            var elapsedTime = new TimeSpan();
 
             // 2 second timespan
-            TimeSpan TimeSpan = new TimeSpan(0, 0, 0, 0, Timeout);
+            var TimeSpan = new TimeSpan(0, 0, 0, 0, Timeout);
 
             // Read from port until TIMEOUT time has elapsed since
             // last successful read
             while (TimeSpan.CompareTo(elapsedTime) > 0)
             {
-                string buffer = _port.ReadExisting();
+                var buffer = _port.ReadExisting();
 
                 if (buffer.Length > 0)
                 {
                     builder.Append(buffer);
                     lastRead = DateTime.Now;
                 }
+
                 elapsedTime = DateTime.Now - lastRead;
             }
+
             return builder.ToString();
         }
 
         /// <summary>
-        /// Escapes GPIB command string for use with Prologix controller.
-        /// CR (13), LF (10), ESC (27), + (43) characters will be escaped.
+        ///     Escapes GPIB command string for use with Prologix controller.
+        ///     CR (13), LF (10), ESC (27), + (43) characters will be escaped.
         /// </summary>
         /// <param name="s">GPIB command</param>
         /// <returns>Escaped string</returns>
         static string EscapeString(string s)
         {
-            StringBuilder builder = new StringBuilder(s.Length);
-            for (int i = 0; i < s.Length; i++)
+            var builder = new StringBuilder(s.Length);
+            for (var i = 0; i < s.Length; i++)
             {
                 if (s[i] == (char)10 || s[i] == (char)13 || s[i] == (char)27 || s[i] == (char)43)
-                {
                     builder.Append((char)27); //escape
-                }
                 builder.Append(s[i]);
                 builder.Append('\0'); // Workaround for every-other-character problem.
             }
+
             return builder.ToString();
         }
 
@@ -237,5 +224,18 @@ namespace lasercom.gpib
         {
             Timeout = p.Timeout;
         }
+
+        #region Constants
+
+        const string PrologixInitiator = "++";
+        const string PrologixAddress = "addr";
+        const string PrologixIFC = "ifc";
+        const string PrologixMode = "mode 1";
+        const string PrologixEOI = "eoi 1";
+        const string PrologixEOS = "eos 0"; // 0 = CRLF termination
+        const string PrologixRead = "read";
+        const string ReadTimeoutCommand = "read_tmo_ms";
+
+        #endregion Constants
     }
 }

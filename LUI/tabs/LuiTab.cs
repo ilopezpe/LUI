@@ -7,6 +7,8 @@ using log4net;
 using LUI.config;
 using System;
 using System.ComponentModel;
+using System.Drawing;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Threading;
@@ -15,36 +17,14 @@ namespace LUI.tabs
 {
     public partial class LuiTab : UserControl
     {
-        protected static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public event EventHandler TaskStarted;
-        public event EventHandler TaskFinished;
-        ManualResetEvent Paused;
-
-        public Commander Commander { get; set; }
-        public LuiConfig Config { get; set; }
-        protected BackgroundWorker worker;
-        protected bool wait;
-
-        protected BackgroundWorker ioWorker;
+        readonly ManualResetEvent Paused;
         protected Dispatcher Dispatcher;
 
-        protected uint CameraStatusCode
-        {
-            set
-            {
-                if (InvokeRequired)
-                {
-                    BeginInvoke(new Action(() =>
-                        CameraStatus.Text = Commander.Camera.DecodeStatus(value)));
-                }
-                else
-                {
-                    CameraStatus.Text = Commander.Camera.DecodeStatus(value);
-                }
-
-            }
-        }
+        protected BackgroundWorker ioWorker;
+        protected bool wait;
+        protected BackgroundWorker worker;
 
         public LuiTab(LuiConfig config)
         {
@@ -69,9 +49,32 @@ namespace LUI.tabs
             Abort.Enabled = Pause.Enabled = false;
         }
 
-        public LuiTab() : this(null) { }
+        public LuiTab() : this(null)
+        {
+        }
 
-        private void Init()
+        public Commander Commander { get; set; }
+        public LuiConfig Config { get; set; }
+
+        protected uint CameraStatusCode
+        {
+            set
+            {
+                if (InvokeRequired)
+                    BeginInvoke(new Action(() =>
+                        CameraStatus.Text = Commander.Camera.DecodeStatus(value)));
+                else
+                    CameraStatus.Text = Commander.Camera.DecodeStatus(value);
+            }
+        }
+
+        public bool IsBusy => worker != null && worker.IsBusy;
+
+        public event EventHandler TaskStarted;
+
+        public event EventHandler TaskFinished;
+
+        void Init()
         {
             SuspendLayout();
 
@@ -82,9 +85,9 @@ namespace LUI.tabs
             //RightPanel.MinimumSize = sz;
             //StatusBox.Dock = DockStyle.Top;
             var screenSize = Screen.PrimaryScreen.WorkingArea.Size;
-            LeftPanel.MaximumSize = new System.Drawing.Size((int)(screenSize.Width * 0.85), 0);
+            LeftPanel.MaximumSize = new Size((int)(screenSize.Width * 0.85), 0);
 
-            this.Width = LeftPanel.Width + RightPanel.Width;
+            Width = LeftPanel.Width + RightPanel.Width;
 
             ResumeLayout();
         }
@@ -101,8 +104,11 @@ namespace LUI.tabs
                 HandleParametersChanged(this, EventArgs.Empty);
                 LoadSettings();
             }
-            Graph.XLeft = (float)Math.Min(Commander.Camera.Calibration[0], Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
-            Graph.XRight = (float)Math.Max(Commander.Camera.Calibration[0], Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
+
+            Graph.XLeft = (float)Math.Min(Commander.Camera.Calibration[0],
+                Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
+            Graph.XRight = (float)Math.Max(Commander.Camera.Calibration[0],
+                Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
         }
 
         public virtual void HandleParametersChanged(object sender, EventArgs e)
@@ -147,6 +153,7 @@ namespace LUI.tabs
                 CameraGain.Maximum = 0;
                 CameraGain.Value = 0;
             }
+
             // Update the graph with new camera's calibrated X-axis.
             HandleCalibrationChanged(sender, new LuiObjectParametersEventArgs(CameraBox.SelectedObject));
         }
@@ -156,8 +163,10 @@ namespace LUI.tabs
             // If a different camera is selected, do nothing (until that camera is selected by the user).
             if (!CameraBox.SelectedObject.Equals(e.Argument)) return;
 
-            Graph.XLeft = (float)Math.Min(Commander.Camera.Calibration[0], Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
-            Graph.XRight = (float)Math.Max(Commander.Camera.Calibration[0], Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
+            Graph.XLeft = (float)Math.Min(Commander.Camera.Calibration[0],
+                Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
+            Graph.XRight = (float)Math.Max(Commander.Camera.Calibration[0],
+                Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
             Graph.ClearAxes();
             Graph.Invalidate();
         }
@@ -182,16 +191,13 @@ namespace LUI.tabs
 
         public void HandleExit(object sender, EventArgs e)
         {
-            if (Config.Saved)
-            {
-                SaveSettings();
-            }
+            if (Config.Saved) SaveSettings();
         }
 
         protected virtual void LoadSettings()
         {
-            var Settings = Config.TabSettings[this.GetType().Name];
-            if (Settings.TryGetValue("Camera", out string value) && value != null && value != "")
+            var Settings = Config.TabSettings[GetType().Name];
+            if (Settings.TryGetValue("Camera", out var value) && value != null && value != "")
                 CameraBox.SelectedObject = Config.GetFirstParameters(typeof(CameraParameters), value);
             if (Settings.TryGetValue("BeamFlag", out value) && value != null && value != "")
                 BeamFlagBox.SelectedObject = Config.GetFirstParameters(typeof(BeamFlagsParameters), value);
@@ -199,7 +205,7 @@ namespace LUI.tabs
 
         protected virtual void SaveSettings()
         {
-            var Settings = Config.TabSettings[this.GetType().Name];
+            var Settings = Config.TabSettings[GetType().Name];
             Settings["Camera"] = CameraBox.SelectedObject?.Name;
             Settings["BeamFlag"] = BeamFlagBox.SelectedObject?.Name;
         }
@@ -226,6 +232,7 @@ namespace LUI.tabs
                     Commander.BeamFlag.OpenLaser();
                 worker.ReportProgress(percentProgress, progress);
             }
+
             return false;
         }
 
@@ -236,11 +243,12 @@ namespace LUI.tabs
                 e.Cancel = true;
                 return true;
             }
+
             return false;
         }
 
         /// <summary>
-        /// If Paused is not set, Waits until Paused is set. Returns true if waiting occurred.
+        ///     If Paused is not set, Waits until Paused is set. Returns true if waiting occurred.
         /// </summary>
         /// <returns></returns>
         protected bool WaitForResume()
@@ -261,16 +269,16 @@ namespace LUI.tabs
         protected void SetupWorker()
         {
             worker = new BackgroundWorker();
-            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
-            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
-            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
+            worker.DoWork += DoWork;
+            worker.ProgressChanged += WorkProgress;
+            worker.RunWorkerCompleted += WorkComplete;
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
         }
 
         protected virtual void Collect_Click(object sender, EventArgs e)
         {
-            int N = (int)NScan.Value;
+            var N = (int)NScan.Value;
             Commander.BeamFlag.CloseLaserAndFlash();
             SetupWorker();
             worker.RunWorkerAsync(N);
@@ -302,27 +310,27 @@ namespace LUI.tabs
             Graph.Invalidate();
         }
 
-        private void OpenLaser_Click(object sender, EventArgs e)
+        void OpenLaser_Click(object sender, EventArgs e)
         {
             Commander.BeamFlag.OpenLaser();
         }
 
-        private void CloseLaser_Click(object sender, EventArgs e)
+        void CloseLaser_Click(object sender, EventArgs e)
         {
             Commander.BeamFlag.CloseLaser();
         }
 
-        private void OpenLamp_Click(object sender, EventArgs e)
+        void OpenLamp_Click(object sender, EventArgs e)
         {
             Commander.BeamFlag.OpenFlash();
         }
 
-        private void CloseLamp_Click(object sender, EventArgs e)
+        void CloseLamp_Click(object sender, EventArgs e)
         {
             Commander.BeamFlag.CloseFlash();
         }
 
-        private void CameraGain_ValueChanged(object sender, EventArgs e)
+        void CameraGain_ValueChanged(object sender, EventArgs e)
         {
             Commander.Camera.IntensifierGain = (int)CameraGain.Value;
         }
@@ -345,14 +353,6 @@ namespace LUI.tabs
         protected virtual void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
             throw new NotImplementedException();
-        }
-
-        public bool IsBusy
-        {
-            get
-            {
-                return worker != null && worker.IsBusy;
-            }
         }
 
         public virtual void OnTaskStarted(EventArgs e)
@@ -381,49 +381,37 @@ namespace LUI.tabs
 
         public static bool IsInDesignMode()
         {
-            if (Application.ExecutablePath.IndexOf("devenv.exe", StringComparison.OrdinalIgnoreCase) > -1)
-            {
-                return true;
-            }
+            if (Application.ExecutablePath.IndexOf("devenv.exe", StringComparison.OrdinalIgnoreCase) > -1) return true;
             return false;
         }
 
         protected void BlockingBlankDialog()
         {
-            DialogResult result = MessageBox.Show("Please insert blank",
+            var result = MessageBox.Show("Please insert blank",
                 "Blank",
                 MessageBoxButtons.OKCancel);
-            if (result == DialogResult.Cancel)
-            {
-                worker.CancelAsync();
-            }
+            if (result == DialogResult.Cancel) worker.CancelAsync();
             wait = false;
         }
 
         protected void BlockingSampleDialog()
         {
-            DialogResult result = MessageBox.Show("Please insert sample",
-                    "Continue",
-                    MessageBoxButtons.OKCancel);
-            if (result == DialogResult.Cancel)
-            {
-                worker.CancelAsync();
-            }
+            var result = MessageBox.Show("Please insert sample",
+                "Continue",
+                MessageBoxButtons.OKCancel);
+            if (result == DialogResult.Cancel) worker.CancelAsync();
             wait = false;
         }
 
         protected void OpenPump(bool discard)
         {
             Commander.Pump.SetOpen();
-            if (discard)
-            {
-                TryAcquire();
-            }
+            if (discard) TryAcquire();
         }
 
         protected void TryAcquire()
         {
-            int[] dummy = new int[Commander.Camera.AcqSize];
+            var dummy = new int[Commander.Camera.AcqSize];
             TryAcquire(dummy);
         }
 
@@ -437,14 +425,14 @@ namespace LUI.tabs
             {
                 Log.Error(ex);
                 if (worker != null && worker.IsBusy) worker.CancelAsync();
-                BeginInvoke(new Action(() => MessageBox.Show("Sensor saturation occurred. Aborting run.", "Error", MessageBoxButtons.OK)));
+                BeginInvoke(new Action(() =>
+                    MessageBox.Show("Sensor saturation occurred. Aborting run.", "Error", MessageBoxButtons.OK)));
             }
         }
 
         protected void UpdateCollectText()
         {
-            Collect.Text = Commander.Camera.ReadMode == AndorCamera.ReadModeFVB ?
-                    "Collect (FVB)" : "Collect (Image)";
+            Collect.Text = Commander.Camera.ReadMode == AndorCamera.ReadModeFVB ? "Collect (FVB)" : "Collect (Image)";
         }
     }
 }

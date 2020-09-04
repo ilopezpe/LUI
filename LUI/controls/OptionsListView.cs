@@ -10,8 +10,8 @@ namespace LUI.controls
             // Swallow mouse messages that are not in the client area.
             if (m.Msg >= 0x201 && m.Msg <= 0x209) // Range contains L/R button up, down and dblclk
             {
-                Point pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
-                var hit = this.HitTest(pos);
+                var pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
+                var hit = HitTest(pos);
                 switch (hit.Location)
                 {
                     case ListViewHitTestLocations.AboveClientArea:
@@ -22,6 +22,7 @@ namespace LUI.controls
                         return;
                 }
             }
+
             base.WndProc(ref m);
         }
     }

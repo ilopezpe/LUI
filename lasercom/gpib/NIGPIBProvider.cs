@@ -5,15 +5,15 @@ using System;
 namespace lasercom.gpib
 {
     /// <summary>
-    /// Provide GPIB using NI 488.2 PCI card.
+    ///     Provide GPIB using NI 488.2 PCI card.
     /// </summary>
     public class NIGpibProvider : AbstractGpibProvider
     {
         const string GpibTerminator = "\r\n";
 
-        public Board Board { get; set; }
-
-        public NIGpibProvider(LuiObjectParameters p) : this(p as GpibProviderParameters) { }
+        public NIGpibProvider(LuiObjectParameters p) : this(p as GpibProviderParameters)
+        {
+        }
 
         public NIGpibProvider(GpibProviderParameters p)
         {
@@ -22,7 +22,9 @@ namespace lasercom.gpib
             Init(p.BoardNumber);
         }
 
-        private void Init(int _BoardNumber)
+        public Board Board { get; set; }
+
+        void Init(int _BoardNumber)
         {
             Board = new Board(_BoardNumber);
             Board.SendInterfaceClear();
@@ -38,13 +40,10 @@ namespace lasercom.gpib
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                Board.Dispose();
-            }
+            if (disposing) Board.Dispose();
         }
 
-        override public void LoggedWrite(byte address, string command)
+        public override void LoggedWrite(byte address, string command)
         {
             Log.Debug("GPIB Command: " + command);
             try
@@ -59,10 +58,9 @@ namespace lasercom.gpib
             {
                 Log.Error(e.InnerException.Message);
             }
-
         }
 
-        override public string LoggedQuery(byte address, string command)
+        public override string LoggedQuery(byte address, string command)
         {
             Log.Debug("GPIB Command: " + command);
             string response = null;
@@ -80,9 +78,9 @@ namespace lasercom.gpib
             {
                 Log.Error(ex);
             }
+
             Log.Debug("GPIB Response: " + response);
             return response;
         }
-
     }
 }

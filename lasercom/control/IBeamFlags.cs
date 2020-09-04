@@ -1,9 +1,13 @@
-﻿
-namespace lasercom.control
+﻿namespace lasercom.control
 {
-    public enum BeamFlagState { Open, Closed }
+    public enum BeamFlagState
+    {
+        Open,
+        Closed
+    }
+
     /// <summary>
-    /// Defines the public operations supported by beam flags.
+    ///     Defines the public operations supported by beam flags.
     /// </summary>
     public interface IBeamFlags
     {
@@ -11,16 +15,21 @@ namespace lasercom.control
         BeamFlagState LaserState { get; }
 
         BeamFlagState ToggleLaser();
+
         BeamFlagState ToggleFlash();
+
         void ToggleLaserAndFlash();
 
         void OpenLaser();
+
         void CloseLaser();
 
         void OpenFlash();
+
         void CloseFlash();
 
         void OpenLaserAndFlash();
+
         void CloseLaserAndFlash();
     }
 }

@@ -7,23 +7,6 @@ namespace lasercom.control
     [DataContract]
     public class BeamFlagsParameters : LuiObjectParameters<BeamFlagsParameters>
     {
-        [DataMember]
-        public string PortName { get; set; }
-
-        private int _Delay = BeamFlags.DefaultDelay;
-        [DataMember]
-        public int Delay
-        {
-            get
-            {
-                return _Delay;
-            }
-            set
-            {
-                _Delay = value;
-            }
-        }
-
         public BeamFlagsParameters(Type Type, string PortName)
             : base(Type)
         {
@@ -33,26 +16,26 @@ namespace lasercom.control
         public BeamFlagsParameters(BeamFlagsParameters other)
             : base(other)
         {
-
         }
 
         public BeamFlagsParameters(Type Type)
             : base(Type)
         {
-
         }
 
         public BeamFlagsParameters()
-            : base()
         {
-
         }
+
+        [DataMember] public string PortName { get; set; }
+
+        [DataMember] public int Delay { get; set; } = BeamFlags.DefaultDelay;
 
         public override void Copy(BeamFlagsParameters other)
         {
             base.Copy(other);
-            this.PortName = other.PortName;
-            this.Delay = other.Delay;
+            PortName = other.PortName;
+            Delay = other.Delay;
         }
 
         //public override bool Equals(BeamFlagsParameters other)
@@ -82,19 +65,16 @@ namespace lasercom.control
 
         public override bool NeedsReinstantiation(BeamFlagsParameters other)
         {
-            bool needs = base.NeedsReinstantiation(other);
+            var needs = base.NeedsReinstantiation(other);
             if (needs) return true;
 
-            if (Type == typeof(BeamFlags) || Type.IsSubclassOf(typeof(BeamFlags)))
-            {
-                needs |= other.PortName != PortName;
-            }
+            if (Type == typeof(BeamFlags) || Type.IsSubclassOf(typeof(BeamFlags))) needs |= other.PortName != PortName;
             return needs;
         }
 
         public override bool NeedsUpdate(BeamFlagsParameters other)
         {
-            bool needs = other.Delay != Delay;
+            var needs = other.Delay != Delay;
             return needs;
         }
     }

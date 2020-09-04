@@ -1,5 +1,4 @@
 ﻿using log4net;
-using log4net.Core;
 using log4net.Repository.Hierarchy;
 using LUI.config;
 using System;
@@ -16,11 +15,13 @@ namespace LUI.controls
         {
             InitializeComponent();
             this.Size = Size;
-            this.Visible = Visibility;
+            Visible = Visibility;
             Init();
         }
 
-        public LoggingOptionsDialog(Size Size) : this(Size, true) { }
+        public LoggingOptionsDialog(Size Size) : this(Size, true)
+        {
+        }
 
         public LoggingOptionsDialog()
         {
@@ -28,15 +29,15 @@ namespace LUI.controls
             Init();
         }
 
-        private void Init()
+        void Init()
         {
             SuspendLayout();
 
             LogLevel = new LabeledControl<ComboBox>(new ComboBox(), "Log Level");
             LogLevel.Control.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            Hierarchy h = (Hierarchy)LogManager.GetRepository();
-            foreach (Level l in h.LevelMap.AllLevels) LogLevel.Control.Items.Add(l.DisplayName);
+            var h = (Hierarchy)LogManager.GetRepository();
+            foreach (var l in h.LevelMap.AllLevels) LogLevel.Control.Items.Add(l.DisplayName);
 
             LogLevel.Control.SelectedIndexChanged += (s, e) => OnOptionsChanged(s, e);
 
@@ -54,12 +55,12 @@ namespace LUI.controls
 
         public override void CopyConfigState()
         {
-            CopyConfigState(this.Config);
+            CopyConfigState(Config);
         }
 
         public override void HandleApply(object sender, EventArgs e)
         {
-            string LevelName = (string)LogLevel.Control.SelectedItem;
+            var LevelName = (string)LogLevel.Control.SelectedItem;
             Config.SetLogLevel(LevelName);
         }
 

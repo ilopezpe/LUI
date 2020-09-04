@@ -1,5 +1,4 @@
-﻿
-namespace LUI
+﻿namespace LUI
 {
     public static class Constants
     {

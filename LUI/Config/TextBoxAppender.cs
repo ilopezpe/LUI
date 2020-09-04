@@ -1,59 +1,51 @@
 ﻿using log4net.Appender;
-using System;
+using log4net.Core;
 using System.Windows.Forms;
 
 namespace LUI.config
 {
     class TextBoxAppender : AppenderSkeleton
     {
-        private TextBox _textBox;
-        public TextBox AppenderTextBox
-        {
-            get
-            {
-                return _textBox;
-            }
-            set
-            {
-                _textBox = value;
-            }
-        }
+        public TextBox AppenderTextBox { get; set; }
+
         public string FormName { get; set; }
         public string TextBoxName { get; set; }
 
-        private Control FindControlRecursive(Control root, string textBoxName)
+        Control FindControlRecursive(Control root, string textBoxName)
         {
             if (root.Name == textBoxName) return root;
             foreach (Control c in root.Controls)
             {
-                Control t = FindControlRecursive(c, textBoxName);
+                var t = FindControlRecursive(c, textBoxName);
                 if (t != null) return t;
             }
+
             return null;
         }
 
-        protected override void Append(log4net.Core.LoggingEvent loggingEvent)
+        protected override void Append(LoggingEvent loggingEvent)
         {
-            if (_textBox == null)
+            if (AppenderTextBox == null)
             {
-                if (String.IsNullOrEmpty(FormName) ||
-                    String.IsNullOrEmpty(TextBoxName))
+                if (string.IsNullOrEmpty(FormName) ||
+                    string.IsNullOrEmpty(TextBoxName))
                     return;
 
-                Form form = Application.OpenForms[FormName];
+                var form = Application.OpenForms[FormName];
                 if (form == null)
                     return;
 
-                _textBox = (TextBox)FindControlRecursive(form, TextBoxName);
-                if (_textBox == null)
+                AppenderTextBox = (TextBox)FindControlRecursive(form, TextBoxName);
+                if (AppenderTextBox == null)
                     return;
 
-                form.FormClosing += (s, e) => _textBox = null;
+                form.FormClosing += (s, e) => AppenderTextBox = null;
             }
-            _textBox.BeginInvoke((MethodInvoker)delegate
-            {
-                _textBox.AppendText(RenderLoggingEvent(loggingEvent));
-            });
+
+            AppenderTextBox.BeginInvoke((MethodInvoker)delegate
+           {
+               AppenderTextBox.AppendText(RenderLoggingEvent(loggingEvent));
+           });
         }
     }
 }

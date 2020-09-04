@@ -11,26 +11,16 @@ namespace LUI
                 Filter = Filter
             };
             if (ofd.ShowDialog() == DialogResult.OK)
-            {
                 return ofd.FileName;
-            }
-            else
-            {
-                return "";
-            }
+            return "";
         }
 
         public static string SimpleFolderNameDialog()
         {
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            var fbd = new FolderBrowserDialog();
             if (fbd.ShowDialog() == DialogResult.OK)
-            {
                 return fbd.SelectedPath;
-            }
-            else
-            {
-                return "";
-            }
+            return "";
         }
     }
 }

@@ -16,95 +16,24 @@ namespace LUI.tabs
 {
     public partial class ResidualsControl : LuiTab
     {
-        MatVar<int> RawData;
+        public enum Dialog
+        {
+            INIT,
+            PROGRESS_DATA
+        }
+
+        double[] _DiffLight;
+
+        int _SelectedChannel = -1;
+        double[] CumulativeLight;
         MatFile DataFile;
-        CancellationTokenSource TemperatureCts = null;
-        private double[] Light = null;
-        private double[] LastLight = null;
-        private double[] CumulativeLight = null;
 
         int LastAcqWidth;
         ImageArea LastImage;
-
-        private double[] _DiffLight = null;
-        private double[] DiffLight
-        {
-            get
-            {
-                return _DiffLight;
-            }
-            set
-            {
-                _DiffLight = value;
-                DiffSum.Text = _DiffLight.Sum().ToString("n");
-            }
-        }
-
-        int _SelectedChannel = -1;
-        int SelectedChannel
-        {
-            get
-            {
-                return _SelectedChannel;
-            }
-            set
-            {
-                _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
-            }
-        }
-
-        int LowerBound { get; set; }
-        int UpperBound { get; set; }
-
-        int SelectedRow { get; set; }
-
-        public enum Dialog
-        {
-            INIT, PROGRESS_DATA
-        }
-
-        struct WorkArgs
-        {
-            public WorkArgs(int NScans, int NAverage, bool CollectLaser, bool SoftwareBinning)
-            {
-                this.NScans = NScans;
-                this.NAvg = NAverage;
-                this.CollectLaser = CollectLaser;
-                this.SoftwareBinning = SoftwareBinning;
-            }
-            public readonly int NScans;
-            public readonly int NAvg;
-            public readonly bool CollectLaser;
-            public readonly bool SoftwareBinning;
-        }
-
-        struct ProgressObject
-        {
-            public ProgressObject(object Data, int Counts, double VarCounts, int Peak, double VarPeak,
-                int CountsN, double VarCountsN, int PeakN, double VarPeakN, Dialog Status)
-            {
-                this.Data = Data;
-                this.Counts = Counts;
-                this.VarCounts = VarCounts;
-                this.Peak = Peak;
-                this.VarPeak = VarPeak;
-                this.CountsN = CountsN;
-                this.VarCountsN = VarCountsN;
-                this.PeakN = PeakN;
-                this.VarPeakN = VarPeakN;
-                this.Status = Status;
-            }
-            public readonly object Data;
-            public readonly int Counts;
-            public readonly int Peak;
-            public readonly double VarCounts;
-            public readonly double VarPeak;
-            public readonly int CountsN;
-            public readonly int PeakN;
-            public readonly double VarCountsN;
-            public readonly double VarPeakN;
-            public readonly Dialog Status;
-        }
+        double[] LastLight;
+        double[] Light;
+        MatVar<int> RawData;
+        CancellationTokenSource TemperatureCts;
 
         public ResidualsControl(LuiConfig config) : base(config)
         {
@@ -144,8 +73,29 @@ namespace LUI.tabs
             DdgConfigBox.HandleParametersChanged(this, EventArgs.Empty);
         }
 
-        /// <summary> 
-        /// Clean up any resources being used.
+        double[] DiffLight
+        {
+            get => _DiffLight;
+            set
+            {
+                _DiffLight = value;
+                DiffSum.Text = _DiffLight.Sum().ToString("n");
+            }
+        }
+
+        int SelectedChannel
+        {
+            get => _SelectedChannel;
+            set => _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
+        }
+
+        int LowerBound { get; set; }
+        int UpperBound { get; set; }
+
+        int SelectedRow { get; set; }
+
+        /// <summary>
+        ///     Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
@@ -158,8 +108,10 @@ namespace LUI.tabs
                     DataFile.Dispose();
                     if (File.Exists(FileName)) File.Delete(FileName);
                 }
+
                 if (components != null) components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
@@ -210,23 +162,19 @@ namespace LUI.tabs
         protected override void LoadSettings()
         {
             base.LoadSettings();
-            var Settings = Config.TabSettings[this.GetType().Name];
-            if (Settings.TryGetValue("PrimaryDelayDdg", out string value) && value != null && value != "")
-            {
+            var Settings = Config.TabSettings[GetType().Name];
+            if (Settings.TryGetValue("PrimaryDelayDdg", out var value) && value != null && value != "")
                 DdgConfigBox.PrimaryDelayDdg = (DelayGeneratorParameters)Config.GetFirstParameters(
                     typeof(DelayGeneratorParameters), value);
-            }
 
             if (Settings.TryGetValue("PrimaryDelayDelay", out value) && value != null && value != "")
-            {
                 DdgConfigBox.PrimaryDelayDelay = value;
-            }
         }
 
         protected override void SaveSettings()
         {
             base.SaveSettings();
-            var Settings = Config.TabSettings[this.GetType().Name];
+            var Settings = Config.TabSettings[GetType().Name];
             Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg?.Name;
             Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay ?? null;
         }
@@ -262,7 +210,8 @@ namespace LUI.tabs
             SoftFvbMode_CheckedChanged(sender, e);
 
             SetupWorker();
-            worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value, CollectLaser.Checked, SoftFvbMode.Checked));
+            worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value, CollectLaser.Checked,
+                SoftFvbMode.Checked));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -283,12 +232,12 @@ namespace LUI.tabs
         }
 
         /// <summary>
-        /// Alignment / Residuals background task logic.
-        /// For both functions, we need to poll the camera continuously while
-        /// updating the graph with the acquired data.
-        /// A blank isn't required since we're already looking at the blank
-        /// for these functions. Subtracting dark current is also not required
-        /// as it would only subtract an equal, fixed amount from every scan.
+        ///     Alignment / Residuals background task logic.
+        ///     For both functions, we need to poll the camera continuously while
+        ///     updating the graph with the acquired data.
+        ///     A blank isn't required since we're already looking at the blank
+        ///     for these functions. Subtracting dark current is also not required
+        ///     as it would only subtract an equal, fixed amount from every scan.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -297,56 +246,50 @@ namespace LUI.tabs
             if (PauseCancelProgress(e, -1,
                 new ProgressObject(null, 0, 0, 0, 0, 0, 0, 0, 0, Dialog.INIT))) return;
 
-            WorkArgs args = (WorkArgs)e.Argument;
+            var args = (WorkArgs)e.Argument;
 
-            int cmasum = 0; // Cumulative moving average over scans
+            var cmasum = 0; // Cumulative moving average over scans
             double varsum = 0;
-            int cmapeak = 0;
+            var cmapeak = 0;
             double varpeak = 0;
-            int nsum = 0; // CMA over last NAvg scans only
+            var nsum = 0; // CMA over last NAvg scans only
             double nvarsum = 0;
-            int npeak = 0;
+            var npeak = 0;
             double nvarpeak = 0;
-            int[] pastsums = new int[args.NAvg];
-            int[] pastpeaks = new int[args.NAvg];
+            var pastsums = new int[args.NAvg];
+            var pastpeaks = new int[args.NAvg];
 
-            int finalSize = args.SoftwareBinning ?
-                Commander.Camera.AcqSize / Commander.Camera.Image.Height :
-                Commander.Camera.AcqSize;
-            double nrows = (double)Commander.Camera.AcqSize / finalSize;
-            int[] DataBuffer = new int[Commander.Camera.AcqSize];
-            int[] BinnedDataBuffer = new int[finalSize];
-            int[] CumulativeDataBuffer = new int[finalSize];
+            var finalSize = args.SoftwareBinning
+                ? Commander.Camera.AcqSize / Commander.Camera.Image.Height
+                : Commander.Camera.AcqSize;
+            var nrows = (double)Commander.Camera.AcqSize / finalSize;
+            var DataBuffer = new int[Commander.Camera.AcqSize];
+            var BinnedDataBuffer = new int[finalSize];
+            var CumulativeDataBuffer = new int[finalSize];
 
             InitDataFile(finalSize, args.NScans);
 
             if (args.CollectLaser)
-            {
                 Commander.BeamFlag.OpenLaserAndFlash();
-            }
             else
-            {
                 Commander.BeamFlag.OpenFlash();
-            }
 
-            for (int i = 0; i < args.NScans; i++)
+            for (var i = 0; i < args.NScans; i++)
             {
                 TryAcquire(DataBuffer);
 
-                int sum = 0;
-                int peak = int.MinValue;
-                for (int k = 0; k < Commander.Camera.AcqSize / Commander.Camera.AcqWidth; k++)
-                {
-                    for (int j = LowerBound; j <= UpperBound; j++)
+                var sum = 0;
+                var peak = int.MinValue;
+                for (var k = 0; k < Commander.Camera.AcqSize / Commander.Camera.AcqWidth; k++)
+                    for (var j = LowerBound; j <= UpperBound; j++)
                     {
-                        int idx = k * Commander.Camera.Image.Width + j;
+                        var idx = k * Commander.Camera.Image.Width + j;
                         sum += DataBuffer[idx];
                         if (DataBuffer[idx] > peak) peak = DataBuffer[idx];
                     }
-                }
 
                 double vartemp;
-                int delta = sum - cmasum;
+                var delta = sum - cmasum;
                 cmasum += delta / (i + 1);
                 vartemp = delta * (sum - cmasum);
                 varsum += Math.Sqrt(Math.Abs(vartemp));
@@ -358,13 +301,13 @@ namespace LUI.tabs
                 //cmasum = (sum + i * cmasum) / (i + 1);
                 //cmapeak = (peak + i * cmapeak) / (i + 1);
 
-                int n = i % args.NAvg;
+                var n = i % args.NAvg;
                 pastsums[n] = sum;
                 pastpeaks[n] = peak;
 
                 nvarpeak = nvarsum = npeak = nsum = 0;
-                int localN = i < args.NAvg ? n : args.NAvg;
-                for (int j = 0; j < localN; j++)
+                var localN = i < args.NAvg ? n : args.NAvg;
+                for (var j = 0; j < localN; j++)
                 {
                     //nsum = (sum + n * nsum) / (n + 1);
                     //npeak = (peak + n * npeak) / (n + 1);
@@ -386,7 +329,7 @@ namespace LUI.tabs
                 RawData.WriteNext(BinnedDataBuffer, 0);
 
                 var progress = new ProgressObject(
-                    Array.ConvertAll((int[])BinnedDataBuffer, x => (double)x / nrows),
+                    Array.ConvertAll(BinnedDataBuffer, x => (double)x / nrows),
                     cmasum, varsum / i, cmapeak, varpeak / i, nsum, nvarsum / i,
                     npeak, nvarpeak / i, Dialog.PROGRESS_DATA);
                 if (PauseCancelProgress(e, i + 1, progress)) return;
@@ -394,23 +337,24 @@ namespace LUI.tabs
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
-            double[] CumulativeData = Array.ConvertAll((int[])CumulativeDataBuffer, x => (double)x / (args.NScans * nrows));
+            var CumulativeData = Array.ConvertAll(CumulativeDataBuffer, x => (double)x / (args.NScans * nrows));
             e.Result = CumulativeData;
         }
 
         /// <summary>
-        /// Runs in UI thread to report background task progress.
+        ///     Runs in UI thread to report background task progress.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
-            ProgressObject Progress = (ProgressObject)e.UserState;
+            var Progress = (ProgressObject)e.UserState;
             switch (Progress.Status)
             {
                 case Dialog.INIT:
                     ProgressLabel.Text = "Initializing";
                     break;
+
                 case Dialog.PROGRESS_DATA:
                     Light = (double[])Progress.Data;
                     if (LastLight != null)
@@ -426,14 +370,14 @@ namespace LUI.tabs
                     PeakN.Text = Progress.PeakN.ToString("n0") + " \u00B1 " + Progress.VarPeakN.ToString("n3");
                     CountsN.Text = Progress.CountsN.ToString("n0") + " \u00B1 " + Progress.VarCountsN.ToString("n0");
 
-                    ScanProgress.Text = e.ProgressPercentage.ToString() + "/" + NScan.Value.ToString();
+                    ScanProgress.Text = e.ProgressPercentage + "/" + NScan.Value;
                     ProgressLabel.Text = "Collecting data";
                     break;
             }
         }
 
         /// <summary>
-        /// Runs in UI thread after background task completed.
+        ///     Runs in UI thread after background task completed.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -463,29 +407,28 @@ namespace LUI.tabs
 
         protected override void Graph_Click(object sender, MouseEventArgs e)
         {
-            SelectedChannel = Commander.Camera.CalibrationAscending ?
-                (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1))
-                :
-                (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X) * (Commander.Camera.Width - 1));
+            SelectedChannel = Commander.Camera.CalibrationAscending
+                ? (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X *
+                                   (Commander.Camera.Width - 1))
+                : (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X) *
+                                   (Commander.Camera.Width - 1));
 
             // If the click is closer to the LB, update LB. Else (equidistant or closer to UB), update UB.
             if (Math.Abs(SelectedChannel - LowerBound) < Math.Abs(SelectedChannel - UpperBound))
-            {
                 LowerBound = SelectedChannel;
-            }
             else
-            {
                 UpperBound = SelectedChannel;
-            }
 
             RedrawLines();
         }
 
-        private void RedrawLines()
+        void RedrawLines()
         {
             Graph.ClearAnnotation();
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], Commander.Camera.Calibration[LowerBound]);
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], Commander.Camera.Calibration[UpperBound]);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0],
+                Commander.Camera.Calibration[LowerBound]);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0],
+                Commander.Camera.Calibration[UpperBound]);
             Graph.Invalidate();
         }
 
@@ -499,36 +442,37 @@ namespace LUI.tabs
                         if (Commander.Camera.CalibrationAscending) SelectedChannel--;
                         else SelectedChannel++;
                     }
+
                     RedrawLines();
                     break;
+
                 case Keys.Right:
                     if (SelectedChannel > -1)
                     {
                         if (Commander.Camera.CalibrationAscending) SelectedChannel--;
                         else SelectedChannel++;
                     }
+
                     RedrawLines();
                     break;
             }
+
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
         void TBKeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!(char.IsDigit(e.KeyChar)))
+            if (!char.IsDigit(e.KeyChar))
             {
-                Keys key = (Keys)e.KeyChar;
+                var key = (Keys)e.KeyChar;
 
-                if (!(key == Keys.Back || key == Keys.Delete))
-                {
-                    e.Handled = true;
-                }
+                if (!(key == Keys.Back || key == Keys.Delete)) e.Handled = true;
             }
         }
 
-        private void LoadProfile_Click(object sender, EventArgs e)
+        void LoadProfile_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFile = new OpenFileDialog
+            var openFile = new OpenFileDialog
             {
                 Filter = "Alignment File|*.aln|Text File|*.txt|All Files|*.*",
                 Title = "Load Alignment Profile"
@@ -550,21 +494,22 @@ namespace LUI.tabs
                     {
                         MessageBox.Show(ex.ToString());
                     }
+
                     break;
             }
         }
 
         /// <summary>
-        /// (Re-)graph most current data.
-        /// Used when ShowLast/ShowDiff is changed or calibration is updated
-        /// while the background task is stopped.
-        /// Also if in "alignment mode" (PeristentGraphing NOT checked) while
-        /// the background task is running.
+        ///     (Re-)graph most current data.
+        ///     Used when ShowLast/ShowDiff is changed or calibration is updated
+        ///     while the background task is stopped.
+        ///     Also if in "alignment mode" (PeristentGraphing NOT checked) while
+        ///     the background task is running.
         /// </summary>
-        private void Display()
+        void Display()
         {
-            int start = LastAcqWidth * SelectedRow;
-            int count = LastAcqWidth;
+            var start = LastAcqWidth * SelectedRow;
+            var count = LastAcqWidth;
 
             Graph.ClearData();
 
@@ -596,15 +541,15 @@ namespace LUI.tabs
         }
 
         /// <summary>
-        /// Used to update graph as background task runs.
-        /// If PersistentGraphing isn't checked, forwards to Display().
-        /// Otherwise, we re-graph the new DiffLight and Light.
-        /// DiffLight should rarely appear on top of other curves.
+        ///     Used to update graph as background task runs.
+        ///     If PersistentGraphing isn't checked, forwards to Display().
+        ///     Otherwise, we re-graph the new DiffLight and Light.
+        ///     DiffLight should rarely appear on top of other curves.
         /// </summary>
-        private void DisplayProgress()
+        void DisplayProgress()
         {
-            int start = LastAcqWidth * SelectedRow;
-            int count = LastAcqWidth;
+            var start = LastAcqWidth * SelectedRow;
+            var count = LastAcqWidth;
             if (PersistentGraphing.Checked)
             {
                 if (ShowDifference.Checked && DiffLight != null)
@@ -618,6 +563,7 @@ namespace LUI.tabs
                     Graph.MarkerColor = Graph.ColorOrder[0];
                     Graph.DrawPoints(Commander.Camera.Calibration, new ArraySegment<double>(Light, start, count));
                 }
+
                 Graph.Invalidate();
             }
             else
@@ -627,31 +573,32 @@ namespace LUI.tabs
         }
 
         /// <summary>
-        /// Updates graph after background task complete.
-        /// Reduces to a no-op if PersistentGraphing is NOT checked.
-        /// Note in this case, the final scan has already been displayed.
+        ///     Updates graph after background task complete.
+        ///     Reduces to a no-op if PersistentGraphing is NOT checked.
+        ///     Note in this case, the final scan has already been displayed.
         /// </summary>
-        private void DisplayComplete()
+        void DisplayComplete()
         {
             // No point if PersistentGraphing isn't checked, as we would only
             // see the final scan with the average. Graphing the average is
             // most useful if it's graphed on top of all previous scans.
             if (CumulativeLight != null && PersistentGraphing.Checked)
             {
-                int start = LastAcqWidth * SelectedRow;
-                int count = LastAcqWidth;
+                var start = LastAcqWidth * SelectedRow;
+                var count = LastAcqWidth;
                 Graph.MarkerColor = Graph.ColorOrder[3];
                 Graph.DrawPoints(Commander.Camera.Calibration, new ArraySegment<double>(CumulativeLight, start, count));
             }
+
             Graph.Invalidate();
         }
 
-        private void ShowLast_CheckedChanged(object sender, EventArgs e)
+        void ShowLast_CheckedChanged(object sender, EventArgs e)
         {
             Display();
         }
 
-        private void ShowDifference_CheckedChanged(object sender, EventArgs e)
+        void ShowDifference_CheckedChanged(object sender, EventArgs e)
         {
             Display();
         }
@@ -661,9 +608,9 @@ namespace LUI.tabs
         //    PeakNLabel.Text = NAverage.Value.ToString("n") + " Point Average";
         //}
 
-        private void SaveProfile_Click(object sender, EventArgs e)
+        void SaveProfile_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFile = new SaveFileDialog
+            var saveFile = new SaveFileDialog
             {
                 Filter = "ALN File|*.aln|MAT File|*.mat|All Files|*.*",
                 Title = "Save As"
@@ -683,19 +630,21 @@ namespace LUI.tabs
                     // ALN
                     try
                     {
-                        FileIO.WriteVector<double>(saveFile.FileName, Light);
+                        FileIO.WriteVector(saveFile.FileName, Light);
                     }
                     catch (IOException ex)
                     {
                         MessageBox.Show(ex.ToString());
                     }
+
                     break;
+
                 case 2:
                     // MAT
                     try
                     {
-                        MatFile mat = new MatFile(saveFile.FileName);
-                        MatVar<double> V = mat.CreateVariable<double>("aln", Light.Length, 1);
+                        var mat = new MatFile(saveFile.FileName);
+                        var V = mat.CreateVariable<double>("aln", Light.Length, 1);
                         V.WriteNext(Light, 1);
                         mat.Dispose();
                     }
@@ -703,6 +652,7 @@ namespace LUI.tabs
                     {
                         MessageBox.Show(ex.ToString());
                     }
+
                     break;
             }
         }
@@ -712,11 +662,12 @@ namespace LUI.tabs
             if (CollectLaser.Checked)
             {
                 if (Commander.Camera.HasIntensifier) CameraGain.Value = Commander.Camera.MinIntensifierGain;
-                string Msg = "Warning: camera will be exposed to scattered laser light!\r\n" +
-                (Commander.Camera.HasIntensifier ? "Gain has been set to minimum as a precaution.\r\n" : "") +
-                         "Remember to configure DDG and set delay manually before proceeding.";
+                var Msg = "Warning: camera will be exposed to scattered laser light!\r\n" +
+                          (Commander.Camera.HasIntensifier ? "Gain has been set to minimum as a precaution.\r\n" : "") +
+                          "Remember to configure DDG and set delay manually before proceeding.";
                 MessageBox.Show(Msg, "Warning!", MessageBoxButtons.OK);
             }
+
             PersistentGraphing.Checked = !CollectLaser.Checked;
             DdgConfigBox.Enabled = CollectLaser.Checked;
         }
@@ -734,10 +685,9 @@ namespace LUI.tabs
 
         void GraphScroll_Scroll(object sender, ScrollEventArgs e)
         {
-
-            var first = (LastImage.vstart + SelectedRow * LastImage.vbin);
-            var last = (LastImage.vstart + SelectedRow * LastImage.vbin + LastImage.vbin - 1);
-            ScrollTip.SetToolTip(GraphScroll, SelectedRow.ToString() + " (" + first.ToString() + " - " + last.ToString() + ")");
+            var first = LastImage.vstart + SelectedRow * LastImage.vbin;
+            var last = LastImage.vstart + SelectedRow * LastImage.vbin + LastImage.vbin - 1;
+            ScrollTip.SetToolTip(GraphScroll, SelectedRow + " (" + first + " - " + last + ")");
         }
 
         async void CameraTemperature_ValueChanged(object sender, EventArgs e)
@@ -749,7 +699,8 @@ namespace LUI.tabs
                 TemperatureCts = new CancellationTokenSource();
 
                 CameraTemperature.ForeColor = Color.Red;
-                await camct.EquilibrateTemperatureAsync((int)CameraTemperature.Value, TemperatureCts.Token); // Wait for 3 deg. threshold.
+                await camct.EquilibrateTemperatureAsync((int)CameraTemperature.Value,
+                    TemperatureCts.Token); // Wait for 3 deg. threshold.
                 CameraTemperature.ForeColor = Color.Goldenrod;
                 await camct.EquilibrateTemperatureAsync(TemperatureCts.Token); // Wait for driver signal.
                 UpdateCameraTemperature();
@@ -759,7 +710,7 @@ namespace LUI.tabs
             }
         }
 
-        private void UpdateCameraTemperature()
+        void UpdateCameraTemperature()
         {
             var camct = Commander.Camera as CameraTempControlled;
             if (camct != null)
@@ -770,7 +721,7 @@ namespace LUI.tabs
             }
         }
 
-        private void UpdateCameraImage()
+        void UpdateCameraImage()
         {
             VStart.ValueChanged -= CameraImage_ValueChanged;
             VBin.ValueChanged -= CameraImage_ValueChanged;
@@ -791,17 +742,15 @@ namespace LUI.tabs
             VEnd.ValueChanged += CameraImage_ValueChanged;
         }
 
-        private void UpdateGraphScroll()
+        void UpdateGraphScroll()
         {
             if (GraphScroll.Enabled)
             {
                 GraphScroll.ValueChanged -= GraphScroll_ValueChanged;
                 GraphScroll.Maximum = LastImage.Height - 1;
                 GraphScroll.Value = GraphScroll.Value > GraphScroll.Maximum
-                    ?
-                    GraphScroll.Minimum + (GraphScroll.Maximum - GraphScroll.Minimum) / 2
-                    :
-                    GraphScroll.Value;
+                    ? GraphScroll.Minimum + (GraphScroll.Maximum - GraphScroll.Minimum) / 2
+                    : GraphScroll.Value;
                 UpdateSelectedRow();
                 GraphScroll.ValueChanged += GraphScroll_ValueChanged;
             }
@@ -811,19 +760,15 @@ namespace LUI.tabs
             }
         }
 
-        private void UpdateReadMode()
+        void UpdateReadMode()
         {
             if (Commander.Camera.ReadMode == AndorCamera.ReadModeImage)
-            {
                 ImageMode.Checked = true;
-            }
             else
-            {
                 FvbMode.Checked = true;
-            }
         }
 
-        private void CameraImage_ValueChanged(object sender, EventArgs e)
+        void CameraImage_ValueChanged(object sender, EventArgs e)
         {
             if ((VEnd.Value - VStart.Value + 1) % VBin.Value != 0)
             {
@@ -861,7 +806,7 @@ namespace LUI.tabs
         }
 
         /// <summary>
-        /// Create temporary MAT file and initialize variables.
+        ///     Create temporary MAT file and initialize variables.
         /// </summary>
         /// <param name="NumChannels"></param>
         /// <param name="NumScans"></param>
@@ -879,13 +824,14 @@ namespace LUI.tabs
             {
                 TempFileName = Path.GetTempFileName();
             }
+
             DataFile = new MatFile(TempFileName);
             RawData = DataFile.CreateVariable<int>("rawdata", NumScans, NumChannels);
         }
 
-        private void SaveData_Click(object sender, EventArgs e)
+        void SaveData_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFile = new SaveFileDialog
+            var saveFile = new SaveFileDialog
             {
                 Filter = "MAT File|*.mat|CSV File|*.csv",
                 Title = "Save As"
@@ -909,7 +855,9 @@ namespace LUI.tabs
                         Log.Error(ex);
                         MessageBox.Show(ex.Message);
                     }
+
                     break;
+
                 case 2: // CSV file; copy data to CSV file.
                     if (DataFile != null)
                     {
@@ -917,7 +865,7 @@ namespace LUI.tabs
 
                         if (!RawData.Closed)
                         {
-                            int[,] Matrix = new int[RawData.Dims[0], RawData.Dims[1]];
+                            var Matrix = new int[RawData.Dims[0], RawData.Dims[1]];
                             RawData.Read(Matrix, new long[] { 0, 0 }, RawData.Dims);
                             Matrix = Data.Transpose(Matrix);
                             FileIO.WriteMatrix(saveFile.FileName, Matrix);
@@ -925,8 +873,54 @@ namespace LUI.tabs
 
                         DataFile.Close();
                     }
+
                     break;
             }
+        }
+
+        struct WorkArgs
+        {
+            public WorkArgs(int NScans, int NAverage, bool CollectLaser, bool SoftwareBinning)
+            {
+                this.NScans = NScans;
+                NAvg = NAverage;
+                this.CollectLaser = CollectLaser;
+                this.SoftwareBinning = SoftwareBinning;
+            }
+
+            public readonly int NScans;
+            public readonly int NAvg;
+            public readonly bool CollectLaser;
+            public readonly bool SoftwareBinning;
+        }
+
+        struct ProgressObject
+        {
+            public ProgressObject(object Data, int Counts, double VarCounts, int Peak, double VarPeak,
+                int CountsN, double VarCountsN, int PeakN, double VarPeakN, Dialog Status)
+            {
+                this.Data = Data;
+                this.Counts = Counts;
+                this.VarCounts = VarCounts;
+                this.Peak = Peak;
+                this.VarPeak = VarPeak;
+                this.CountsN = CountsN;
+                this.VarCountsN = VarCountsN;
+                this.PeakN = PeakN;
+                this.VarPeakN = VarPeakN;
+                this.Status = Status;
+            }
+
+            public readonly object Data;
+            public readonly int Counts;
+            public readonly int Peak;
+            public readonly double VarCounts;
+            public readonly double VarPeak;
+            public readonly int CountsN;
+            public readonly int PeakN;
+            public readonly double VarCountsN;
+            public readonly double VarPeakN;
+            public readonly Dialog Status;
         }
     }
 }

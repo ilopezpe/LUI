@@ -1,13 +1,21 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace LUI.controls
 {
-    public class DisabledRichTextBox : System.Windows.Forms.RichTextBox
+    public class DisabledRichTextBox : RichTextBox
     {
-        private const int WM_SETFOCUS = 0x07;
-        private const int WM_ENABLE = 0x0A;
-        private const int WM_SETCURSOR = 0x20;
+        const int WM_SETFOCUS = 0x07;
+        const int WM_ENABLE = 0x0A;
+        const int WM_SETCURSOR = 0x20;
+
+        public DisabledRichTextBox()
+        {
+            SetAutoSizeMode(AutoSizeMode.GrowAndShrink);
+            TextChanged += HandleTextChanged;
+        }
 
         [EditorBrowsable(EditorBrowsableState.Always)]
         [Browsable(true)]
@@ -16,14 +24,7 @@ namespace LUI.controls
         [Category("Appearance")]
         public override bool AutoSize { get; set; }
 
-        public DisabledRichTextBox()
-            : base()
-        {
-            SetAutoSizeMode(System.Windows.Forms.AutoSizeMode.GrowAndShrink);
-            TextChanged += HandleTextChanged;
-        }
-
-        protected override void WndProc(ref System.Windows.Forms.Message m)
+        protected override void WndProc(ref Message m)
         {
             // Originally included WM_ENABLE.
             // Removed to allow enabling/disabling to change text color.
@@ -32,31 +33,27 @@ namespace LUI.controls
                 base.WndProc(ref m);
         }
 
-        private System.Drawing.Size GetAutoSize()
+        Size GetAutoSize()
         {
-            return System.Windows.Forms.TextRenderer.MeasureText(Text, Font);
+            return TextRenderer.MeasureText(Text, Font);
         }
 
-        public override System.Drawing.Size GetPreferredSize(System.Drawing.Size proposedSize)
+        public override Size GetPreferredSize(Size proposedSize)
         {
             return GetAutoSize();
         }
 
-        private void ResizeForAutoSize()
+        void ResizeForAutoSize()
         {
-            if (this.AutoSize)
-            {
-                SetBoundsCore(this.Left, this.Top, this.Width, this.Height, System.Windows.Forms.BoundsSpecified.Size);
-            }
+            if (AutoSize) SetBoundsCore(Left, Top, Width, Height, BoundsSpecified.Size);
         }
 
-        protected override void SetBoundsCore(int x, int y, int width, int height, System.Windows.Forms.BoundsSpecified specified)
+        protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
         {
-
             //  Only when the size is affected...
-            if (this.AutoSize && (specified & System.Windows.Forms.BoundsSpecified.Size) != 0)
+            if (AutoSize && (specified & BoundsSpecified.Size) != 0)
             {
-                System.Drawing.Size size = GetAutoSize();
+                var size = GetAutoSize();
 
                 width = size.Width;
                 height = size.Height;
@@ -65,9 +62,9 @@ namespace LUI.controls
             base.SetBoundsCore(x, y, width, height, specified);
         }
 
-        private void HandleTextChanged(object sender, EventArgs e)
+        void HandleTextChanged(object sender, EventArgs e)
         {
-            this.Size = GetAutoSize();
+            Size = GetAutoSize();
         }
     }
 }

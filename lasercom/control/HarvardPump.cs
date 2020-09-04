@@ -5,16 +5,17 @@ using System.IO.Ports;
 namespace lasercom.control
 {
     /// <summary>
-    /// Represents a Harvard Apparatus syringe pump using the custom
-    /// flip-flop box and foot-pedal hack.
+    ///     Represents a Harvard Apparatus syringe pump using the custom
+    ///     flip-flop box and foot-pedal hack.
     /// </summary>
     public class HarvardPump : AbstractPump
     {
-        private SerialPort _port;
+        SerialPort _port;
 
         public HarvardPump(LuiObjectParameters p) :
             this(p as PumpParameters)
-        { }
+        {
+        }
 
         public HarvardPump(PumpParameters p)
         {
@@ -23,19 +24,19 @@ namespace lasercom.control
             Init(p.PortName);
         }
 
-        public HarvardPump(String portName)
+        public HarvardPump(string portName)
         {
             Init(portName);
         }
 
-        private void Init(string portName)
+        void Init(string portName)
         {
             // DtrEnable causes DTR pin to go high on port open
             _port = new SerialPort(portName) { DtrEnable = true };
             SetClosed();
         }
 
-        public String GetPortName()
+        public string GetPortName()
         {
             return _port.PortName;
         }
@@ -47,10 +48,12 @@ namespace lasercom.control
                 case PumpState.Open:
                     SetClosed();
                     break;
+
                 case PumpState.Closed:
                     SetOpen();
                     break;
             }
+
             return CurrentState;
         }
 

@@ -7,111 +7,37 @@ namespace lasercom.camera
 {
     public abstract class AbstractCamera : LuiObject<CameraParameters>, ICamera
     {
-        public abstract int Width
-        {
-            get;
-        }
+        public virtual int SaturationLevel { get; set; }
 
-        public abstract int Height
-        {
-            get;
-        }
+        public abstract int Width { get; }
 
-        public abstract int AcqSize
-        {
-            get;
-        }
+        public abstract int Height { get; }
 
-        public abstract int AcqWidth
-        {
-            get;
-        }
+        public abstract int AcqSize { get; }
 
-        public abstract int AcqHeight
-        {
-            get;
-        }
+        public abstract int AcqWidth { get; }
 
-        public abstract int AcquisitionMode
-        {
-            get;
-            set;
-        }
+        public abstract int AcqHeight { get; }
 
-        public abstract int TriggerMode
-        {
-            get;
-            set;
-        }
+        public abstract int AcquisitionMode { get; set; }
 
-        public abstract int DDGTriggerMode
-        {
-            get;
-            set;
-        }
+        public abstract int TriggerMode { get; set; }
 
-        public abstract int ReadMode
-        {
-            get;
-            set;
-        }
+        public abstract int DDGTriggerMode { get; set; }
 
-        public abstract bool HasIntensifier
-        {
-            get;
-        }
+        public abstract int ReadMode { get; set; }
 
-        public abstract int IntensifierGain
-        {
-            get;
-            set;
-        }
+        public abstract bool HasIntensifier { get; }
 
-        public abstract int MinIntensifierGain
-        {
-            get;
-            protected set;
-        }
+        public abstract int IntensifierGain { get; set; }
 
-        public abstract int MaxIntensifierGain
-        {
-            get;
-            protected set;
-        }
+        public abstract int MinIntensifierGain { get; protected set; }
 
-        double[] _Calibration;
-        public double[] Calibration
-        {
-            get
-            {
-                return _Calibration;
-            }
-            set
-            {
-                _Calibration = value;
-            }
-        }
+        public abstract int MaxIntensifierGain { get; protected set; }
 
-        public bool CalibrationAscending
-        {
-            get
-            {
-                return Calibration[Calibration.Length - 1] > Calibration[0];
-            }
-        }
+        public double[] Calibration { get; set; }
 
-        private int _SaturationLevel;
-        public virtual int SaturationLevel
-        {
-            get
-            {
-                return _SaturationLevel;
-            }
-            set
-            {
-                _SaturationLevel = value;
-            }
-        }
+        public bool CalibrationAscending => Calibration[Calibration.Length - 1] > Calibration[0];
 
         public abstract ImageArea Image { get; set; }
 
@@ -137,11 +63,8 @@ namespace lasercom.camera
         protected void LoadCalibration(string CalFile)
         {
             if (CalFile == null || CalFile == "")
-            {
-                Calibration = Enumerable.Range(0, (int)Width).Select(x => (double)x).ToArray();
-            }
+                Calibration = Enumerable.Range(0, Width).Select(x => (double)x).ToArray();
             else
-            {
                 try
                 {
                     Calibration = FileIO.ReadVector<double>(CalFile);
@@ -149,10 +72,9 @@ namespace lasercom.camera
                 catch (IOException ex)
                 {
                     Log.Error(ex);
-                    Calibration = Enumerable.Range(0, (int)Width).Select(x => (double)x).ToArray();
+                    Calibration = Enumerable.Range(0, Width).Select(x => (double)x).ToArray();
                     throw;
                 }
-            }
         }
     }
 }

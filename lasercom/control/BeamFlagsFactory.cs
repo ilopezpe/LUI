@@ -3,7 +3,7 @@
 namespace lasercom.control
 {
     /// <summary>
-    /// Instantiate concrete beam flag objects from parameters.
+    ///     Instantiate concrete beam flag objects from parameters.
     /// </summary>
     class BeamFlagsFactory
     {

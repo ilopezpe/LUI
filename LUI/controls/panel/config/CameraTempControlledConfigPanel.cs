@@ -6,15 +6,9 @@ namespace LUI.controls
 {
     class CameraTempControlledConfigPanel : AndorCameraConfigPanel
     {
-        LabeledControl<NumericUpDown> Temperature;
-
-        public override Type Target
-        {
-            get { return typeof(CameraTempControlled); }
-        }
+        readonly LabeledControl<NumericUpDown> Temperature;
 
         public CameraTempControlledConfigPanel()
-            : base()
         {
             Temperature = new LabeledControl<NumericUpDown>(new NumericUpDown(), "Temperature (C):");
             Temperature.Control.Increment = 1;
@@ -22,8 +16,10 @@ namespace LUI.controls
             Temperature.Control.Maximum = 25;
             Temperature.Control.Value = lasercom.Constants.DefaultTemperature;
             Temperature.Control.ValueChanged += (s, e) => OnOptionsChanged(s, e);
-            this.Controls.Add(Temperature);
+            Controls.Add(Temperature);
         }
+
+        public override Type Target => typeof(CameraTempControlled);
 
         public override void CopyFrom(CameraParameters other)
         {

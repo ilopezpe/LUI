@@ -3,7 +3,7 @@
 namespace lasercom.ddg
 {
     /// <summary>
-    /// Instantiate concrete DDG objects from parameters.
+    ///     Instantiate concrete DDG objects from parameters.
     /// </summary>
     public class DelayGeneratorFactory
     {

@@ -4,25 +4,23 @@ namespace lasercom.objects
 {
     public sealed class AndorFactory
     {
-        private static volatile AndorSDK _AndorSdkInstance;
-        private static object AndorSdkLock = new object();
+        static volatile AndorSDK _AndorSdkInstance;
+        static readonly object AndorSdkLock = new object();
 
-        private AndorFactory() { }
+        AndorFactory()
+        {
+        }
 
         public static AndorSDK AndorSdkInstance
         {
             get
             {
                 if (_AndorSdkInstance == null)
-                {
                     lock (AndorSdkLock)
                     {
-                        if (_AndorSdkInstance == null)
-                        {
-                            _AndorSdkInstance = new AndorSDK();
-                        }
+                        if (_AndorSdkInstance == null) _AndorSdkInstance = new AndorSDK();
                     }
-                }
+
                 return _AndorSdkInstance;
             }
         }

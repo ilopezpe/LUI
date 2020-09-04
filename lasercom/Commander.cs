@@ -2,34 +2,17 @@
 using lasercom.control;
 using lasercom.ddg;
 using log4net;
-using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace lasercom
 {
-
     public class Commander
     {
-        private ICamera _Camera;
-        public ICamera Camera
-        {
-            get
-            {
-                return _Camera;
-            }
-            set
-            {
-                _Camera = value;
-            }
-        }
-        public IBeamFlags BeamFlag { get; set; }
-        public IDigitalDelayGenerator DDG { get; set; }
-        public IPump Pump { get; set; }
-        public List<Double> Delays { get; set; }
+        static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        public Commander(ICamera camera = null, IBeamFlags beamFlags = null, IDigitalDelayGenerator ddg = null, IPump pump = null)
+        public Commander(ICamera camera = null, IBeamFlags beamFlags = null, IDigitalDelayGenerator ddg = null,
+            IPump pump = null)
         {
             // Set dummies instead of null values to save a *ton* of null checks elsewhere.
             Camera = camera ?? new DummyCamera();
@@ -37,6 +20,12 @@ namespace lasercom
             DDG = ddg ?? new DummyDigitalDelayGenerator();
             Pump = pump ?? new DummyPump();
         }
+
+        public ICamera Camera { get; set; }
+        public IBeamFlags BeamFlag { get; set; }
+        public IDigitalDelayGenerator DDG { get; set; }
+        public IPump Pump { get; set; }
+        public List<double> Delays { get; set; }
 
         public void SetDelays(string file)
         {
@@ -46,10 +35,7 @@ namespace lasercom
 
         public int[] Collect(int n)
         {
-            for (int i = 0; i < n; i++)
-            {
-                Camera.CountsFvb();
-            }
+            for (var i = 0; i < n; i++) Camera.CountsFvb();
             return null;
         }
 
@@ -59,26 +45,26 @@ namespace lasercom
             return Camera.Acquire();
         }
 
-        public uint Dark(int[] DataBuffer)
+        public uint Dark(int[] dataBuffer)
         {
             BeamFlag.CloseLaserAndFlash();
-            return Camera.Acquire(DataBuffer);
+            return Camera.Acquire(dataBuffer);
         }
 
         public int[] Flash()
         {
             BeamFlag.CloseLaserAndFlash();
             BeamFlag.OpenFlash();
-            int[] data = Camera.Acquire();
+            var data = Camera.Acquire();
             BeamFlag.CloseLaserAndFlash();
             return data;
         }
 
-        public uint Flash(int[] DataBuffer)
+        public uint Flash(int[] dataBuffer)
         {
             BeamFlag.CloseLaserAndFlash();
             BeamFlag.OpenFlash();
-            uint ret = Camera.Acquire(DataBuffer);
+            var ret = Camera.Acquire(dataBuffer);
             BeamFlag.CloseLaserAndFlash();
             return ret;
         }
@@ -86,18 +72,17 @@ namespace lasercom
         public int[] Trans()
         {
             BeamFlag.OpenLaserAndFlash();
-            int[] data = Camera.Acquire();
+            var data = Camera.Acquire();
             BeamFlag.CloseLaserAndFlash();
             return data;
         }
 
-        public uint Trans(int[] DataBuffer)
+        public uint Trans(int[] dataBuffer)
         {
             BeamFlag.OpenLaserAndFlash();
-            uint ret = Camera.Acquire(DataBuffer);
+            var ret = Camera.Acquire(dataBuffer);
             BeamFlag.CloseLaserAndFlash();
             return ret;
         }
-
     }
 }

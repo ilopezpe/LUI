@@ -1,15 +1,14 @@
-﻿
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
+
 namespace lasercom.camera
 {
     /// <summary>
-    /// Defines an image area including binning.
+    ///     Defines an image area including binning.
     /// </summary>
     [DataContract]
     public class ImageArea
     {
-        [DataMember]
-        public readonly int hbin, vbin, hstart, hcount, vstart, vcount;
+        [DataMember] public readonly int hbin, vbin, hstart, hcount, vstart, vcount;
 
         public ImageArea(int hbin, int vbin, int hstart, int hcount, int vstart, int vcount)
         {
@@ -21,36 +20,12 @@ namespace lasercom.camera
             this.vcount = vcount;
         }
 
-        public int Width
-        {
-            get
-            {
-                return hcount / hbin;
-            }
-        }
+        public int Width => hcount / hbin;
 
-        public int Height
-        {
-            get
-            {
-                return vcount / vbin;
-            }
-        }
+        public int Height => vcount / vbin;
 
-        public int vend
-        {
-            get
-            {
-                return vstart + vcount - 1;
-            }
-        }
+        public int vend => vstart + vcount - 1;
 
-        public int hend
-        {
-            get
-            {
-                return hstart + hcount - 1;
-            }
-        }
+        public int hend => hstart + hcount - 1;
     }
 }

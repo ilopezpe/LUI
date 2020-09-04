@@ -1,4 +1,5 @@
-﻿using lasercom.control;
+﻿using lasercom;
+using lasercom.control;
 using System;
 using System.Windows.Forms;
 
@@ -6,22 +7,17 @@ namespace LUI.controls
 {
     class HarvardPumpConfigPanel : LuiObjectConfigPanel<PumpParameters>
     {
-
-        LabeledControl<ComboBox> COMPort;
-
-        public override Type Target
-        {
-            get { return typeof(HarvardPump); }
-        }
+        readonly LabeledControl<ComboBox> COMPort;
 
         public HarvardPumpConfigPanel()
-             : base()
         {
             COMPort = new LabeledControl<ComboBox>(new ComboBox(), "COM Port:");
-            lasercom.Util.EnumerateSerialPorts().ForEach(x => COMPort.Control.Items.Add(x));
+            Util.EnumerateSerialPorts().ForEach(x => COMPort.Control.Items.Add(x));
             COMPort.Control.SelectedIndexChanged += (s, e) => OnOptionsChanged(s, e);
-            this.Controls.Add(COMPort);
+            Controls.Add(COMPort);
         }
+
+        public override Type Target => typeof(HarvardPump);
 
         public override void CopyTo(PumpParameters other)
         {
@@ -32,6 +28,5 @@ namespace LUI.controls
         {
             COMPort.Control.SelectedItem = other.PortName;
         }
-
     }
 }

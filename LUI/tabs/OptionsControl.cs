@@ -8,39 +8,39 @@ using LUI.config;
 using LUI.controls;
 using System;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace LUI.tabs
 {
     public class OptionsControl : UserControl
     {
-        protected static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        ListView OptionsListView;
+        protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         LuiOptionsDialog ActiveDialog;
-        Button ApplyConfig;
-        Button SaveConfig;
-        Button LoadConfig;
+        readonly Button ApplyConfig;
 
-        LuiConfig Config;
-
-        public event EventHandler OptionsApplied;
+        readonly LuiConfig Config;
+        readonly Button LoadConfig;
+        readonly ListView OptionsListView;
+        readonly Button SaveConfig;
 
         public OptionsControl(LuiConfig config)
         {
             SuspendLayout();
 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+            AutoScaleDimensions = new SizeF(6F, 13F);
+            AutoScaleMode = AutoScaleMode.Inherit;
             Name = "OptionsControl";
 
             #region Panels and list of options dialogs
-            Panel OptionsPanel = new Panel
+
+            var OptionsPanel = new Panel
             {
                 Dock = DockStyle.Fill // Panel will fill all left-over space.
             }; // Container for options dialogs.
             Controls.Add(OptionsPanel); // Must add the DockStyle.Fill control first.
 
-            Panel ListPanel = new Panel
+            var ListPanel = new Panel
             {
                 Dock = DockStyle.Left // Panel will dock to the left.
             };
@@ -58,39 +58,41 @@ namespace LUI.tabs
             OptionsListView.Columns.Add(new ColumnHeader());
             OptionsListView.SelectedIndexChanged += HandleSelectedOptionsDialogChanged;
             ListPanel.Controls.Add(OptionsListView);
-            #endregion
+
+            #endregion Panels and list of options dialogs
 
             #region Options dialogs
-            ListViewGroup General = new ListViewGroup("General", HorizontalAlignment.Left);
+
+            var General = new ListViewGroup("General", HorizontalAlignment.Left);
             OptionsListView.Groups.Add(General);
-            ListViewGroup Instruments = new ListViewGroup("Instruments", HorizontalAlignment.Left);
+            var Instruments = new ListViewGroup("Instruments", HorizontalAlignment.Left);
             OptionsListView.Groups.Add(Instruments);
 
-            LoggingOptionsDialog LoggingOptionsDialog = new LoggingOptionsDialog(OptionsPanel.Size)
+            var LoggingOptionsDialog = new LoggingOptionsDialog(OptionsPanel.Size)
             {
                 Dock = DockStyle.Fill
             };
-            ListViewItem LoggingOptionsItem = new ListViewItem("Logging", General)
+            var LoggingOptionsItem = new ListViewItem("Logging", General)
             {
                 Tag = LoggingOptionsDialog
             };
             OptionsListView.Items.Add(LoggingOptionsItem);
             OptionsPanel.Controls.Add(LoggingOptionsDialog);
 
-            LuiOptionsListDialog<AbstractBeamFlags, BeamFlagsParameters> BeamFlagOptionsDialog =
+            var BeamFlagOptionsDialog =
                 new LuiOptionsListDialog<AbstractBeamFlags, BeamFlagsParameters>(OptionsPanel.Size);
             BeamFlagOptionsDialog.AddConfigPanel(new BeamFlagsConfigPanel());
             BeamFlagOptionsDialog.AddConfigPanel(new DummyBeamFlagsConfigPanel());
             BeamFlagOptionsDialog.SetDefaultSelectedItems();
             BeamFlagOptionsDialog.Dock = DockStyle.Fill;
-            ListViewItem BeamFlagOptionsItem = new ListViewItem("Beam Flags", Instruments)
+            var BeamFlagOptionsItem = new ListViewItem("Beam Flags", Instruments)
             {
                 Tag = BeamFlagOptionsDialog
             };
             OptionsListView.Items.Add(BeamFlagOptionsItem);
             OptionsPanel.Controls.Add(BeamFlagOptionsDialog);
 
-            LuiOptionsListDialog<ICamera, CameraParameters> CameraOptionsDialog =
+            var CameraOptionsDialog =
                 new LuiOptionsListDialog<ICamera, CameraParameters>(OptionsPanel.Size);
             CameraOptionsDialog.AddConfigPanel(new AndorCameraConfigPanel());
             CameraOptionsDialog.AddConfigPanel(new CameraTempControlledConfigPanel());
@@ -98,7 +100,7 @@ namespace LUI.tabs
             CameraOptionsDialog.AddConfigPanel(new DummyCameraConfigPanel());
             CameraOptionsDialog.SetDefaultSelectedItems();
             CameraOptionsDialog.Dock = DockStyle.Fill;
-            ListViewItem CameraOptionsItem = new ListViewItem("Camera", Instruments)
+            var CameraOptionsItem = new ListViewItem("Camera", Instruments)
             {
                 Tag = CameraOptionsDialog
             };
@@ -111,19 +113,20 @@ namespace LUI.tabs
             GPIBOptionsDialog.AddConfigPanel(new DummyGpibProviderConfigPanel());
             GPIBOptionsDialog.SetDefaultSelectedItems();
             GPIBOptionsDialog.Dock = DockStyle.Fill;
-            ListViewItem GPIBOptionsItem = new ListViewItem("GPIB Controllers", Instruments)
+            var GPIBOptionsItem = new ListViewItem("GPIB Controllers", Instruments)
             {
                 Tag = GPIBOptionsDialog
             };
             OptionsListView.Items.Add(GPIBOptionsItem);
             OptionsPanel.Controls.Add(GPIBOptionsDialog);
 
-            var DDGOptionsDialog = new LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters>(OptionsPanel.Size);
+            var DDGOptionsDialog =
+                new LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters>(OptionsPanel.Size);
             DDGOptionsDialog.AddConfigPanel(new DG535ConfigPanel(GPIBOptionsDialog));
             DDGOptionsDialog.AddConfigPanel(new DummyDigitalDelayGeneratorConfigPanel());
             DDGOptionsDialog.SetDefaultSelectedItems();
             DDGOptionsDialog.Dock = DockStyle.Fill;
-            ListViewItem DDGOptionsItem = new ListViewItem("Digital Delay Generators", Instruments)
+            var DDGOptionsItem = new ListViewItem("Digital Delay Generators", Instruments)
             {
                 Tag = DDGOptionsDialog
             };
@@ -135,14 +138,14 @@ namespace LUI.tabs
             PumpOptionsDialog.AddConfigPanel(new DummyPumpConfigPanel());
             PumpOptionsDialog.SetDefaultSelectedItems();
             PumpOptionsDialog.Dock = DockStyle.Fill;
-            ListViewItem PumpOptionsItem = new ListViewItem("Syringe Pumps", Instruments)
+            var PumpOptionsItem = new ListViewItem("Syringe Pumps", Instruments)
             {
                 Tag = PumpOptionsDialog
             };
             OptionsListView.Items.Add(PumpOptionsItem);
             OptionsPanel.Controls.Add(PumpOptionsDialog);
 
-            #endregion
+            #endregion Options dialogs
 
             OptionsListView.Columns[0].Width = -1; // Sets width to that of widest item.
 
@@ -151,7 +154,8 @@ namespace LUI.tabs
             SetChildConfig(Config); // Sets options dialogs to reference & match this config.
 
             #region Buttons
-            FlowLayoutPanel ButtonPanel = new FlowLayoutPanel
+
+            var ButtonPanel = new FlowLayoutPanel
             {
                 FlowDirection = FlowDirection.RightToLeft,
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
@@ -166,7 +170,6 @@ namespace LUI.tabs
                 Enabled = false
             };
             ApplyConfig.Click += ApplyConfig_Click;
-
 
             SaveConfig = new Button
             {
@@ -190,10 +193,13 @@ namespace LUI.tabs
             OptionsPanel.Controls.Add(ButtonPanel);
 
             ButtonPanel.BringToFront(); // Display on top of any overlapping controls (OptionsPanel).
-            #endregion
+
+            #endregion Buttons
 
             ResumeLayout(false);
         }
+
+        public event EventHandler OptionsApplied;
 
         protected override void OnLoad(EventArgs e)
         {
@@ -209,6 +215,7 @@ namespace LUI.tabs
                 // so we defer setting visibility until the control is loaded.
                 luiOptionsDialog.Visible = false;
             }
+
             // Selecting the ListView causes selected item to be highlighted with system color.
             OptionsListView.Select();
 
@@ -216,27 +223,21 @@ namespace LUI.tabs
             base.OnLoad(e); // Forward to base class event handler.
         }
 
-        private void SetChildConfig(LuiConfig config)
+        void SetChildConfig(LuiConfig config)
         {
             // Set all options dialogs to reference & match the given config.
-            foreach (ListViewItem it in OptionsListView.Items)
-            {
-                ((LuiOptionsDialog)it.Tag).Config = config;
-            }
+            foreach (ListViewItem it in OptionsListView.Items) ((LuiOptionsDialog)it.Tag).Config = config;
         }
 
         public void ChildrenMatchConfig(LuiConfig config)
         {
             // Set all options dialogs to match the given config.
-            foreach (ListViewItem it in OptionsListView.Items)
-            {
-                ((LuiOptionsDialog)it.Tag).MatchConfig(config);
-            }
+            foreach (ListViewItem it in OptionsListView.Items) ((LuiOptionsDialog)it.Tag).MatchConfig(config);
         }
 
         public void ChildrenMatchConfig()
         {
-            ChildrenMatchConfig(this.Config);
+            ChildrenMatchConfig(Config);
         }
 
         //public void ChildrenCopyConfigState()
@@ -248,18 +249,18 @@ namespace LUI.tabs
         //    }
         //}
 
-        private void HandleParametersChanged(object sender, EventArgs e)
+        void HandleParametersChanged(object sender, EventArgs e)
         {
             ChildrenMatchConfig();
         }
 
-        private void HandleCanApply(object sender, EventArgs e)
+        void HandleCanApply(object sender, EventArgs e)
         {
             ApplyConfig.Enabled = true; // Can apply after options changed
             SaveConfig.Enabled = false; // Can't save until new options applied.
         }
 
-        private void ApplyConfig_Click(object sender, EventArgs e)
+        void ApplyConfig_Click(object sender, EventArgs e)
         {
             foreach (ListViewItem item in OptionsListView.Items) ((LuiOptionsDialog)item.Tag).HandleApply(sender, e);
             OptionsApplied.Raise(this, EventArgs.Empty);
@@ -267,13 +268,13 @@ namespace LUI.tabs
             SaveConfig.Enabled = true; // Can save config after apply.
         }
 
-        private void SaveConfig_Click(object sender, EventArgs e)
+        void SaveConfig_Click(object sender, EventArgs e)
         {
             Config.Save();
             SaveConfig.Enabled = false; // Can't save again until new changes made and applied.
         }
 
-        private void LoadConfig_Click(object sender, EventArgs e)
+        void LoadConfig_Click(object sender, EventArgs e)
         {
             var ofd = new OpenFileDialog
             {
@@ -290,7 +291,7 @@ namespace LUI.tabs
             }
         }
 
-        private void HandleSelectedOptionsDialogChanged(object sender, EventArgs e)
+        void HandleSelectedOptionsDialogChanged(object sender, EventArgs e)
         {
             // The SelectedIndexChanged event of the ListView will trigger twice:
             // once as the previous item is deselected, and again as the new item is selected.
@@ -298,16 +299,13 @@ namespace LUI.tabs
             if (OptionsListView.SelectedItems.Count != 0)
             {
                 if (ActiveDialog != null) ActiveDialog.Visible = false; // Hide previously active dialog.
-                ListViewItem selectedItem = OptionsListView.SelectedItems[0];
+                var selectedItem = OptionsListView.SelectedItems[0];
                 ActiveDialog = (LuiOptionsDialog)selectedItem.Tag; // Update the active dialog.
 
                 if (ActiveDialog != null)
-                {
                     ActiveDialog.Visible = true; // Show newly active dialog.
-                    //ActiveDialog.OnSetActive(); // Hypothetical so far.
-                }
+                //ActiveDialog.OnSetActive(); // Hypothetical so far.
             }
         }
-
     }
 }

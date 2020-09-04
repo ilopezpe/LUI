@@ -18,121 +18,29 @@ namespace LUI.tabs
 {
     public partial class CalibrateControl : LuiTab
     {
-        public event EventHandler<LuiObjectParametersEventArgs> CalibrationChanged;
-
-        double[] OD = null;
-        int[] BlankBuffer = null;
-
-        private int _SelectedChannel = -1;
-        /// <summary>
-        /// Currently selected detector channel regardless of calibration.
-        /// Min value is zero, max value is camera width - 1.
-        /// </summary>
-        int SelectedChannel
-        {
-            get
-            {
-                return _SelectedChannel;
-            }
-            set
-            {
-                _SelectedChannel = value;
-                _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
-            }
-        }
-
-        bool Ascending { get; set; }
-
-        /// <summary>
-        /// Stores channel & wavelength point in a class suitable for data
-        /// binding to a DataGridView.
-        /// </summary>
-        public class CalibrationPoint : INotifyPropertyChanged
-        {
-            private int _Channel;
-            public int Channel
-            {
-                get
-                {
-                    return _Channel;
-                }
-                set
-                {
-                    if (value != _Channel)
-                    {
-                        _Channel = value;
-                        NotifyPropertyChanged();
-                    }
-                }
-            }
-            private double _Wavelength;
-            public double Wavelength
-            {
-                get
-                {
-                    return _Wavelength;
-                }
-                set
-                {
-                    if (value != _Wavelength)
-                    {
-                        _Wavelength = value;
-                        NotifyPropertyChanged();
-                    }
-                }
-            }
-            public event PropertyChangedEventHandler PropertyChanged;
-            private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
-
-            public static explicit operator CalibrationPoint(DataRow dr)
-            {
-                CalibrationPoint p = new CalibrationPoint
-                {
-                    Channel = (int)dr.ItemArray[0],
-                    Wavelength = (double)dr.ItemArray[1]
-                };
-                return p;
-            }
-            public static explicit operator CalibrationPoint(DataGridViewRow row)
-            {
-                return new CalibrationPoint()
-                {
-                    Channel = (int)row.Cells["Channel"].Value,
-                    Wavelength = (double)row.Cells["Channel"].Value
-                };
-            }
-            public static explicit operator Tuple<int, double>(CalibrationPoint p)
-            {
-                return Tuple.Create<int, double>(p.Channel, p.Wavelength);
-            }
-        }
-
-        /// <summary>
-        /// List of current calibration points, bound to CalibrationListView.
-        /// </summary>
-        BindingList<CalibrationPoint> CalibrationList = new BindingList<CalibrationPoint>();
-
         public enum Dialog
         {
-            BLANK, SAMPLE, PROGRESS, PROGRESS_BLANK, PROGRESS_DARK, PROGRESS_DATA,
+            BLANK,
+            SAMPLE,
+            PROGRESS,
+            PROGRESS_BLANK,
+            PROGRESS_DARK,
+            PROGRESS_DATA,
             PROGRESS_CALC
         }
 
-        struct WorkArgs
-        {
-            public WorkArgs(int N)
-            {
-                this.N = N;
-            }
-            public readonly int N;
-        }
+        int _SelectedChannel = -1;
+        int[] BlankBuffer;
+
+        /// <summary>
+        ///     List of current calibration points, bound to CalibrationListView.
+        /// </summary>
+        readonly BindingList<CalibrationPoint> CalibrationList = new BindingList<CalibrationPoint>();
+
+        double[] OD;
 
         public CalibrateControl(LuiConfig config) : base(config)
         {
-
             InitializeComponent();
 
             CalibrationList.AllowEdit = true;
@@ -152,6 +60,23 @@ namespace LUI.tabs
             ClearBlank.Click += ClearBlank_Click;
             ClearBlank.Enabled = false;
         }
+
+        /// <summary>
+        ///     Currently selected detector channel regardless of calibration.
+        ///     Min value is zero, max value is camera width - 1.
+        /// </summary>
+        int SelectedChannel
+        {
+            get => _SelectedChannel;
+            set
+            {
+                _SelectedChannel = value;
+                _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
+            }
+        }
+
+        bool Ascending { get; set; }
+        public event EventHandler<LuiObjectParametersEventArgs> CalibrationChanged;
 
         public override void HandleCalibrationChanged(object sender, LuiObjectParametersEventArgs args)
         {
@@ -192,20 +117,21 @@ namespace LUI.tabs
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
-            WorkArgs args = (WorkArgs)e.Argument;
-            int N = args.N;
+            var args = (WorkArgs)e.Argument;
+            var N = args.N;
 
-            int AcqSize = Commander.Camera.AcqSize;
-            int finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage ?
-                AcqSize / Commander.Camera.Image.Height : AcqSize;
+            var AcqSize = Commander.Camera.AcqSize;
+            var finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage
+                ? AcqSize / Commander.Camera.Image.Height
+                : AcqSize;
 
             if (PauseCancelProgress(e, 0, Dialog.PROGRESS_DARK.ToString())) return;
 
-            int[] DataBuffer = new int[AcqSize];
-            int[] DarkBuffer = new int[finalSize];
+            var DataBuffer = new int[AcqSize];
+            var DarkBuffer = new int[finalSize];
 
             Commander.BeamFlag.CloseLaserAndFlash();
-            for (int i = 0; i < N; i++)
+            for (var i = 0; i < N; i++)
             {
                 TryAcquire(DataBuffer);
                 Data.ColumnSum(DarkBuffer, DataBuffer);
@@ -221,7 +147,7 @@ namespace LUI.tabs
                 Commander.BeamFlag.OpenFlash();
 
                 BlankBuffer = new int[finalSize];
-                for (int i = 0; i < N; i++)
+                for (var i = 0; i < N; i++)
                 {
                     TryAcquire(DataBuffer);
                     Data.ColumnSum(BlankBuffer, DataBuffer);
@@ -243,13 +169,14 @@ namespace LUI.tabs
 
             Commander.BeamFlag.OpenFlash();
 
-            int[] SampleBuffer = new int[finalSize];
-            for (int i = 0; i < N; i++)
+            var SampleBuffer = new int[finalSize];
+            for (var i = 0; i < N; i++)
             {
                 TryAcquire(DataBuffer);
                 Data.ColumnSum(SampleBuffer, DataBuffer);
                 if (PauseCancelProgress(e, i + 1, Dialog.PROGRESS_DATA.ToString())) return;
             }
+
             Commander.BeamFlag.CloseLaserAndFlash();
             if (PauseCancelProgress(e, -1, Dialog.PROGRESS_CALC.ToString())) return;
             e.Result = Data.OpticalDensity(SampleBuffer, BlankBuffer, DarkBuffer);
@@ -260,14 +187,14 @@ namespace LUI.tabs
             //Dispatcher = Dispatcher.CurrentDispatcher;
             Graph.ClearData();
             Graph.Invalidate();
-            int N = (int)NScan.Value;
+            var N = (int)NScan.Value;
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
             worker = new BackgroundWorker();
-            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
-            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
-            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
+            worker.DoWork += DoWork;
+            worker.ProgressChanged += WorkProgress;
+            worker.RunWorkerCompleted += WorkComplete;
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(new WorkArgs(N));
@@ -276,29 +203,35 @@ namespace LUI.tabs
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
-            Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), (string)e.UserState);
+            var operation = (Dialog)Enum.Parse(typeof(Dialog), (string)e.UserState);
             if (e.ProgressPercentage != -1)
-                ScanProgress.Text = e.ProgressPercentage.ToString() + "/" + NScan.Value.ToString();
+                ScanProgress.Text = e.ProgressPercentage + "/" + NScan.Value;
             switch (operation)
             {
                 case Dialog.BLANK:
                     ProgressLabel.Text = "Waiting";
                     break;
+
                 case Dialog.SAMPLE:
                     ProgressLabel.Text = "Waiting";
                     break;
+
                 case Dialog.PROGRESS:
                     ProgressLabel.Text = "Busy";
                     break;
+
                 case Dialog.PROGRESS_BLANK:
                     ProgressLabel.Text = "Collecting blank";
                     break;
+
                 case Dialog.PROGRESS_DARK:
                     ProgressLabel.Text = "Collecting dark";
                     break;
+
                 case Dialog.PROGRESS_DATA:
                     ProgressLabel.Text = "Collecting data";
                     break;
+
                 case Dialog.PROGRESS_CALC:
                     ProgressLabel.Text = "Calculating";
                     break;
@@ -311,7 +244,9 @@ namespace LUI.tabs
             if (!e.Cancelled)
             {
                 OD = (double[])e.Result;
-                for (int i = 0; i < OD.Length; i++) if (Double.IsNaN(OD[i]) || Double.IsInfinity(OD[i])) OD[i] = 0;
+                for (var i = 0; i < OD.Length; i++)
+                    if (double.IsNaN(OD[i]) || double.IsInfinity(OD[i]))
+                        OD[i] = 0;
                 Graph.DrawPoints(Commander.Camera.Calibration, OD);
                 Graph.Invalidate();
                 ProgressLabel.Text = "Complete";
@@ -320,20 +255,22 @@ namespace LUI.tabs
             {
                 ProgressLabel.Text = "Aborted";
             }
+
             OnTaskFinished(EventArgs.Empty);
         }
 
         protected override void Graph_Click(object sender, MouseEventArgs e)
         {
-            SelectedChannel = Ascending ?
-                (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1))
-                :
-                (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X) * (Commander.Camera.Width - 1));
+            SelectedChannel = Ascending
+                ? (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X *
+                                   (Commander.Camera.Width - 1))
+                : (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X) *
+                                   (Commander.Camera.Width - 1));
 
-            DataGridViewSelectedRowCollection selection = CalibrationListView.SelectedRows;
+            var selection = CalibrationListView.SelectedRows;
             if (selection.Count == 0)
             {
-                DataGridViewRow row = CalibrationListView.Rows[CalibrationListView.Rows.Count - 1];
+                var row = CalibrationListView.Rows[CalibrationListView.Rows.Count - 1];
                 row.Cells["Channel"].Value = SelectedChannel;
             }
             else if (selection.Count == 1)
@@ -344,32 +281,36 @@ namespace LUI.tabs
             {
                 CalibrationListView.ClearSelection();
             }
+
             RedrawLines();
         }
 
         /// <summary>
-        /// Vertical lines are drawn for each calibration point at the
-        /// X-position of the channel wrt to the current calibration vector.
+        ///     Vertical lines are drawn for each calibration point at the
+        ///     X-position of the channel wrt to the current calibration vector.
         /// </summary>
-        private void RedrawLines()
+        void RedrawLines()
         {
             Graph.ClearAnnotation();
             int i;
             for (i = 0; i < CalibrationList.Count; i++)
             {
                 if (i > CalibrationListView.Rows.Count) break;
-                CalibrationPoint p = CalibrationList[i];
+                var p = CalibrationList[i];
                 //float X = Graph.XLeft + (float)p.Channel / (Commander.Camera.Width - 1) * Graph.XRange;
-                float X = (float)Commander.Camera.Calibration[p.Channel];
+                var X = (float)Commander.Camera.Calibration[p.Channel];
                 Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], X);
             }
-            int newRowChannel = (int)(CalibrationListView.Rows[CalibrationListView.NewRowIndex].Cells["Channel"].Value ?? 0);
+
+            var newRowChannel =
+                (int)(CalibrationListView.Rows[CalibrationListView.NewRowIndex].Cells["Channel"].Value ?? 0);
             if (CalibrationListView.Rows.Count > CalibrationList.Count && newRowChannel != 0)
             {
                 //float X = Graph.XLeft + (float)newRowChannel / (Commander.Camera.Width - 1) * Graph.XRange;
-                float X = (float)Commander.Camera.Calibration[newRowChannel];
+                var X = (float)Commander.Camera.Calibration[newRowChannel];
                 Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], X);
             }
+
             Graph.Invalidate();
         }
 
@@ -384,8 +325,10 @@ namespace LUI.tabs
                         else SelectedChannel++;
                         CalibrationListView.SelectedRows[0].Cells["Channel"].Value = SelectedChannel;
                     }
+
                     RedrawLines();
                     break;
+
                 case Keys.Right:
                     if (!CalibrationListView.IsCurrentCellInEditMode && CalibrationListView.SelectedRows.Count == 1)
                     {
@@ -393,65 +336,59 @@ namespace LUI.tabs
                         else SelectedChannel--;
                         CalibrationListView.SelectedRows[0].Cells["Channel"].Value = SelectedChannel;
                     }
+
                     RedrawLines();
                     break;
+
                 case Keys.Enter:
                     //TODO add calibration point
                     break;
             }
+
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
         /// <summary>
-        /// Called when editing CalibrationListView to set accepted key press events.
+        ///     Called when editing CalibrationListView to set accepted key press events.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         void CalibrationListView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (this.CalibrationListView.CurrentCell.ColumnIndex == 1)
-            {
+            if (CalibrationListView.CurrentCell.ColumnIndex == 1)
                 if (e.Control is TextBox)
                 {
-                    TextBox tb = e.Control as TextBox;
-                    tb.KeyPress -= new KeyPressEventHandler(TBKeyPress);
-                    tb.KeyPress += new KeyPressEventHandler(TBKeyPress);
+                    var tb = e.Control as TextBox;
+                    tb.KeyPress -= TBKeyPress;
+                    tb.KeyPress += TBKeyPress;
                 }
-            }
         }
 
         /// <summary>
-        /// Key press event firing for digits, backspace and delete only.
+        ///     Key press event firing for digits, backspace and delete only.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         void TBKeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!(char.IsDigit(e.KeyChar)))
+            if (!char.IsDigit(e.KeyChar))
             {
-                Keys key = (Keys)e.KeyChar;
+                var key = (Keys)e.KeyChar;
 
-                if (!(key == Keys.Back || key == Keys.Delete))
-                {
-                    e.Handled = true;
-                }
+                if (!(key == Keys.Back || key == Keys.Delete)) e.Handled = true;
             }
         }
 
-        private void CalibrationListView_DefaultValuesNeeded(object sender,
-    System.Windows.Forms.DataGridViewRowEventArgs e)
+        void CalibrationListView_DefaultValuesNeeded(object sender,
+            DataGridViewRowEventArgs e)
         {
             if (e.Row.Cells["Channel"].Value != null)
-            {
                 e.Row.Cells["Channel"].Value = SelectedChannel;
-            }
             else
-            {
                 e.Row.Cells["Channel"].Value = 0;
-            }
         }
 
-        private void RemoveCalItem_Click(object sender, EventArgs e)
+        void RemoveCalItem_Click(object sender, EventArgs e)
         {
             var minidx = int.MaxValue;
             foreach (DataGridViewRow row in CalibrationListView.SelectedRows)
@@ -459,6 +396,7 @@ namespace LUI.tabs
                 minidx = Math.Min(minidx, row.Index - 1); // Minimum preceeding index.
                 if (!row.IsNewRow) CalibrationListView.Rows.Remove(row);
             }
+
             CalibrationListView.ClearSelection();
             minidx = Math.Max(0, minidx);
             if (minidx < CalibrationListView.Rows.Count)
@@ -466,10 +404,10 @@ namespace LUI.tabs
             RedrawLines();
         }
 
-        private void RunCal_Click(object sender, EventArgs e)
+        void RunCal_Click(object sender, EventArgs e)
         {
-            Tuple<double, double, double> fitdata = Data.LinearLeastSquares(CalibrationList.Select(it => (double)it.Channel).ToArray(),
-                CalibrationList.Select(it => (double)it.Wavelength).ToArray());
+            var fitdata = Data.LinearLeastSquares(CalibrationList.Select(it => (double)it.Channel).ToArray(),
+                CalibrationList.Select(it => it.Wavelength).ToArray());
             Commander.Camera.Calibration = Data.Calibrate(Commander.Camera.Width, fitdata.Item1, fitdata.Item2);
             CalibrationChanged.Raise(this, new LuiObjectParametersEventArgs(CameraBox.SelectedObject));
             Slope.Text = fitdata.Item1.ToString("n4");
@@ -477,9 +415,9 @@ namespace LUI.tabs
             RSquared.Text = fitdata.Item3.ToString("n6");
         }
 
-        private void SaveCal_Click(object sender, EventArgs e)
+        void SaveCal_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFile = new SaveFileDialog
+            var saveFile = new SaveFileDialog
             {
                 Filter = "CAL File|*.cal|All Files|*.*",
                 Title = "Save As",
@@ -499,19 +437,21 @@ namespace LUI.tabs
                     // CAL
                     try
                     {
-                        FileIO.WriteVector<double>(saveFile.FileName, Commander.Camera.Calibration);
+                        FileIO.WriteVector(saveFile.FileName, Commander.Camera.Calibration);
                     }
                     catch (IOException ex)
                     {
                         MessageBox.Show(ex.ToString());
                     }
+
                     break;
+
                 case 2:
                     // MAT
                     try
                     {
-                        MatFile mat = new MatFile(saveFile.FileName);
-                        MatVar<double> V = mat.CreateVariable<double>("cal", Commander.Camera.Calibration.Length, 1);
+                        var mat = new MatFile(saveFile.FileName);
+                        var V = mat.CreateVariable<double>("cal", Commander.Camera.Calibration.Length, 1);
                         V.WriteNext(Commander.Camera.Calibration, 1);
                         mat.Dispose();
                     }
@@ -519,11 +459,12 @@ namespace LUI.tabs
                     {
                         MessageBox.Show(ex.ToString());
                     }
+
                     break;
             }
         }
 
-        private void FlipGraph_Click(object sender, EventArgs e)
+        void FlipGraph_Click(object sender, EventArgs e)
         {
             Ascending = !Ascending; // Toggle direction.
 
@@ -548,6 +489,84 @@ namespace LUI.tabs
         {
             BlankBuffer = null;
             ClearBlank.Enabled = false;
+        }
+
+        /// <summary>
+        ///     Stores channel & wavelength point in a class suitable for data
+        ///     binding to a DataGridView.
+        /// </summary>
+        public class CalibrationPoint : INotifyPropertyChanged
+        {
+            int _Channel;
+
+            double _Wavelength;
+
+            public int Channel
+            {
+                get => _Channel;
+                set
+                {
+                    if (value != _Channel)
+                    {
+                        _Channel = value;
+                        NotifyPropertyChanged();
+                    }
+                }
+            }
+
+            public double Wavelength
+            {
+                get => _Wavelength;
+                set
+                {
+                    if (value != _Wavelength)
+                    {
+                        _Wavelength = value;
+                        NotifyPropertyChanged();
+                    }
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+
+            public static explicit operator CalibrationPoint(DataRow dr)
+            {
+                var p = new CalibrationPoint
+                {
+                    Channel = (int)dr.ItemArray[0],
+                    Wavelength = (double)dr.ItemArray[1]
+                };
+                return p;
+            }
+
+            public static explicit operator CalibrationPoint(DataGridViewRow row)
+            {
+                return new CalibrationPoint
+                {
+                    Channel = (int)row.Cells["Channel"].Value,
+                    Wavelength = (double)row.Cells["Channel"].Value
+                };
+            }
+
+            public static explicit operator Tuple<int, double>(CalibrationPoint p)
+            {
+                return Tuple.Create(p.Channel, p.Wavelength);
+            }
+        }
+
+        struct WorkArgs
+        {
+            public WorkArgs(int N)
+            {
+                this.N = N;
+            }
+
+            public readonly int N;
         }
     }
 }

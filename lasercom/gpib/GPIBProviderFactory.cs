@@ -1,20 +1,20 @@
-﻿
+﻿using System;
+
 namespace lasercom.gpib
 {
     /// <summary>
-    /// Instantiate concrete GPIB providers from parameters.
+    ///     Instantiate concrete GPIB providers from parameters.
     /// </summary>
     public class GpibProviderFactory
     {
-
         public static IGpibProvider CreateGPIBProvider(GpibProviderParameters p)
         {
-            return (IGpibProvider)System.Activator.CreateInstance(p.Type, p);
+            return (IGpibProvider)Activator.CreateInstance(p.Type, p);
         }
 
         public static GpibProviderParameters CreateGPIBProviderParameters(GpibProviderParameters p)
         {
-            GpibProviderParameters q = new GpibProviderParameters
+            var q = new GpibProviderParameters
             {
                 Type = p.Type,
                 Name = p.Name,
@@ -24,6 +24,5 @@ namespace lasercom.gpib
             };
             return q;
         }
-
     }
 }

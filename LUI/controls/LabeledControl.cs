@@ -2,12 +2,11 @@
 
 namespace LUI.controls
 {
-    public partial class LabeledControl<T> : FlowLayoutPanel where T : Control
+    public class LabeledControl<T> : FlowLayoutPanel where T : Control
     {
-        public T Control { get; set; }
-        public DisabledRichTextBox Label { get; set; }
-
-        public LabeledControl(T Control) : this(Control, "") { }
+        public LabeledControl(T Control) : this(Control, "")
+        {
+        }
 
         public LabeledControl(T Control, string Text)
         {
@@ -28,6 +27,11 @@ namespace LUI.controls
             Controls.Add(Control);
         }
 
-        public LabeledControl() { }
+        public LabeledControl()
+        {
+        }
+
+        public T Control { get; set; }
+        public DisabledRichTextBox Label { get; set; }
     }
 }

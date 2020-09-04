@@ -7,31 +7,28 @@ namespace LUI.controls
 {
     public abstract class LuiObjectConfigPanel<T> : FlowLayoutPanel where T : LuiObjectParameters<T>
     {
-        /// <summary>
-        /// If false, OnOptionsChanged will not call the event handler.
-        /// </summary>
-        public bool TriggerEvents { get; set; }
-
-        /// <summary>
-        /// Indicates a child control has had its value changed.
-        /// </summary>
-        public event EventHandler OptionsChanged;
-
-        /// <summary>
-        /// Returns the type of LuiObject configured by the panel.
-        /// </summary>
-        public abstract Type Target
-        {
-            get;
-        }
-
         public LuiObjectConfigPanel()
         {
             TriggerEvents = true;
         }
 
         /// <summary>
-        /// Safely trigger OptionsChanged, unless TriggerEvents is false.
+        ///     If false, OnOptionsChanged will not call the event handler.
+        /// </summary>
+        public bool TriggerEvents { get; set; }
+
+        /// <summary>
+        ///     Returns the type of LuiObject configured by the panel.
+        /// </summary>
+        public abstract Type Target { get; }
+
+        /// <summary>
+        ///     Indicates a child control has had its value changed.
+        /// </summary>
+        public event EventHandler OptionsChanged;
+
+        /// <summary>
+        ///     Safely trigger OptionsChanged, unless TriggerEvents is false.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -41,13 +38,13 @@ namespace LUI.controls
         }
 
         /// <summary>
-        /// Copies panel content to LuiParameters.
+        ///     Copies panel content to LuiParameters.
         /// </summary>
         /// <param name="other"></param>
         public abstract void CopyTo(T other);
 
         /// <summary>
-        /// Copes panel content from LuiParameters.
+        ///     Copes panel content from LuiParameters.
         /// </summary>
         /// <param name="other"></param>
         public abstract void CopyFrom(T other);

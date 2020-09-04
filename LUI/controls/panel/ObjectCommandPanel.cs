@@ -1,74 +1,26 @@
 ﻿using Extensions;
 using lasercom.objects;
+using LUI.controls.designer;
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace LUI.controls
 {
-    [Designer(typeof(LUI.controls.designer.ObjectCommandPanelDesigner))]
+    [Designer(typeof(ObjectCommandPanelDesigner))]
     public class ObjectCommandPanel : UserControl
     {
-        public event EventHandler ObjectChanged;
+        readonly LabeledControl<ComboBox> _Objects;
 
-        private GroupBox Group;
-
-        private FlowLayoutPanel _Flow;
-        [Category("Appearance")]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        public FlowLayoutPanel Flow
-        {
-            get
-            {
-                return _Flow;
-            }
-        }
-
-        private LabeledControl<ComboBox> _Objects;
-        public ComboBox Objects
-        {
-            get
-            {
-                return _Objects.Control;
-            }
-        }
-
-        public LuiObjectParameters SelectedObject
-        {
-            get
-            {
-                return (LuiObjectParameters)Objects.SelectedItem;
-            }
-            set
-            {
-                Objects.SelectedItem = value;
-            }
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Always)]
-        [Browsable(true)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-        [Bindable(true)]
-        [Category("Appearance")]
-        public override string Text
-        {
-            get
-            {
-                return Group.Text;
-            }
-            set
-            {
-                Group.Text = value;
-            }
-        }
+        readonly GroupBox Group;
 
         public ObjectCommandPanel()
         {
             SuspendLayout();
 
-            this.AutoSize = true;
-            this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+            AutoSize = true;
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            AutoScaleMode = AutoScaleMode.Inherit;
 
             Group = new GroupBox
             {
@@ -77,7 +29,7 @@ namespace LUI.controls
                 Dock = DockStyle.Fill
             };
 
-            _Flow = new FlowLayoutPanel();
+            Flow = new FlowLayoutPanel();
             Flow.FlowDirection = FlowDirection.TopDown;
             Flow.AutoSize = true;
             Flow.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -96,10 +48,34 @@ namespace LUI.controls
             ResumeLayout();
         }
 
-        private void OnObjectChanged(object sender, EventArgs e)
+        [Category("Appearance")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public FlowLayoutPanel Flow { get; }
+
+        public ComboBox Objects => _Objects.Control;
+
+        public LuiObjectParameters SelectedObject
+        {
+            get => (LuiObjectParameters)Objects.SelectedItem;
+            set => Objects.SelectedItem = value;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Always)]
+        [Browsable(true)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        [Bindable(true)]
+        [Category("Appearance")]
+        public override string Text
+        {
+            get => Group.Text;
+            set => Group.Text = value;
+        }
+
+        public event EventHandler ObjectChanged;
+
+        void OnObjectChanged(object sender, EventArgs e)
         {
             ObjectChanged.Raise(sender, e);
         }
-
     }
 }

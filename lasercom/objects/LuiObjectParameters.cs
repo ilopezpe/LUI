@@ -2,55 +2,29 @@
 using System;
 using System.Runtime.Serialization;
 
-
 namespace lasercom.objects
 {
-
     /// <summary>
-    /// Nongeneric base for all instrument parameters.
-    /// Permits access of fields shared by all instrument parameters without
-    /// knowing the exact runtime parameters class.
+    ///     Nongeneric base for all instrument parameters.
+    ///     Permits access of fields shared by all instrument parameters without
+    ///     knowing the exact runtime parameters class.
     /// </summary>
     [DataContract]
     [KnownType("GetKnownTypes")]
     public abstract class LuiObjectParameters
     {
-        [DataMember]
-        public string Name { get; set; }
+        [DataMember] public string Name { get; set; }
 
-        private Type _Type;
-        public Type Type
-        {
-            get
-            {
-                return _Type;
-            }
-            set
-            {
-                _Type = value;
-            }
-        }
+        public Type Type { get; set; }
 
         [DataMember]
         public string TypeName
         {
-            get
-            {
-                return Type.FullName;
-            }
-            set
-            {
-                _Type = Type.GetType(value);
-            }
+            get => Type.FullName;
+            set => Type = Type.GetType(value);
         }
 
-        public virtual LuiObjectParameters[] Dependencies
-        {
-            get
-            {
-                return new LuiObjectParameters[0];
-            }
-        }
+        public virtual LuiObjectParameters[] Dependencies => new LuiObjectParameters[0];
 
         static Type[] GetKnownTypes()
         {
@@ -67,8 +41,8 @@ namespace lasercom.objects
         {
             if (other == null || GetType() != other.GetType())
                 return false;
-            bool iseq = Type == other.Type &&
-                        Name == other.Name;
+            var iseq = Type == other.Type &&
+                       Name == other.Name;
             return iseq;
         }
 
@@ -79,20 +53,18 @@ namespace lasercom.objects
     }
 
     /// <summary>
-    /// Self-constrained generic base class for all instrument parameters.
+    ///     Self-constrained generic base class for all instrument parameters.
     /// </summary>
     /// <typeparam name="P"></typeparam>
     [DataContract]
     public abstract class LuiObjectParameters<P> : LuiObjectParameters,
         IEquatable<P> where P : LuiObjectParameters<P>
     {
-
         public LuiObjectParameters()
         {
-
         }
 
-        public LuiObjectParameters(P other) : base()
+        public LuiObjectParameters(P other)
         {
             Copy(other);
         }
@@ -102,10 +74,16 @@ namespace lasercom.objects
             Type = t;
         }
 
+        public virtual bool Equals(P other)
+        {
+            var iseq = base.Equals(other);
+            return iseq;
+        }
+
         public virtual void Copy(P other)
         {
-            this.Type = other.Type;
-            this.Name = other.Name;
+            Type = other.Type;
+            Name = other.Name;
         }
 
         public override bool Equals(object other)
@@ -117,12 +95,6 @@ namespace lasercom.objects
         public override bool Equals(LuiObjectParameters other)
         {
             return Equals(other as P);
-        }
-
-        public virtual bool Equals(P other)
-        {
-            bool iseq = base.Equals(other);
-            return iseq;
         }
 
         public override int GetHashCode()

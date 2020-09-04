@@ -1,23 +1,24 @@
 ﻿using lasercom.camera;
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace LUI.controls
 {
     public abstract class CameraConfigPanel : LuiObjectConfigPanel<CameraParameters>
     {
-        LabeledControl<TextBox> CalFile;
-        LabeledControl<NumericUpDown> VBin;
-        LabeledControl<NumericUpDown> VStart;
-        LabeledControl<NumericUpDown> VEnd;
-        LabeledControl<ComboBox> ReadMode;
-        LabeledControl<NumericUpDown> SaturationLevel;
+        readonly LabeledControl<TextBox> CalFile;
+        readonly LabeledControl<ComboBox> ReadMode;
+        readonly LabeledControl<NumericUpDown> SaturationLevel;
+        readonly LabeledControl<NumericUpDown> VBin;
+        readonly LabeledControl<NumericUpDown> VEnd;
+        readonly LabeledControl<NumericUpDown> VStart;
 
-        public CameraConfigPanel() : base()
+        public CameraConfigPanel()
         {
             SuspendLayout();
             CalFile = new LabeledControl<TextBox>(new TextBox(), "Calibration file:");
-            CalFile.Control.MinimumSize = new System.Drawing.Size(40, 0);
+            CalFile.Control.MinimumSize = new Size(40, 0);
             CalFile.Control.Text = "";
             CalFile.Control.TextChanged += OnOptionsChanged;
             CalFile.Control.TextChanged += (s, e) => CalFile.Control.AutoResize();
@@ -29,13 +30,13 @@ namespace LUI.controls
             };
             Browse.Click += Browse_Click;
             CalFile.Controls.Add(Browse);
-            this.Controls.Add(CalFile);
+            Controls.Add(CalFile);
 
             SaturationLevel = new LabeledControl<NumericUpDown>(new NumericUpDown(), "Saturation level:");
             SaturationLevel.Control.Minimum = 0;
             SaturationLevel.Control.Maximum = (int)Math.Pow(2, 16);
             SaturationLevel.Control.ValueChanged += OnOptionsChanged;
-            this.Controls.Add(SaturationLevel);
+            Controls.Add(SaturationLevel);
 
             var ImagePanel = new FlowLayoutPanel
             {
@@ -60,7 +61,7 @@ namespace LUI.controls
             ImagePanel.Controls.Add(VBin);
             ImagePanel.Controls.Add(VStart);
             ImagePanel.Controls.Add(VEnd);
-            this.Controls.Add(ImagePanel);
+            Controls.Add(ImagePanel);
 
             ReadMode = new LabeledControl<ComboBox>(new ComboBox(), "Read Mode:");
             ReadMode.Control.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -70,23 +71,23 @@ namespace LUI.controls
             ReadMode.Control.Items.Add(new Tuple<string, int>("Image", AndorCamera.ReadModeImage));
             ReadMode.Control.SelectedIndex = 0;
             ReadMode.Control.SelectedIndexChanged += OnOptionsChanged;
-            this.Controls.Add(ReadMode);
-            this.ResumeLayout();
+            Controls.Add(ReadMode);
+            ResumeLayout();
         }
 
-        private void VEnd_ValueChanged(object sender, System.EventArgs e)
+        void VEnd_ValueChanged(object sender, EventArgs e)
         {
             VStart.Control.Maximum = VEnd.Control.Value;
             VBin.Control.Maximum = VEnd.Control.Value - VStart.Control.Value + 1;
         }
 
-        private void VStart_ValueChanged(object sender, System.EventArgs e)
+        void VStart_ValueChanged(object sender, EventArgs e)
         {
             VEnd.Control.Minimum = VStart.Control.Value;
             VBin.Control.Maximum = VEnd.Control.Value - VStart.Control.Value + 1;
         }
 
-        private void Browse_Click(object sender, System.EventArgs e)
+        void Browse_Click(object sender, EventArgs e)
         {
             var orig = CalFile.Control.Text;
             var user = GuiUtil.SimpleFileNameDialog("CAL Files|*.cal");
@@ -101,7 +102,6 @@ namespace LUI.controls
             VEnd.Control.Value = Math.Max(-1, other.VStart + other.VCount - 1);
             ReadMode.Control.SelectedIndex = other.ReadMode == AndorCamera.ReadModeFVB ? 0 : 1;
             SaturationLevel.Control.Value = other.SaturationLevel;
-
         }
 
         public override void CopyTo(CameraParameters other)
@@ -110,7 +110,9 @@ namespace LUI.controls
             other.VBin = (int)VBin.Control.Value;
             other.VStart = (int)VStart.Control.Value;
             other.VCount = (int)Math.Max(-1, VEnd.Control.Value - VStart.Control.Value + 1);
-            other.ReadMode = ReadMode.Control.SelectedItem != null ? ((Tuple<string, int>)ReadMode.Control.SelectedItem).Item2 : AndorCamera.ReadModeFVB;
+            other.ReadMode = ReadMode.Control.SelectedItem != null
+                ? ((Tuple<string, int>)ReadMode.Control.SelectedItem).Item2
+                : AndorCamera.ReadModeFVB;
             other.SaturationLevel = (int)SaturationLevel.Control.Value;
         }
     }

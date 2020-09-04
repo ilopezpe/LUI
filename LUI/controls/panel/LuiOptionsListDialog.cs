@@ -10,23 +10,41 @@ namespace LUI.controls
 {
     public class LuiOptionsListDialog<T, P> : LuiOptionsDialog where P : LuiObjectParameters<P>
     {
-        LabeledControl<ComboBox> ObjectTypes;
-        LabeledControl<TextBox> ObjectName;
-        ListView ObjectView;
         Button Add, Remove;
 
-        Panel ConfigSubPanel;
-
         Dictionary<Type, LuiObjectConfigPanel<P>> ConfigPanels;
+
+        Panel ConfigSubPanel;
+        LabeledControl<TextBox> ObjectName;
+        LabeledControl<ComboBox> ObjectTypes;
+        ListView ObjectView;
+
+        public LuiOptionsListDialog()
+        {
+            AutoScaleMode = AutoScaleMode.Inherit;
+            Init();
+        }
+
+        public LuiOptionsListDialog(Size size, bool visibility)
+        {
+            AutoScaleMode = AutoScaleMode.Inherit;
+            Size = size;
+            Visible = visibility;
+            Init();
+        }
+
+        public LuiOptionsListDialog(Size size) : this(size, true)
+        {
+        }
 
         public IEnumerable<P> PersistentItems
         {
             get
             {
                 // Skip the "New..." row.
-                for (int i = 0; i < ObjectView.Items.Count - 1; i++)
+                for (var i = 0; i < ObjectView.Items.Count - 1; i++)
                 {
-                    LuiObjectItem it = (LuiObjectItem)ObjectView.Items[i];
+                    var it = (LuiObjectItem)ObjectView.Items[i];
                     yield return it.Persistent;
                 }
             }
@@ -34,7 +52,7 @@ namespace LUI.controls
             {
                 ObjectView.Items.Clear();
                 AddDummyItem(); // Add the "New..." row.
-                foreach (P luiParameters in value) AddObject(luiParameters);
+                foreach (var luiParameters in value) AddObject(luiParameters);
                 SetDefaultSelectedItems();
             }
         }
@@ -43,53 +61,24 @@ namespace LUI.controls
         {
             get
             {
-                for (int i = 0; i < ObjectView.Items.Count - 1; i++)
-                {
+                for (var i = 0; i < ObjectView.Items.Count - 1; i++)
                     yield return ((LuiObjectItem)ObjectView.Items[i]).Transient;
-                }
             }
         }
 
-        /// <summary>
-        /// Extends ListViewItem to hold two generic parameter objects.
-        /// Persistent will be restored 
-        /// </summary>
-        private class LuiObjectItem : ListViewItem
-        {
-            public P Persistent;
-            public P Transient;
-
-            public LuiObjectItem(string text) : base(text) { }
-        }
-
-        public LuiOptionsListDialog()
-        {
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
-            Init();
-        }
-
-        public LuiOptionsListDialog(Size size, bool visibility)
-        {
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
-            this.Size = size;
-            this.Visible = visibility;
-            Init();
-        }
-
-        public LuiOptionsListDialog(Size size) : this(size, true) { }
-
-        private void Init()
+        void Init()
         {
             SuspendLayout();
 
             #region Object list and configuration panel setup
-            Panel ConfigPanel = new Panel
+
+            var ConfigPanel = new Panel
             {
                 Dock = DockStyle.Fill
             };
             Controls.Add(ConfigPanel);
 
-            Panel ListPanel = new Panel
+            var ListPanel = new Panel
             {
                 Dock = DockStyle.Left
             };
@@ -110,12 +99,13 @@ namespace LUI.controls
             //ObjectView.ItemSelectionChanged += SelectedObjectChanged;
             AddDummyItem(); // Add the "New..." row.
 
-            Panel ListControlsPanel = new Panel
+            var ListControlsPanel = new Panel
             {
                 Dock = DockStyle.Top
             };
 
             #region Buttons
+
             Add = new Button
             {
                 Dock = DockStyle.Left,
@@ -134,13 +124,16 @@ namespace LUI.controls
 
             ListControlsPanel.Controls.Add(Remove);
             ListControlsPanel.Controls.Add(Add);
-            #endregion
+
+            #endregion Buttons
 
             ListPanel.Controls.Add(ListControlsPanel);
             ListPanel.Controls.Add(ObjectView);
-            #endregion
+
+            #endregion Object list and configuration panel setup
 
             #region Configuration panel
+
             ConfigSubPanel = new Panel
             {
                 Dock = DockStyle.Fill
@@ -154,12 +147,9 @@ namespace LUI.controls
             ObjectTypes.Control.DropDownStyle = ComboBoxStyle.DropDownList;
             ObjectTypes.Control.DisplayMember = "Name";
 
-            List<Type> AvailableTypes = typeof(T).GetSubclasses(true);
+            var AvailableTypes = typeof(T).GetSubclasses(true);
             AvailableTypes.Sort((x, y) => x.Name.CompareTo(y.Name));
-            AvailableTypes.ForEach(x =>
-            {
-                ObjectTypes.Control.Items.Add(x);
-            });
+            AvailableTypes.ForEach(x => { ObjectTypes.Control.Items.Add(x); });
             ObjectTypes.Control.SelectedIndex = 0;
             ObjectTypes.Control.SelectedIndexChanged += SelectedObjectTypeChanged;
             ObjectTypes.Control.SelectionChangeCommitted += OnOptionsChanged; // Caused by user input.
@@ -172,7 +162,8 @@ namespace LUI.controls
             ObjectName.Control.KeyDown += OnOptionsChanged; // Caused by user input.
             ConfigPanel.Controls.Add(ObjectName);
             ConfigPanel.Controls.Add(ObjectTypes);
-            #endregion
+
+            #endregion Configuration panel
 
             ConfigPanels = new Dictionary<Type, LuiObjectConfigPanel<P>>();
 
@@ -182,11 +173,11 @@ namespace LUI.controls
         }
 
         /// <summary>
-        /// Adds the "New..." item dummy.
+        ///     Adds the "New..." item dummy.
         /// </summary>
-        private void AddDummyItem()
+        void AddDummyItem()
         {
-            LuiObjectItem nextItem = new LuiObjectItem("New..."); // Dummy item
+            var nextItem = new LuiObjectItem("New..."); // Dummy item
             ObjectView.Items.Add(nextItem);
         }
 
@@ -207,19 +198,19 @@ namespace LUI.controls
             ObjectView.SelectedIndices.Add(ObjectView.Items.Count - 1);
         }
 
-        private void UpdateSelectedObject(object sender, EventArgs e)
+        void UpdateSelectedObject(object sender, EventArgs e)
         {
-            LuiObjectItem selectedItem = (LuiObjectItem)ObjectView.SelectedItems[0];
-            P luiParameters = (P)selectedItem.Transient;
+            var selectedItem = (LuiObjectItem)ObjectView.SelectedItems[0];
+            var luiParameters = selectedItem.Transient;
             ConfigPanels[luiParameters.Type].CopyTo(luiParameters);
         }
 
-        private void SelectedObjectChanged(object sender, EventArgs e)
+        void SelectedObjectChanged(object sender, EventArgs e)
         {
             if (ObjectView.SelectedIndices.Count == 0)
                 return;
 
-            LuiObjectItem selectedItem = (LuiObjectItem)ObjectView.SelectedItems[0];
+            var selectedItem = (LuiObjectItem)ObjectView.SelectedItems[0];
             if (selectedItem.Index == ObjectView.Items.Count - 1)
             {
                 Remove.Enabled = false;
@@ -237,7 +228,7 @@ namespace LUI.controls
                 Add.Enabled = false;
             }
 
-            P p = (P)selectedItem.Transient;
+            var p = selectedItem.Transient;
             ConfigPanels[p.Type].TriggerEvents = false; // Deactivate LuiConfigPanel's OnOptionsChanged.
             ConfigPanels[p.Type].CopyFrom(p); // No OnOptionsChanged => Apply button not enabled.
             ConfigPanels[p.Type].TriggerEvents = true; // Reactivate OnOptionsChanged.
@@ -245,45 +236,42 @@ namespace LUI.controls
             ObjectName.Control.Text = p.Name;
         }
 
-        private void ShowConfigPanel(Type type)
+        void ShowConfigPanel(Type type)
         {
-            foreach (Type t in ConfigPanels.Keys)
-            {
-                if (t != type) ConfigPanels[t].Visible = false;
-            }
+            foreach (var t in ConfigPanels.Keys)
+                if (t != type)
+                    ConfigPanels[t].Visible = false;
             ConfigPanels[type].Visible = true;
         }
 
-        private void SelectedObjectTypeChanged(object sender, EventArgs e)
+        void SelectedObjectTypeChanged(object sender, EventArgs e)
         {
-            LuiObjectItem selectedItem = (LuiObjectItem)ObjectView.SelectedItems[0];
-            Type t = (Type)ObjectTypes.Control.SelectedItem;
+            var selectedItem = (LuiObjectItem)ObjectView.SelectedItems[0];
+            var t = (Type)ObjectTypes.Control.SelectedItem;
             selectedItem.Transient.Type = t;
             ShowConfigPanel(t);
         }
 
-        private void SelectedObjectNameChanged(object sender, EventArgs e)
+        void SelectedObjectNameChanged(object sender, EventArgs e)
         {
-            LuiObjectItem selectedItem = (LuiObjectItem)ObjectView.SelectedItems[0];
+            var selectedItem = (LuiObjectItem)ObjectView.SelectedItems[0];
             selectedItem.Transient.Name = ObjectName.Control.Text;
             if (selectedItem.Index != ObjectView.Items.Count - 1) // If not the "New..." item.
-            {
                 selectedItem.Text = selectedItem.Transient.Name;
-            }
         }
 
-        private void Remove_Click(object sender, EventArgs e)
+        void Remove_Click(object sender, EventArgs e)
         {
-            LuiObjectItem selectedItem = (LuiObjectItem)ObjectView.SelectedItems[0];
-            int idx = Math.Max(selectedItem.Index - 1, 0);
+            var selectedItem = (LuiObjectItem)ObjectView.SelectedItems[0];
+            var idx = Math.Max(selectedItem.Index - 1, 0);
             selectedItem.Selected = false;
             selectedItem.Remove();
             ObjectView.Items[idx].Selected = true;
         }
 
-        private void Add_Click(object sender, EventArgs e)
+        void Add_Click(object sender, EventArgs e)
         {
-            LuiObjectItem dummyRow = (LuiObjectItem)ObjectView.Items[ObjectView.Items.Count - 1];
+            var dummyRow = (LuiObjectItem)ObjectView.Items[ObjectView.Items.Count - 1];
             AddObject(dummyRow.Transient);
             dummyRow.Transient = null;
             dummyRow.Selected = false;
@@ -292,7 +280,7 @@ namespace LUI.controls
 
         public void AddObject(P p)
         {
-            LuiObjectItem newItem = new LuiObjectItem(p.Name)
+            var newItem = new LuiObjectItem(p.Name)
             {
                 Transient = Activator.CreateInstance(typeof(P), p) as P,
                 Persistent = p
@@ -317,7 +305,7 @@ namespace LUI.controls
 
         public override void CopyConfigState()
         {
-            CopyConfigState(this.Config);
+            CopyConfigState(Config);
         }
 
         public override void HandleConfigChanged(object sender, EventArgs e)
@@ -327,14 +315,25 @@ namespace LUI.controls
 
         protected override void OnOptionsChanged(object sender, EventArgs e)
         {
-            LuiObjectItem dummyRow = (LuiObjectItem)ObjectView.Items[ObjectView.Items.Count - 1];
+            var dummyRow = (LuiObjectItem)ObjectView.Items[ObjectView.Items.Count - 1];
             // If the "New..." item is selected, skip event unless
             // event sent by Remove button. (Correctly enables Apply button).
-            if (dummyRow.Selected && sender != Remove)
-            {
-                return;
-            }
+            if (dummyRow.Selected && sender != Remove) return;
             base.OnOptionsChanged(sender, e);
+        }
+
+        /// <summary>
+        ///     Extends ListViewItem to hold two generic parameter objects.
+        ///     Persistent will be restored
+        /// </summary>
+        class LuiObjectItem : ListViewItem
+        {
+            public P Persistent;
+            public P Transient;
+
+            public LuiObjectItem(string text) : base(text)
+            {
+            }
         }
     }
 }

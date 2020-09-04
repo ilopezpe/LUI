@@ -6,17 +6,29 @@ using System.Runtime.Serialization;
 namespace lasercom.ddg
 {
     /// <summary>
-    /// Stores parameters for instantiation of a DDG and provides
-    /// fpr their serialization to XML.
+    ///     Stores parameters for instantiation of a DDG and provides
+    ///     fpr their serialization to XML.
     /// </summary>
     [DataContract]
     public class DelayGeneratorParameters : LuiObjectParameters<DelayGeneratorParameters>
     {
-        [DataMember]
-        public byte GpibAddress { get; set; }
+        public DelayGeneratorParameters(Type Type)
+            : base(Type)
+        {
+        }
 
-        [DataMember]
-        public GpibProviderParameters GpibProvider { get; set; }
+        public DelayGeneratorParameters()
+        {
+        }
+
+        public DelayGeneratorParameters(DelayGeneratorParameters other)
+            : base(other)
+        {
+        }
+
+        [DataMember] public byte GpibAddress { get; set; }
+
+        [DataMember] public GpibProviderParameters GpibProvider { get; set; }
 
         public override LuiObjectParameters[] Dependencies
         {
@@ -28,29 +40,11 @@ namespace lasercom.ddg
             }
         }
 
-        public DelayGeneratorParameters(Type Type)
-            : base(Type)
-        {
-
-        }
-
-        public DelayGeneratorParameters()
-            : base()
-        {
-
-        }
-
-        public DelayGeneratorParameters(DelayGeneratorParameters other)
-            : base(other)
-        {
-
-        }
-
         public override void Copy(DelayGeneratorParameters other)
         {
             base.Copy(other);
-            this.GpibAddress = other.GpibAddress;
-            this.GpibProvider = other.GpibProvider;
+            GpibAddress = other.GpibAddress;
+            GpibProvider = other.GpibProvider;
         }
 
         //public override bool Equals(DelayGeneratorParameters other)
@@ -90,24 +84,22 @@ namespace lasercom.ddg
 
         public override bool NeedsReinstantiation(DelayGeneratorParameters other)
         {
-            bool needs = base.NeedsReinstantiation(other);
+            var needs = base.NeedsReinstantiation(other);
             if (needs) return true;
 
-            if (Type == typeof(StanfordDigitalDelayGenerator) || Type.IsSubclassOf(typeof(StanfordDigitalDelayGenerator)))
-            {
-                needs |= (GpibProvider != other.GpibProvider || (GpibProvider != null && !GpibProvider.Equals(other.GpibProvider)));
-            }
+            if (Type == typeof(StanfordDigitalDelayGenerator) ||
+                Type.IsSubclassOf(typeof(StanfordDigitalDelayGenerator)))
+                needs |= GpibProvider != other.GpibProvider ||
+                         GpibProvider != null && !GpibProvider.Equals(other.GpibProvider);
             return needs;
         }
 
         public override bool NeedsUpdate(DelayGeneratorParameters other)
         {
-            bool needs = false;
+            var needs = false;
 
-            if (Type == typeof(StanfordDigitalDelayGenerator) || Type.IsSubclassOf(typeof(StanfordDigitalDelayGenerator)))
-            {
-                needs |= other.GpibAddress != GpibAddress;
-            }
+            if (Type == typeof(StanfordDigitalDelayGenerator) ||
+                Type.IsSubclassOf(typeof(StanfordDigitalDelayGenerator))) needs |= other.GpibAddress != GpibAddress;
 
             return needs;
         }
