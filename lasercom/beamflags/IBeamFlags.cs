@@ -1,4 +1,4 @@
-﻿namespace lasercom.control
+﻿namespace lasercom.beamflags
 {
     public enum BeamFlagState
     {

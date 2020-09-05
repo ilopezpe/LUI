@@ -3,7 +3,7 @@ using System;
 using System.IO.Ports;
 using System.Threading;
 
-namespace lasercom.control
+namespace lasercom.beamflags
 {
     /// <summary>
     ///     Class representing BeamFlags operated by numato usbgpio16 controller.

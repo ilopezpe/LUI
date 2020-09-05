@@ -1,7 +1,7 @@
 ﻿using lasercom.objects;
 using System;
 
-namespace lasercom.control
+namespace lasercom.beamflags
 {
     /// <summary>
     ///     Base class for all beam flag classes.

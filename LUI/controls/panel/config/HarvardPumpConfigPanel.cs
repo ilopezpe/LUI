@@ -1,5 +1,5 @@
 ﻿using lasercom;
-using lasercom.control;
+using lasercom.syringepump;
 using System;
 using System.Windows.Forms;
 

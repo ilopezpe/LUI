@@ -1,7 +1,7 @@
 ﻿using lasercom.objects;
 using System;
 
-namespace lasercom.control
+namespace lasercom.syringepump
 {
     /// <summary>
     ///     Base class for all pumps.

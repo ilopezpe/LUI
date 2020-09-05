@@ -1,12 +1,12 @@
 ﻿using lasercom.objects;
 
-namespace lasercom.control
+namespace lasercom.syringepump
 {
     public class DummyPump : AbstractPump
     {
-        public DummyPump(LuiObjectParameters p) : this()
-        {
-        }
+        //public DummyPump(LuiObjectParameters p) : this()
+        //{
+        //}
 
         public DummyPump()
         {

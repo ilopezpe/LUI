@@ -1,5 +1,6 @@
 ﻿using lasercom.camera;
-using lasercom.control;
+using lasercom.syringepump;
+using lasercom.beamflags;
 using lasercom.ddg;
 using log4net;
 using System.Collections.Generic;

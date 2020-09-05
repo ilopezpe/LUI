@@ -1,6 +1,7 @@
 ﻿using lasercom;
 using lasercom.camera;
-using lasercom.control;
+using lasercom.syringepump;
+using lasercom.beamflags;
 using LUI.config;
 using LUI.controls;
 using System;

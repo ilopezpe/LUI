@@ -1,5 +1,6 @@
 ﻿using lasercom;
-using lasercom.control;
+using lasercom.syringepump;
+using lasercom.beamflags;
 using System;
 using System.Windows.Forms;
 

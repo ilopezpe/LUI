@@ -2,7 +2,7 @@
 using System;
 using System.IO.Ports;
 
-namespace lasercom.control
+namespace lasercom.syringepump
 {
     /// <summary>
     ///     Represents a Harvard Apparatus syringe pump using the custom

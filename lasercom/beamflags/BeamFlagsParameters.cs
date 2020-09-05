@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace lasercom.control
+namespace lasercom.beamflags
 {
     [DataContract]
     public class BeamFlagsParameters : LuiObjectParameters<BeamFlagsParameters>

@@ -1,6 +1,6 @@
 ﻿using lasercom.objects;
 
-namespace lasercom.control
+namespace lasercom.beamflags
 {
     /// <summary>
     ///     Dummy beam flags object implemented using no-ops.

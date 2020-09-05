@@ -1,7 +1,8 @@
 ﻿using Extensions;
 using lasercom;
 using lasercom.camera;
-using lasercom.control;
+using lasercom.syringepump;
+using lasercom.beamflags;
 using lasercom.objects;
 using log4net;
 using LUI.config;

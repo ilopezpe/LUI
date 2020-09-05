@@ -1,6 +1,7 @@
 ﻿using Extensions;
 using lasercom.camera;
-using lasercom.control;
+using lasercom.syringepump;
+using lasercom.beamflags;
 using lasercom.ddg;
 using lasercom.gpib;
 using log4net;
