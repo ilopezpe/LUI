@@ -137,6 +137,21 @@ namespace lasercom
         }
 
         /// <summary>
+        /// Computes S from +/- beta transmitted intensity, and dark counts.
+        /// </summary>
+        /// <param name="PlusB"></param>
+        /// <param name="MinusB"></param>
+        /// <param name="Dark"></param>
+        /// <returns>Delta OD</returns>
+        public static double[] S(IList<double> PlusB, IList<double> MinusB, IList<double> Dark)
+        {
+            var S = new double[PlusB.Count];
+            for (var i = 0; i < S.Length; i++)
+                S[i] = (PlusB[i] - MinusB[i]) / (PlusB[i] + MinusB[i] - 2*Dark[i]);
+            return S;
+        }
+
+        /// <summary>
         ///     Computes OD from Sample and Blank counts, subtracting Dark counts from both.
         /// </summary>
         /// <param name="Sample"></param>
@@ -176,7 +191,6 @@ namespace lasercom
         {
             var OD = new double[Ground.Count];
             for (var i = 0; i < OD.Length; i++)
-                // OD[i] = Math.Log10((double)(Trans[i] - Dark[i]) / (double)(Ground[i] - Dark[i]));
                 OD[i] = Math.Log10((Ground[i] - Dark[i]) / (double)(Trans[i] - Dark[i]));
             return OD;
         }
@@ -192,7 +206,6 @@ namespace lasercom
         {
             var OD = new double[Ground.Count];
             for (var i = 0; i < OD.Length; i++)
-                //OD[i] = Math.Log10((Trans[i] - Dark[i]) / (Ground[i] - Dark[i]));
                 OD[i] = Math.Log10((Ground[i] - Dark[i]) / (Trans[i] - Dark[i]));
             return OD;
         }
@@ -207,7 +220,6 @@ namespace lasercom
         {
             var OD = new double[Ground.Count];
             for (var i = 0; i < OD.Length; i++)
-                //OD[i] = Math.Log10((double)(Trans[i]) / (double)(Ground[i]));
                 OD[i] = Math.Log10(Ground[i] / (double)Trans[i]);
             return OD;
         }
@@ -216,7 +228,6 @@ namespace lasercom
         {
             var OD = new double[Ground.Count];
             for (var i = 0; i < OD.Length; i++)
-                //OD[i] = Math.Log10((Trans[i]) / (Ground[i]));
                 OD[i] = Math.Log10(Ground[i] / Trans[i]);
             return OD;
         }

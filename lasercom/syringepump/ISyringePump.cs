@@ -1,6 +1,6 @@
 ﻿namespace lasercom.syringepump
 {
-    public enum PumpState
+    public enum SyringePumpState
     {
         Open,
         Closed
@@ -9,16 +9,16 @@
     /// <summary>
     ///     Defines the public operations supported by a pump.
     /// </summary>
-    public interface IPump
+    public interface ISyringePump
     {
-        PumpState CurrentState { get; }
+        SyringePumpState CurrentState { get; }
 
-        PumpState Toggle();
+        SyringePumpState Toggle();
 
         void SetOpen();
 
         void SetClosed();
 
-        PumpState GetState();
+        SyringePumpState GetState();
     }
 }

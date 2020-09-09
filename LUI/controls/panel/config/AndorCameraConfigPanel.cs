@@ -15,7 +15,8 @@ namespace LUI.controls
             Dir = new LabeledControl<TextBox>(new TextBox(), "Andor INI Dir:");
             Dir.Control.TextChanged += OnOptionsChanged;
             Dir.Control.TextChanged += (s, e) => Dir.Control.AutoResize();
-            Dir.Control.MinimumSize = new Size(40, 0);
+            Dir.Control.
+                Size = new Size(40, 0);
             Dir.Control.Text = "./";
             var Browse = new Button
             {

@@ -24,7 +24,7 @@ namespace LUI.tabs
             CALCULATE
         }
 
-        public enum PumpMode
+        public enum SyringePumpMode
         {
             NEVER,
             TRANS,
@@ -52,44 +52,44 @@ namespace LUI.tabs
 
         protected override void OnLoad(EventArgs e)
         {
-            PumpBox.ObjectChanged += HandlePumpChanged;
+            SyringePumpBox.ObjectChanged += HandleSyringePumpChanged;
             base.OnLoad(e);
         }
 
         public override void HandleParametersChanged(object sender, EventArgs e)
         {
             base.HandleParametersChanged(sender, e);
-            var PumpsAvailable = Config.GetParameters(typeof(PumpParameters));
-            if (PumpsAvailable.Count() > 0)
+            var SyringePumpsAvailable = Config.GetParameters(typeof(SyringePumpParameters));
+            if (SyringePumpsAvailable.Count() > 0)
             {
-                var selectedPump = PumpBox.SelectedObject;
-                PumpBox.Objects.Items.Clear();
-                foreach (var p in PumpsAvailable)
-                    PumpBox.Objects.Items.Add(p);
+                var selectedSyringePump = SyringePumpBox.SelectedObject;
+                SyringePumpBox.Objects.Items.Clear();
+                foreach (var p in SyringePumpsAvailable)
+                    SyringePumpBox.Objects.Items.Add(p);
                 // One of next two lines will trigger CameraChanged event.
-                PumpBox.SelectedObject = selectedPump;
-                if (PumpBox.Objects.SelectedItem == null) PumpBox.Objects.SelectedIndex = 0;
-                PumpBox.Enabled = true;
+                SyringePumpBox.SelectedObject = selectedSyringePump;
+                if (SyringePumpBox.Objects.SelectedItem == null) SyringePumpBox.Objects.SelectedIndex = 0;
+                SyringePumpBox.Enabled = true;
             }
             else
             {
-                PumpBox.Enabled = false;
+                SyringePumpBox.Enabled = false;
             }
         }
 
-        public virtual void HandlePumpChanged(object sender, EventArgs e)
+        public virtual void HandleSyringePumpChanged(object sender, EventArgs e)
         {
-            if (Commander.Pump != null) Commander.Pump.SetClosed();
-            Commander.Pump = (IPump)Config.GetObject(PumpBox.SelectedObject);
+            if (Commander.SyringePump != null) Commander.SyringePump.SetClosed();
+            Commander.SyringePump = (ISyringePump)Config.GetObject(SyringePumpBox.SelectedObject);
         }
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
             var N = (int)NScan.Value;
-            PumpMode Pump;
-            if (PumpNever.Checked) Pump = PumpMode.NEVER;
-            else if (PumpTs.Checked) Pump = PumpMode.TRANS;
-            else Pump = PumpMode.ALWAYS;
+            SyringePumpMode SyringePump;
+            if (SyringePumpNever.Checked) SyringePump = SyringePumpMode.NEVER;
+            else if (SyringePumpTs.Checked) SyringePump = SyringePumpMode.TRANS;
+            else SyringePump = SyringePumpMode.ALWAYS;
             Commander.BeamFlag.CloseLaserAndFlash();
             worker = new BackgroundWorker();
             worker.DoWork += DoWork;
@@ -97,20 +97,20 @@ namespace LUI.tabs
             worker.RunWorkerCompleted += WorkComplete;
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(new WorkArgs(N, Pump, Discard.Checked));
+            worker.RunWorkerAsync(new WorkArgs(N, SyringePump, Discard.Checked));
             OnTaskStarted(EventArgs.Empty);
         }
 
         public override void OnTaskStarted(EventArgs e)
         {
             base.OnTaskStarted(e);
-            PumpBox.Enabled = false;
+            SyringePumpBox.Enabled = false;
         }
 
         public override void OnTaskFinished(EventArgs e)
         {
             base.OnTaskFinished(e);
-            PumpBox.Enabled = true;
+            SyringePumpBox.Enabled = true;
         }
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
@@ -147,9 +147,9 @@ namespace LUI.tabs
             if (PauseCancelProgress(e, 0, Dialog.PROGRESS_FLASH)) return;
 
             // Flow-flash.
-            if (args.Pump == PumpMode.ALWAYS)
+            if (args.SyringePump == SyringePumpMode.ALWAYS)
             {
-                OpenPump(args.DiscardFirst);
+                OpenSyringePump(args.DiscardFirst);
                 if (PauseCancelProgress(e, -1, Dialog.PROGRESS)) return;
             }
 
@@ -171,9 +171,9 @@ namespace LUI.tabs
             if (PauseCancelProgress(e, 0, Dialog.PROGRESS_TRANS)) return;
 
             // Flow-flash.
-            if (args.Pump == PumpMode.TRANS)
+            if (args.SyringePump == SyringePumpMode.TRANS)
             {
-                OpenPump(args.DiscardFirst);
+                OpenSyringePump(args.DiscardFirst);
                 if (PauseCancelProgress(e, -1, Dialog.PROGRESS)) return;
             }
 
@@ -192,8 +192,8 @@ namespace LUI.tabs
             Commander.BeamFlag.CloseLaserAndFlash();
 
             // Flow-flash.
-            if (args.Pump == PumpMode.TRANS || args.Pump == PumpMode.ALWAYS) // Could close pump before last collect.
-                Commander.Pump.SetClosed();
+            if (args.SyringePump == SyringePumpMode.TRANS || args.SyringePump == SyringePumpMode.ALWAYS) // Could close pump before last collect.
+                Commander.SyringePump.SetClosed();
 
             Data.DivideArray(Excited, N);
             Data.Dissipate(Excited, Dark);
@@ -238,7 +238,7 @@ namespace LUI.tabs
         protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
             Commander.BeamFlag.CloseLaserAndFlash();
-            Commander.Pump.SetClosed();
+            Commander.SyringePump.SetClosed();
             if (!e.Cancelled)
             {
                 Light = (double[])e.Result;
@@ -327,15 +327,15 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, PumpMode Pump, bool DiscardFirst)
+            public WorkArgs(int N, SyringePumpMode SyringePump, bool DiscardFirst)
             {
                 this.N = N;
-                this.Pump = Pump;
+                this.SyringePump = SyringePump;
                 this.DiscardFirst = DiscardFirst;
             }
 
             public readonly int N;
-            public readonly PumpMode Pump;
+            public readonly SyringePumpMode SyringePump;
             public readonly bool DiscardFirst;
         }
     }

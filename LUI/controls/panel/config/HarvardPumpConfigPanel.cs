@@ -5,11 +5,11 @@ using System.Windows.Forms;
 
 namespace LUI.controls
 {
-    class HarvardPumpConfigPanel : LuiObjectConfigPanel<PumpParameters>
+    class HarvardSyringePumpConfigPanel : LuiObjectConfigPanel<SyringePumpParameters>
     {
         readonly LabeledControl<ComboBox> COMPort;
 
-        public HarvardPumpConfigPanel()
+        public HarvardSyringePumpConfigPanel()
         {
             COMPort = new LabeledControl<ComboBox>(new ComboBox(), "COM Port:");
             Util.EnumerateSerialPorts().ForEach(x => COMPort.Control.Items.Add(x));
@@ -17,14 +17,14 @@ namespace LUI.controls
             Controls.Add(COMPort);
         }
 
-        public override Type Target => typeof(HarvardPump);
+        public override Type Target => typeof(HarvardSyringePump);
 
-        public override void CopyTo(PumpParameters other)
+        public override void CopyTo(SyringePumpParameters other)
         {
             other.PortName = (string)COMPort.Control.SelectedItem;
         }
 
-        public override void CopyFrom(PumpParameters other)
+        public override void CopyFrom(SyringePumpParameters other)
         {
             COMPort.Control.SelectedItem = other.PortName;
         }

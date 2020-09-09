@@ -4,7 +4,7 @@ using System;
 namespace lasercom.beamflags
 {
     /// <summary>
-    ///     Base class for all beam flag classes.
+    /// Base class for all beam flag classes.
     /// </summary>
     public abstract class AbstractBeamFlags : LuiObject<BeamFlagsParameters>, IBeamFlags
     {

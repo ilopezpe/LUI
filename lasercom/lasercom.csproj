@@ -115,15 +115,21 @@
     <Compile Include="camera\ImageArea.cs" />
     <Compile Include="beamflags\AbstractBeamFlags.cs" />
     <Compile Include="camera\AndorCamera.cs" />
-    <Compile Include="syringepump\AbstractPump.cs" />
+    <Compile Include="polarizer\AbstractPolarizer.cs" />
+    <Compile Include="polarizer\Polarizer.cs" />
+    <Compile Include="polarizer\DummyPolarizer.cs" />
+    <Compile Include="polarizer\PolarizerFactory.cs" />
+    <Compile Include="polarizer\PolarizerParameters.cs" />
+    <Compile Include="polarizer\IPolarizer.cs" />
+    <Compile Include="syringepump\AbstractSyringePump.cs" />
     <Compile Include="beamflags\BeamFlagsParameters.cs" />
     <Compile Include="beamflags\BeamFlags.cs" />
     <Compile Include="camera\CameraTempControlled.cs" />
     <Compile Include="beamflags\BeamFlagsFactory.cs" />
-    <Compile Include="syringepump\DummyPump.cs" />
+    <Compile Include="syringepump\DummySyringePump.cs" />
     <Compile Include="beamflags\IBeamFlags.cs" />
-    <Compile Include="syringepump\IPump.cs" />
-    <Compile Include="syringepump\PumpParameters.cs" />
+    <Compile Include="syringepump\ISyringePump.cs" />
+    <Compile Include="syringepump\SyringePumpParameters.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="ddg\AbstractDigitalDelayGenerator.cs" />
     <Compile Include="ddg\DelayGeneratorFactory.cs" />
@@ -152,7 +158,7 @@
     <Compile Include="objects\LuiObjectParameters.cs" />
     <Compile Include="objects\LuiObjectParametersEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="syringepump\HarvardPump.cs" />
+    <Compile Include="syringepump\HarvardSyringePump.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -5,6 +5,7 @@ using lasercom.ddg;
 using log4net;
 using System.Collections.Generic;
 using System.Reflection;
+using lasercom.polarizer;
 
 namespace lasercom
 {
@@ -12,20 +13,25 @@ namespace lasercom
     {
         static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public Commander(ICamera camera = null, IBeamFlags beamFlags = null, IDigitalDelayGenerator ddg = null,
-            IPump pump = null)
+        public Commander(ICamera camera = null,
+                         IBeamFlags beamFlags = null,
+                         IDigitalDelayGenerator ddg = null,
+                         ISyringePump pump = null,
+                         IPolarizer polarizer = null)
         {
             // Set dummies instead of null values to save a *ton* of null checks elsewhere.
             Camera = camera ?? new DummyCamera();
             BeamFlag = beamFlags ?? new DummyBeamFlags();
             DDG = ddg ?? new DummyDigitalDelayGenerator();
-            Pump = pump ?? new DummyPump();
+            SyringePump = pump ?? new DummySyringePump();
+            Polarizer = polarizer ?? new DummyPolarizer();
         }
 
         public ICamera Camera { get; set; }
         public IBeamFlags BeamFlag { get; set; }
         public IDigitalDelayGenerator DDG { get; set; }
-        public IPump Pump { get; set; }
+        public ISyringePump SyringePump { get; set; }
+        public IPolarizer Polarizer { get; set; }
         public List<double> Delays { get; set; }
 
         public void SetDelays(string file)

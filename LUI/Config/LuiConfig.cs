@@ -1,7 +1,6 @@
 ﻿using Extensions;
 using lasercom;
 using lasercom.camera;
-using lasercom.syringepump;
 using lasercom.beamflags;
 using lasercom.ddg;
 using lasercom.objects;

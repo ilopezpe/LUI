@@ -20,7 +20,8 @@ namespace LUI
         public enum TaskState
         {
             IDLE,
-            TROS,
+            TROA,
+            TRLD,
             CALIBRATE,
             ALIGN,
             POWER,
@@ -45,8 +46,11 @@ namespace LUI
 
         readonly TabControl Tabs;
 
-        readonly TroaControl TROSControl;
-        readonly TabPage TROSPage;
+        readonly TroaControl TROAControl;
+        readonly TabPage TROAPage;
+
+        readonly TrldControl TRLDControl;
+        readonly TabPage TRLDPage;
 
         public ParentForm(LuiConfig config)
         {
@@ -77,7 +81,8 @@ namespace LUI
 
             HomePage = new TabPage();
             SpecPage = new TabPage();
-            TROSPage = new TabPage();
+            TROAPage = new TabPage();
+            TRLDPage = new TabPage();
             ResidualsPage = new TabPage();
             CalibrationPage = new TabPage();
             PowerPage = new TabPage();
@@ -92,16 +97,23 @@ namespace LUI
             SpecPage.BackColor = SystemColors.Control;
             SpecPage.Margin = new Padding(2, 2, 2, 2);
             SpecPage.Name = "SpecPage";
-            TROSPage.Padding = new Padding(2, 2, 2, 2);
             SpecPage.TabIndex = 3;
             SpecPage.Text = "Spectrum";
 
-            TROSPage.BackColor = SystemColors.Control;
-            TROSPage.Margin = new Padding(2, 2, 2, 2);
-            TROSPage.Name = "TROSPage";
-            TROSPage.Padding = new Padding(2, 2, 2, 2);
-            TROSPage.TabIndex = 0;
-            TROSPage.Text = "TROS";
+            TROAPage.BackColor = SystemColors.Control;
+            TROAPage.Margin = new Padding(2, 2, 2, 2);
+            TROAPage.Name = "TROAPage";
+            TROAPage.Padding = new Padding(2, 2, 2, 2);
+            TROAPage.TabIndex = 0;
+            TROAPage.Text = "TROA";
+
+            TRLDPage.BackColor = SystemColors.Control;
+            TRLDPage.Margin = new Padding(2, 2, 2, 2);
+            TRLDPage.Name = "TRLDPage";
+            TRLDPage.Padding = new Padding(2, 2, 2, 2);
+            TRLDPage.TabIndex = 0;
+            TRLDPage.Text = "TRLD";
+
 
             ResidualsPage.BackColor = SystemColors.Control;
             ResidualsPage.Margin = new Padding(2, 2, 2, 2);
@@ -130,7 +142,8 @@ namespace LUI
 
             Tabs.TabPages.Add(HomePage);
             Tabs.TabPages.Add(SpecPage);
-            Tabs.TabPages.Add(TROSPage);
+            Tabs.TabPages.Add(TROAPage);
+            Tabs.TabPages.Add(TRLDPage);
             Tabs.TabPages.Add(ResidualsPage);
             Tabs.TabPages.Add(CalibrationPage);
             Tabs.TabPages.Add(PowerPage);
@@ -155,8 +168,11 @@ namespace LUI
             CalibrateControl = new CalibrateControl(Config);
             CalibrationPage.Controls.Add(CalibrateControl);
 
-            TROSControl = new TroaControl(Config);
-            TROSPage.Controls.Add(TROSControl);
+            TROAControl = new TroaControl(Config);
+            TROAPage.Controls.Add(TROAControl);
+
+            TRLDControl = new TrldControl(Config);
+            TRLDPage.Controls.Add(TRLDControl);
 
             LaserPowerControl = new LaserPowerControl(Config);
             PowerPage.Controls.Add(LaserPowerControl);
@@ -195,7 +211,8 @@ namespace LUI
             {
                 if (ResidualsControl.IsBusy) return TaskState.RESIDUALS;
                 if (CalibrateControl.IsBusy) return TaskState.CALIBRATE;
-                if (TROSControl.IsBusy) return TaskState.TROS;
+                if (TROAControl.IsBusy) return TaskState.TROA;
+                if (TRLDControl.IsBusy) return TaskState.TRLD;
                 if (LaserPowerControl.IsBusy) return TaskState.POWER;
                 if (SpecControl.IsBusy) return TaskState.SPEC;
                 return TaskState.IDLE;
@@ -229,7 +246,7 @@ namespace LUI
         {
             try
             {
-                DisableTabs(TROSPage, CalibrationPage, ResidualsPage, PowerPage, SpecPage, OptionsPage);
+                DisableTabs(TROAPage, TRLDPage, CalibrationPage, ResidualsPage, PowerPage, SpecPage, OptionsPage);
                 var Instantiation = Config.InstantiateConfigurationAsync();
                 await Instantiation;
                 Config.OnParametersChanged(sender, e);
@@ -348,8 +365,12 @@ namespace LUI
                         Task = "Residuals measurement";
                         break;
 
-                    case TaskState.TROS:
-                        Task = "TROS program";
+                    case TaskState.TROA:
+                        Task = "TROA program";
+                        break;
+
+                    case TaskState.TRLD:
+                        Task = "TRLD program";
                         break;
                 }
 

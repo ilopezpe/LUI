@@ -144,6 +144,12 @@
     <Compile Include="config\TextBoxAppender.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="controls\ControlExtensions.cs" />
+    <Compile Include="controls\panel\config\DummyPolarizerConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\panel\config\PolarizerConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="controls\panel\config\DummyPumpConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -276,6 +282,12 @@
     <Compile Include="tabs\SpecControl.Designer.cs">
       <DependentUpon>SpecControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="tabs\TrldControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="tabs\TrldControl.Designer.cs">
+      <DependentUpon>TrldControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="tabs\TroaControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -318,6 +330,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\SpecControl.resx">
       <DependentUpon>SpecControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="tabs\TrldControl.resx">
+      <DependentUpon>TrldControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\TroaControl.resx">
       <DependentUpon>TroaControl.cs</DependentUpon>

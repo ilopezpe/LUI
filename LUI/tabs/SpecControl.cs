@@ -29,7 +29,7 @@ namespace LUI.tabs
             PROGRESS_CALC
         }
 
-        public enum PumpMode
+        public enum SyringePumpMode
         {
             ALWAYS,
             NEVER
@@ -64,7 +64,7 @@ namespace LUI.tabs
 
         protected override void OnLoad(EventArgs e)
         {
-            PumpBox.ObjectChanged += HandlePumpChanged;
+            SyringePumpBox.ObjectChanged += HandleSyringePumpChanged;
             CurvesView.SelectionChanged += CurvesView_SelectionChanged;
             base.OnLoad(e);
         }
@@ -73,35 +73,35 @@ namespace LUI.tabs
         {
             base.HandleParametersChanged(sender, e); // Takes care of ObjectSelectPanel.
 
-            var PumpsAvailable = Config.GetParameters(typeof(PumpParameters));
-            if (PumpsAvailable.Count() > 0)
+            var SyringePumpsAvailable = Config.GetParameters(typeof(SyringePumpParameters));
+            if (SyringePumpsAvailable.Count() > 0)
             {
-                var selectedPump = PumpBox.SelectedObject;
-                PumpBox.Objects.Items.Clear();
-                foreach (var p in PumpsAvailable)
-                    PumpBox.Objects.Items.Add(p);
+                var selectedSyringePump = SyringePumpBox.SelectedObject;
+                SyringePumpBox.Objects.Items.Clear();
+                foreach (var p in SyringePumpsAvailable)
+                    SyringePumpBox.Objects.Items.Add(p);
                 // One of next two lines will trigger CameraChanged event.
-                PumpBox.SelectedObject = selectedPump;
-                if (PumpBox.Objects.SelectedItem == null) PumpBox.Objects.SelectedIndex = 0;
-                PumpBox.Enabled = true;
+                SyringePumpBox.SelectedObject = selectedSyringePump;
+                if (SyringePumpBox.Objects.SelectedItem == null) SyringePumpBox.Objects.SelectedIndex = 0;
+                SyringePumpBox.Enabled = true;
             }
             else
             {
-                PumpBox.Enabled = false;
+                SyringePumpBox.Enabled = false;
             }
         }
 
-        public virtual void HandlePumpChanged(object sender, EventArgs e)
+        public virtual void HandleSyringePumpChanged(object sender, EventArgs e)
         {
-            if (Commander.Pump != null) Commander.Pump.SetClosed();
-            Commander.Pump = (IPump)Config.GetObject(PumpBox.SelectedObject);
+            if (Commander.SyringePump != null) Commander.SyringePump.SetClosed();
+            Commander.SyringePump = (ISyringePump)Config.GetObject(SyringePumpBox.SelectedObject);
         }
 
         public override void OnTaskStarted(EventArgs e)
         {
             base.OnTaskStarted(e);
             ClearBlank.Enabled = false;
-            PumpBox.Enabled = false;
+            SyringePumpBox.Enabled = false;
             SaveData.Enabled = false;
         }
 
@@ -109,16 +109,16 @@ namespace LUI.tabs
         {
             base.OnTaskFinished(e);
             ClearBlank.Enabled = true;
-            PumpBox.Enabled = true;
+            SyringePumpBox.Enabled = true;
             SaveData.Enabled = true;
         }
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
             var N = (int)NScan.Value;
-            PumpMode Mode;
-            if (PumpNever.Checked) Mode = PumpMode.NEVER;
-            else Mode = PumpMode.ALWAYS;
+            SyringePumpMode Mode;
+            if (SyringePumpNever.Checked) Mode = SyringePumpMode.NEVER;
+            else Mode = SyringePumpMode.ALWAYS;
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
@@ -181,7 +181,7 @@ namespace LUI.tabs
 
             Commander.BeamFlag.OpenFlash();
 
-            if (args.Pump == PumpMode.ALWAYS) OpenPump(args.DiscardFirst);
+            if (args.SyringePump == SyringePumpMode.ALWAYS) OpenSyringePump(args.DiscardFirst);
 
             var SampleBuffer = new int[finalSize];
             for (var i = 0; i < N; i++)
@@ -193,7 +193,7 @@ namespace LUI.tabs
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
-            if (args.Pump == PumpMode.ALWAYS) Commander.Pump.SetClosed();
+            if (args.SyringePump == SyringePumpMode.ALWAYS) Commander.SyringePump.SetClosed();
 
             if (PauseCancelProgress(e, -1, Dialog.PROGRESS_CALC.ToString())) return;
             e.Result = Data.OpticalDensity(SampleBuffer, BlankBuffer, DarkBuffer);
@@ -239,7 +239,7 @@ namespace LUI.tabs
         protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
             Commander.BeamFlag.CloseLaserAndFlash();
-            Commander.Pump.SetClosed();
+            Commander.SyringePump.SetClosed();
             if (!e.Cancelled)
             {
                 CurvesView.Add(Commander.Camera.Calibration, (double[])e.Result);
@@ -361,15 +361,15 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, PumpMode Pump, bool DiscardFirst)
+            public WorkArgs(int N, SyringePumpMode SyringePump, bool DiscardFirst)
             {
                 this.N = N;
-                this.Pump = Pump;
+                this.SyringePump = SyringePump;
                 this.DiscardFirst = DiscardFirst;
             }
 
             public readonly int N;
-            public readonly PumpMode Pump;
+            public readonly SyringePumpMode SyringePump;
             public readonly bool DiscardFirst;
         }
     }

@@ -2,13 +2,13 @@
 
 namespace lasercom.syringepump
 {
-    public class DummyPump : AbstractPump
+    public class DummySyringePump : AbstractSyringePump
     {
-        //public DummyPump(LuiObjectParameters p) : this()
-        //{
-        //}
+        public DummySyringePump(LuiObjectParameters p) : this()
+        {
+        }
 
-        public DummyPump()
+        public DummySyringePump()
         {
             SetClosed();
         }

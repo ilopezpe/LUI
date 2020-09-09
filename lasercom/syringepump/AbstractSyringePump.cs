@@ -4,21 +4,21 @@ using System;
 namespace lasercom.syringepump
 {
     /// <summary>
-    ///     Base class for all pumps.
+    /// Base class for all syringe pumps.
     /// </summary>
-    public abstract class AbstractPump : LuiObject<PumpParameters>, IPump
+    public abstract class AbstractSyringePump : LuiObject<SyringePumpParameters>, ISyringePump
     {
-        public PumpState CurrentState { get; protected set; }
+        public SyringePumpState CurrentState { get; protected set; }
 
-        public virtual PumpState Toggle()
+        public virtual SyringePumpState Toggle()
         {
             switch (CurrentState)
             {
-                case PumpState.Open:
+                case SyringePumpState.Open:
                     SetClosed();
                     break;
 
-                case PumpState.Closed:
+                case SyringePumpState.Closed:
                     SetOpen();
                     break;
             }
@@ -28,21 +28,21 @@ namespace lasercom.syringepump
 
         public virtual void SetOpen()
         {
-            CurrentState = PumpState.Open;
+            CurrentState = SyringePumpState.Open;
             //TODO Which is which?
         }
 
         public virtual void SetClosed()
         {
-            CurrentState = PumpState.Closed;
+            CurrentState = SyringePumpState.Closed;
         }
 
-        public virtual PumpState GetState()
+        public virtual SyringePumpState GetState()
         {
             return CurrentState;
         }
 
-        public override void Update(PumpParameters p)
+        public override void Update(SyringePumpParameters p)
         {
             throw new NotImplementedException();
         }

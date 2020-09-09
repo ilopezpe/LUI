@@ -1,6 +1,6 @@
 ﻿namespace LUI.tabs
 {
-    partial class TroaControl
+    partial class TrldControl
     {
         /// <summary>
         /// Required designer variable.
@@ -28,21 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            this.PolarizerBetaLabel = new System.Windows.Forms.Label();
             this.LoadTimes = new System.Windows.Forms.Button();
             this.TimesView = new System.Windows.Forms.DataGridView();
+            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SaveData = new System.Windows.Forms.Button();
             this.DdgConfigBox = new LUI.controls.DdgCommandPanel();
-            this.SyringePumpBox = new LUI.controls.ObjectCommandPanel();
+            this.PolarizerBox = new LUI.controls.ObjectCommandPanel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.SyringePumpAlways = new System.Windows.Forms.RadioButton();
-            this.SyringePumpTs = new System.Windows.Forms.RadioButton();
-            this.SyringePumpNever = new System.Windows.Forms.RadioButton();
-            this.Discard = new System.Windows.Forms.CheckBox();
+            this.Beta = new System.Windows.Forms.NumericUpDown();
             this.TimeProgress = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
-            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -53,8 +51,9 @@
             this.RightChildArea.SuspendLayout();
             this.LeftPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TimesView)).BeginInit();
-            this.SyringePumpBox.Flow.SuspendLayout();
+            this.PolarizerBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Beta)).BeginInit();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -98,7 +97,17 @@
             // 
             // RightChildArea
             // 
-            this.RightChildArea.Controls.Add(this.SyringePumpBox);
+            this.RightChildArea.Controls.Add(this.PolarizerBox);
+            // 
+            // PolarizerBetaLabel
+            // 
+            this.PolarizerBetaLabel.AutoSize = true;
+            this.PolarizerBetaLabel.Location = new System.Drawing.Point(43, 12);
+            this.PolarizerBetaLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.PolarizerBetaLabel.Name = "PolarizerBetaLabel";
+            this.PolarizerBetaLabel.Size = new System.Drawing.Size(29, 13);
+            this.PolarizerBetaLabel.TabIndex = 10;
+            this.PolarizerBetaLabel.Text = "Beta";
             // 
             // LoadTimes
             // 
@@ -133,6 +142,16 @@
             this.TimesView.Size = new System.Drawing.Size(136, 150);
             this.TimesView.TabIndex = 11;
             // 
+            // Value
+            // 
+            this.Value.DataPropertyName = "Value";
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle2;
+            this.Value.HeaderText = "Delay (s)";
+            this.Value.Name = "Value";
+            this.Value.ReadOnly = true;
+            this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
             // SaveData
             // 
             this.SaveData.Location = new System.Drawing.Point(3, 196);
@@ -153,85 +172,52 @@
             this.DdgConfigBox.Size = new System.Drawing.Size(362, 59);
             this.DdgConfigBox.TabIndex = 15;
             // 
-            // SyringePumpBox
+            // PolarizerBox
             // 
-            this.SyringePumpBox.AutoSize = true;
-            this.SyringePumpBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SyringePumpBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.PolarizerBox.AutoSize = true;
+            this.PolarizerBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.PolarizerBox.Dock = System.Windows.Forms.DockStyle.Top;
             // 
-            // SyringePumpBox.Flow
+            // PolarizerBox.Flow
             // 
-            this.SyringePumpBox.Flow.AutoSize = true;
-            this.SyringePumpBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SyringePumpBox.Flow.Controls.Add(this.panel1);
-            this.SyringePumpBox.Flow.Controls.Add(this.Discard);
-            this.SyringePumpBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SyringePumpBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.SyringePumpBox.Flow.Location = new System.Drawing.Point(3, 16);
-            this.SyringePumpBox.Flow.Name = "Flow";
-            this.SyringePumpBox.Flow.Size = new System.Drawing.Size(294, 92);
-            this.SyringePumpBox.Flow.TabIndex = 0;
-            this.SyringePumpBox.Location = new System.Drawing.Point(0, 0);
-            this.SyringePumpBox.Name = "SyringePumpBox";
-            this.SyringePumpBox.SelectedObject = null;
-            this.SyringePumpBox.Size = new System.Drawing.Size(300, 111);
-            this.SyringePumpBox.TabIndex = 0;
-            this.SyringePumpBox.Text = "Syringe Pump";
+            this.PolarizerBox.Flow.AutoSize = true;
+            this.PolarizerBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.PolarizerBox.Flow.Controls.Add(this.panel1);
+            this.PolarizerBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PolarizerBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.PolarizerBox.Flow.Location = new System.Drawing.Point(3, 16);
+            this.PolarizerBox.Flow.Name = "Flow";
+            this.PolarizerBox.Flow.Size = new System.Drawing.Size(294, 73);
+            this.PolarizerBox.Flow.TabIndex = 0;
+            this.PolarizerBox.Location = new System.Drawing.Point(0, 0);
+            this.PolarizerBox.Name = "PolarizerBox";
+            this.PolarizerBox.SelectedObject = null;
+            this.PolarizerBox.Size = new System.Drawing.Size(300, 92);
+            this.PolarizerBox.TabIndex = 0;
+            this.PolarizerBox.Text = "Polarizer";
             // 
             // panel1
             // 
             this.panel1.AutoSize = true;
-            this.panel1.Controls.Add(this.SyringePumpAlways);
-            this.panel1.Controls.Add(this.SyringePumpTs);
-            this.panel1.Controls.Add(this.SyringePumpNever);
+            this.panel1.Controls.Add(this.Beta);
+            this.panel1.Controls.Add(this.PolarizerBetaLabel);
             this.panel1.Location = new System.Drawing.Point(3, 36);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(198, 30);
+            this.panel1.Size = new System.Drawing.Size(151, 34);
             this.panel1.TabIndex = 1;
             // 
-            // SyringePumpAlways
+            // PolarizerBeta
             // 
-            this.SyringePumpAlways.AutoSize = true;
-            this.SyringePumpAlways.Location = new System.Drawing.Point(137, 10);
-            this.SyringePumpAlways.Name = "SyringePumpAlways";
-            this.SyringePumpAlways.Size = new System.Drawing.Size(58, 17);
-            this.SyringePumpAlways.TabIndex = 2;
-            this.SyringePumpAlways.TabStop = true;
-            this.SyringePumpAlways.Text = "Always";
-            this.SyringePumpAlways.UseVisualStyleBackColor = true;
-            // 
-            // SyringePumpTs
-            // 
-            this.SyringePumpTs.AutoSize = true;
-            this.SyringePumpTs.Location = new System.Drawing.Point(68, 10);
-            this.SyringePumpTs.Name = "SyringePumpTs";
-            this.SyringePumpTs.Size = new System.Drawing.Size(63, 17);
-            this.SyringePumpTs.TabIndex = 1;
-            this.SyringePumpTs.TabStop = true;
-            this.SyringePumpTs.Text = "TS Only";
-            this.SyringePumpTs.UseVisualStyleBackColor = true;
-            // 
-            // SyringePumpNever
-            // 
-            this.SyringePumpNever.AutoSize = true;
-            this.SyringePumpNever.Checked = true;
-            this.SyringePumpNever.Location = new System.Drawing.Point(8, 10);
-            this.SyringePumpNever.Name = "SyringePumpNever";
-            this.SyringePumpNever.Size = new System.Drawing.Size(54, 17);
-            this.SyringePumpNever.TabIndex = 0;
-            this.SyringePumpNever.TabStop = true;
-            this.SyringePumpNever.Text = "Never";
-            this.SyringePumpNever.UseVisualStyleBackColor = true;
-            // 
-            // Discard
-            // 
-            this.Discard.AutoSize = true;
-            this.Discard.Location = new System.Drawing.Point(3, 72);
-            this.Discard.Name = "Discard";
-            this.Discard.Size = new System.Drawing.Size(84, 17);
-            this.Discard.TabIndex = 2;
-            this.Discard.Text = "Discard First";
-            this.Discard.UseVisualStyleBackColor = true;
+            this.Beta.Location = new System.Drawing.Point(80, 10);
+            this.Beta.Margin = new System.Windows.Forms.Padding(4);
+            this.Beta.Maximum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            this.Beta.Name = "PolarizerBeta";
+            this.Beta.Size = new System.Drawing.Size(67, 20);
+            this.Beta.TabIndex = 10;
             // 
             // TimeProgress
             // 
@@ -264,20 +250,10 @@
             this.label2.TabIndex = 15;
             this.label2.Text = "Times";
             // 
-            // Value
-            // 
-            this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Value.HeaderText = "Delay (s)";
-            this.Value.Name = "Value";
-            this.Value.ReadOnly = true;
-            this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // TroaControl
+            // TrldControl
             // 
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.Name = "TroaControl";
+            this.Name = "TrldControl";
             this.ParentPanel.ResumeLayout(false);
             this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
@@ -295,10 +271,11 @@
             this.LeftPanel.ResumeLayout(false);
             this.LeftPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TimesView)).EndInit();
-            this.SyringePumpBox.Flow.ResumeLayout(false);
-            this.SyringePumpBox.Flow.PerformLayout();
+            this.PolarizerBox.Flow.ResumeLayout(false);
+            this.PolarizerBox.Flow.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Beta)).EndInit();
             this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -310,12 +287,10 @@
         private System.Windows.Forms.DataGridView TimesView;
         private System.Windows.Forms.Button SaveData;
         private controls.DdgCommandPanel DdgConfigBox;
-        private controls.ObjectCommandPanel SyringePumpBox;
+        private controls.ObjectCommandPanel PolarizerBox;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.RadioButton SyringePumpAlways;
-        private System.Windows.Forms.RadioButton SyringePumpTs;
-        private System.Windows.Forms.RadioButton SyringePumpNever;
-        private System.Windows.Forms.CheckBox Discard;
+        private System.Windows.Forms.Label PolarizerBetaLabel;
+        private System.Windows.Forms.NumericUpDown Beta;
         protected System.Windows.Forms.TextBox TimeProgress;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label2;

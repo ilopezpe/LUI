@@ -3,15 +3,15 @@ using System;
 
 namespace LUI.controls
 {
-    class DummyPumpConfigPanel : LuiObjectConfigPanel<PumpParameters>
+    class DummySyringePumpConfigPanel : LuiObjectConfigPanel<SyringePumpParameters>
     {
-        public override Type Target => typeof(DummyPump);
+        public override Type Target => typeof(DummySyringePump);
 
-        public override void CopyTo(PumpParameters other)
+        public override void CopyTo(SyringePumpParameters other)
         {
         }
 
-        public override void CopyFrom(PumpParameters other)
+        public override void CopyFrom(SyringePumpParameters other)
         {
         }
     }

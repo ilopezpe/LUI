@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.SaveData = new System.Windows.Forms.Button();
-            this.PumpBox = new LUI.controls.ObjectCommandPanel();
+            this.SyringePumpBox = new LUI.controls.ObjectCommandPanel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.PumpAlways = new System.Windows.Forms.RadioButton();
-            this.PumpNever = new System.Windows.Forms.RadioButton();
+            this.SyringePumpAlways = new System.Windows.Forms.RadioButton();
+            this.SyringePumpNever = new System.Windows.Forms.RadioButton();
             this.Discard = new System.Windows.Forms.CheckBox();
             this.CountsLabel = new System.Windows.Forms.Label();
             this.CountsDisplay = new System.Windows.Forms.TextBox();
@@ -47,7 +47,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             this.RightChildArea.SuspendLayout();
             this.LeftPanel.SuspendLayout();
-            this.PumpBox.Flow.SuspendLayout();
+            this.SyringePumpBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
@@ -81,7 +81,7 @@
             // 
             // RightChildArea
             // 
-            this.RightChildArea.Controls.Add(this.PumpBox);
+            this.RightChildArea.Controls.Add(this.SyringePumpBox);
             // 
             // SaveData
             // 
@@ -94,63 +94,63 @@
             this.SaveData.Text = "Save Data";
             this.SaveData.UseVisualStyleBackColor = true;
             // 
-            // PumpBox
+            // SyringePumpBox
             // 
-            this.PumpBox.AutoSize = true;
-            this.PumpBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PumpBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.SyringePumpBox.AutoSize = true;
+            this.SyringePumpBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.SyringePumpBox.Dock = System.Windows.Forms.DockStyle.Top;
             // 
-            // PumpBox.Flow
+            // SyringePumpBox.Flow
             // 
-            this.PumpBox.Flow.AutoSize = true;
-            this.PumpBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PumpBox.Flow.Controls.Add(this.panel1);
-            this.PumpBox.Flow.Controls.Add(this.Discard);
-            this.PumpBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PumpBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.PumpBox.Flow.Location = new System.Drawing.Point(3, 16);
-            this.PumpBox.Flow.Name = "Flow";
-            this.PumpBox.Flow.Size = new System.Drawing.Size(294, 92);
-            this.PumpBox.Flow.TabIndex = 0;
-            this.PumpBox.Location = new System.Drawing.Point(0, 0);
-            this.PumpBox.Name = "PumpBox";
-            this.PumpBox.SelectedObject = null;
-            this.PumpBox.Size = new System.Drawing.Size(300, 111);
-            this.PumpBox.TabIndex = 1;
-            this.PumpBox.Text = "Syringe Pump";
+            this.SyringePumpBox.Flow.AutoSize = true;
+            this.SyringePumpBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.SyringePumpBox.Flow.Controls.Add(this.panel1);
+            this.SyringePumpBox.Flow.Controls.Add(this.Discard);
+            this.SyringePumpBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SyringePumpBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.SyringePumpBox.Flow.Location = new System.Drawing.Point(3, 16);
+            this.SyringePumpBox.Flow.Name = "Flow";
+            this.SyringePumpBox.Flow.Size = new System.Drawing.Size(294, 92);
+            this.SyringePumpBox.Flow.TabIndex = 0;
+            this.SyringePumpBox.Location = new System.Drawing.Point(0, 0);
+            this.SyringePumpBox.Name = "SyringePumpBox";
+            this.SyringePumpBox.SelectedObject = null;
+            this.SyringePumpBox.Size = new System.Drawing.Size(300, 111);
+            this.SyringePumpBox.TabIndex = 1;
+            this.SyringePumpBox.Text = "Syringe Pump";
             // 
             // panel1
             // 
             this.panel1.AutoSize = true;
-            this.panel1.Controls.Add(this.PumpAlways);
-            this.panel1.Controls.Add(this.PumpNever);
+            this.panel1.Controls.Add(this.SyringePumpAlways);
+            this.panel1.Controls.Add(this.SyringePumpNever);
             this.panel1.Location = new System.Drawing.Point(3, 36);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(129, 30);
             this.panel1.TabIndex = 2;
             // 
-            // PumpAlways
+            // SyringePumpAlways
             // 
-            this.PumpAlways.AutoSize = true;
-            this.PumpAlways.Location = new System.Drawing.Point(68, 10);
-            this.PumpAlways.Name = "PumpAlways";
-            this.PumpAlways.Size = new System.Drawing.Size(58, 17);
-            this.PumpAlways.TabIndex = 2;
-            this.PumpAlways.TabStop = true;
-            this.PumpAlways.Text = "Always";
-            this.PumpAlways.UseVisualStyleBackColor = true;
+            this.SyringePumpAlways.AutoSize = true;
+            this.SyringePumpAlways.Location = new System.Drawing.Point(68, 10);
+            this.SyringePumpAlways.Name = "SyringePumpAlways";
+            this.SyringePumpAlways.Size = new System.Drawing.Size(58, 17);
+            this.SyringePumpAlways.TabIndex = 2;
+            this.SyringePumpAlways.TabStop = true;
+            this.SyringePumpAlways.Text = "Always";
+            this.SyringePumpAlways.UseVisualStyleBackColor = true;
             // 
-            // PumpNever
+            // SyringePumpNever
             // 
-            this.PumpNever.AutoSize = true;
-            this.PumpNever.Checked = true;
-            this.PumpNever.Location = new System.Drawing.Point(8, 10);
-            this.PumpNever.Name = "PumpNever";
-            this.PumpNever.Size = new System.Drawing.Size(54, 17);
-            this.PumpNever.TabIndex = 0;
-            this.PumpNever.TabStop = true;
-            this.PumpNever.Text = "Never";
-            this.PumpNever.UseVisualStyleBackColor = true;
+            this.SyringePumpNever.AutoSize = true;
+            this.SyringePumpNever.Checked = true;
+            this.SyringePumpNever.Location = new System.Drawing.Point(8, 10);
+            this.SyringePumpNever.Name = "SyringePumpNever";
+            this.SyringePumpNever.Size = new System.Drawing.Size(54, 17);
+            this.SyringePumpNever.TabIndex = 0;
+            this.SyringePumpNever.TabStop = true;
+            this.SyringePumpNever.Text = "Never";
+            this.SyringePumpNever.UseVisualStyleBackColor = true;
             // 
             // Discard
             // 
@@ -220,8 +220,8 @@
             this.RightChildArea.PerformLayout();
             this.LeftPanel.ResumeLayout(false);
             this.LeftPanel.PerformLayout();
-            this.PumpBox.Flow.ResumeLayout(false);
-            this.PumpBox.Flow.PerformLayout();
+            this.SyringePumpBox.Flow.ResumeLayout(false);
+            this.SyringePumpBox.Flow.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -231,10 +231,10 @@
         #endregion
 
         private System.Windows.Forms.Button SaveData;
-        private controls.ObjectCommandPanel PumpBox;
+        private controls.ObjectCommandPanel SyringePumpBox;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.RadioButton PumpAlways;
-        private System.Windows.Forms.RadioButton PumpNever;
+        private System.Windows.Forms.RadioButton SyringePumpAlways;
+        private System.Windows.Forms.RadioButton SyringePumpNever;
         private System.Windows.Forms.CheckBox Discard;
         private System.Windows.Forms.Label CountsLabel;
         private System.Windows.Forms.TextBox CountsDisplay;

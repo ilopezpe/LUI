@@ -2,6 +2,7 @@
 using lasercom.camera;
 using lasercom.syringepump;
 using lasercom.beamflags;
+using lasercom.polarizer;
 using lasercom.ddg;
 using lasercom.gpib;
 using log4net;
@@ -35,10 +36,11 @@ namespace LUI.tabs
 
             #region Panels and list of options dialogs
 
+            // Container for options dialogs.
             var OptionsPanel = new Panel
             {
-                Dock = DockStyle.Fill // Panel will fill all left-over space.
-            }; // Container for options dialogs.
+                Dock = DockStyle.Fill
+            };
             Controls.Add(OptionsPanel); // Must add the DockStyle.Fill control first.
 
             var ListPanel = new Panel
@@ -49,7 +51,7 @@ namespace LUI.tabs
 
             OptionsListView = new OptionsListView
             {
-                Dock = DockStyle.Fill, // Fill available space.
+                Dock = DockStyle.Fill,
                 HideSelection = false, // Maintain highlighting if user changes control focus.
                 MultiSelect = false, // Only select one item at a time.
                 HeaderStyle = ColumnHeaderStyle.None,
@@ -69,6 +71,7 @@ namespace LUI.tabs
             var Instruments = new ListViewGroup("Instruments", HorizontalAlignment.Left);
             OptionsListView.Groups.Add(Instruments);
 
+            // Logging Options
             var LoggingOptionsDialog = new LoggingOptionsDialog(OptionsPanel.Size)
             {
                 Dock = DockStyle.Fill
@@ -80,8 +83,8 @@ namespace LUI.tabs
             OptionsListView.Items.Add(LoggingOptionsItem);
             OptionsPanel.Controls.Add(LoggingOptionsDialog);
 
-            var BeamFlagOptionsDialog =
-                new LuiOptionsListDialog<AbstractBeamFlags, BeamFlagsParameters>(OptionsPanel.Size);
+            // Beam Flag Options Dialog
+            var BeamFlagOptionsDialog = new LuiOptionsListDialog<AbstractBeamFlags, BeamFlagsParameters>(OptionsPanel.Size);
             BeamFlagOptionsDialog.AddConfigPanel(new BeamFlagsConfigPanel());
             BeamFlagOptionsDialog.AddConfigPanel(new DummyBeamFlagsConfigPanel());
             BeamFlagOptionsDialog.SetDefaultSelectedItems();
@@ -93,6 +96,7 @@ namespace LUI.tabs
             OptionsListView.Items.Add(BeamFlagOptionsItem);
             OptionsPanel.Controls.Add(BeamFlagOptionsDialog);
 
+            // CCD Camera Dialog
             var CameraOptionsDialog =
                 new LuiOptionsListDialog<ICamera, CameraParameters>(OptionsPanel.Size);
             CameraOptionsDialog.AddConfigPanel(new AndorCameraConfigPanel());
@@ -108,6 +112,7 @@ namespace LUI.tabs
             OptionsListView.Items.Add(CameraOptionsItem);
             OptionsPanel.Controls.Add(CameraOptionsDialog);
 
+            // GPIB Options Dialog
             var GPIBOptionsDialog = new LuiOptionsListDialog<IGpibProvider, GpibProviderParameters>(OptionsPanel.Size);
             GPIBOptionsDialog.AddConfigPanel(new NIConfigPanel());
             GPIBOptionsDialog.AddConfigPanel(new PrologixConfigPanel());
@@ -121,6 +126,8 @@ namespace LUI.tabs
             OptionsListView.Items.Add(GPIBOptionsItem);
             OptionsPanel.Controls.Add(GPIBOptionsDialog);
 
+
+            // DDG Options Dialog
             var DDGOptionsDialog =
                 new LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters>(OptionsPanel.Size);
             DDGOptionsDialog.AddConfigPanel(new DG535ConfigPanel(GPIBOptionsDialog));
@@ -134,17 +141,32 @@ namespace LUI.tabs
             OptionsListView.Items.Add(DDGOptionsItem);
             OptionsPanel.Controls.Add(DDGOptionsDialog);
 
-            var PumpOptionsDialog = new LuiOptionsListDialog<IPump, PumpParameters>(OptionsPanel.Size);
-            PumpOptionsDialog.AddConfigPanel(new HarvardPumpConfigPanel());
-            PumpOptionsDialog.AddConfigPanel(new DummyPumpConfigPanel());
-            PumpOptionsDialog.SetDefaultSelectedItems();
-            PumpOptionsDialog.Dock = DockStyle.Fill;
-            var PumpOptionsItem = new ListViewItem("Syringe Pumps", Instruments)
+            // Syringe Pump Dialog
+            var SyringePumpOptionsDialog = new LuiOptionsListDialog<ISyringePump, SyringePumpParameters>(OptionsPanel.Size);
+            SyringePumpOptionsDialog.AddConfigPanel(new HarvardSyringePumpConfigPanel());
+            SyringePumpOptionsDialog.AddConfigPanel(new DummySyringePumpConfigPanel());
+            SyringePumpOptionsDialog.SetDefaultSelectedItems();
+            SyringePumpOptionsDialog.Dock = DockStyle.Fill;
+            var SyringePumpOptionsItem = new ListViewItem("Syringe Pump", Instruments)
             {
-                Tag = PumpOptionsDialog
+                Tag = SyringePumpOptionsDialog
             };
-            OptionsListView.Items.Add(PumpOptionsItem);
-            OptionsPanel.Controls.Add(PumpOptionsDialog);
+            OptionsListView.Items.Add(SyringePumpOptionsItem);
+            OptionsPanel.Controls.Add(SyringePumpOptionsDialog);
+
+            // Polarizer Dialog
+            var PolarizerOptionsDialog = new LuiOptionsListDialog<IPolarizer, PolarizerParameters>(OptionsPanel.Size);
+            PolarizerOptionsDialog.AddConfigPanel(new PolarizerConfigPanel());
+            PolarizerOptionsDialog.AddConfigPanel(new DummyPolarizerConfigPanel());
+            PolarizerOptionsDialog.SetDefaultSelectedItems();
+            PolarizerOptionsDialog.Dock = DockStyle.Fill;
+            var PolarizerOptionsItem = new ListViewItem("Polarizer", Instruments)
+            {
+                Tag = PolarizerOptionsDialog
+            };
+            OptionsListView.Items.Add(PolarizerOptionsItem);
+            OptionsPanel.Controls.Add(PolarizerOptionsDialog);
+
 
             #endregion Options dialogs
 
@@ -240,15 +262,6 @@ namespace LUI.tabs
         {
             ChildrenMatchConfig(Config);
         }
-
-        //public void ChildrenCopyConfigState()
-        //{
-        //    // Update all options dialogs to to the state of their configs.
-        //    foreach (ListViewItem it in OptionsListView.Items)
-        //    {
-        //        ((LuiOptionsDialog)it.Tag).CopyConfigState();
-        //    }
-        //}
 
         void HandleParametersChanged(object sender, EventArgs e)
         {

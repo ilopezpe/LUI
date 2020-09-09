@@ -36,10 +36,10 @@ namespace lasercom.objects
         {
             var args = new object[] { p }.Concat(dependencies).ToArray();
             return (ILuiObject)Activator.CreateInstance(p.Type,
-                BindingFlags.CreateInstance |
-                BindingFlags.Public |
-                BindingFlags.Instance |
-                BindingFlags.OptionalParamBinding,
+                BindingFlags.CreateInstance
+                | BindingFlags.Public
+                | BindingFlags.Instance
+                | BindingFlags.OptionalParamBinding,
                 null,
                 args,
                 CultureInfo.CurrentCulture);

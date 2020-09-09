@@ -6,30 +6,28 @@ using System.Threading;
 namespace lasercom.beamflags
 {
     /// <summary>
-    ///     Class representing BeamFlags operated by numato usbgpio16 controller.
+    /// Class representing BeamFlags operated by numato usbgpio16 controller.
     /// </summary>
     public class BeamFlags : AbstractBeamFlags
     {
+        #region Constants 
         //use masks to send commands simultaneously
         public const string gpioOutputs = "00ff";
-
         public const string gpioMask = "c000";
 
         //probe light shutter
         //reverse logic, i.e. high = close shutters. low = open shutters.
         public const string OpenFlashCommand = "gpio clear E\r";
-
         public const string CloseFlashCommand = "gpio set E\r";
 
         //laser shutter
         public const string OpenLaserCommand = "gpio clear F\r";
-
         public const string CloseLaserCommand = "gpio set F\r";
 
         // the following allows switching both io14 and io15 simultaneously.
         public const string OpenLaserAndFlashCommand = "gpio writeall 0000\r";
-
         public const string CloseLaserAndFlashCommand = "gpio writeall ffff\r";
+        #endregion
 
         // Approximate time in ms for solenoid to switch.
         public const int DefaultDelay = 300;

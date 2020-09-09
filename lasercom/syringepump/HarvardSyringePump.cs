@@ -8,23 +8,23 @@ namespace lasercom.syringepump
     ///     Represents a Harvard Apparatus syringe pump using the custom
     ///     flip-flop box and foot-pedal hack.
     /// </summary>
-    public class HarvardPump : AbstractPump
+    public class HarvardSyringePump : AbstractSyringePump
     {
         SerialPort _port;
 
-        public HarvardPump(LuiObjectParameters p) :
-            this(p as PumpParameters)
+        public HarvardSyringePump(LuiObjectParameters p) :
+            this(p as SyringePumpParameters)
         {
         }
 
-        public HarvardPump(PumpParameters p)
+        public HarvardSyringePump(SyringePumpParameters p)
         {
             if (p == null || p.PortName == null)
                 throw new ArgumentException("PortName must be defined.");
             Init(p.PortName);
         }
 
-        public HarvardPump(string portName)
+        public HarvardSyringePump(string portName)
         {
             Init(portName);
         }
@@ -41,15 +41,15 @@ namespace lasercom.syringepump
             return _port.PortName;
         }
 
-        public override PumpState Toggle()
+        public override SyringePumpState Toggle()
         {
             switch (CurrentState)
             {
-                case PumpState.Open:
+                case SyringePumpState.Open:
                     SetClosed();
                     break;
 
-                case PumpState.Closed:
+                case SyringePumpState.Closed:
                     SetOpen();
                     break;
             }
@@ -59,17 +59,17 @@ namespace lasercom.syringepump
 
         public override void SetOpen()
         {
-            CurrentState = PumpState.Open;
+            CurrentState = SyringePumpState.Open;
             _port.Open(); //TODO Which is which?
         }
 
         public override void SetClosed()
         {
-            CurrentState = PumpState.Closed;
+            CurrentState = SyringePumpState.Closed;
             _port.Close();
         }
 
-        public override PumpState GetState()
+        public override SyringePumpState GetState()
         {
             return CurrentState;
         }

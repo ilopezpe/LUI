@@ -78,13 +78,6 @@ namespace LUI.tabs
         void Init()
         {
             SuspendLayout();
-
-            //StatusBox.Dock = DockStyle.None;
-            //var mw = Math.Max(Math.Max(StatusBox.Width, CommandsBox.Width), CommonObjectPanel.Width);
-            //var sz = RightPanel.MinimumSize;
-            //sz.Width = mw;
-            //RightPanel.MinimumSize = sz;
-            //StatusBox.Dock = DockStyle.Top;
             var screenSize = Screen.PrimaryScreen.WorkingArea.Size;
             LeftPanel.MaximumSize = new Size((int)(screenSize.Width * 0.85), 0);
 
@@ -211,6 +204,7 @@ namespace LUI.tabs
             Settings["BeamFlag"] = BeamFlagBox.SelectedObject?.Name;
         }
 
+        // XXX add polarizer??
         protected bool PauseCancelProgress(DoWorkEventArgs e, int percentProgress, object progress)
         {
             if (CancelCheck(e)) return true; // If cancelling, set e.Cancel and return true.
@@ -221,10 +215,10 @@ namespace LUI.tabs
                 var OldFlashState = Commander.BeamFlag.FlashState;
                 var OldLaserState = Commander.BeamFlag.LaserState;
                 Commander.BeamFlag.CloseLaserAndFlash();
-                var OldPumpState = Commander.Pump.CurrentState;
-                Commander.Pump.SetClosed();
+                var OldSyringePumpState = Commander.SyringePump.CurrentState;
+                Commander.SyringePump.SetClosed();
                 WaitForResume();
-                if (OldPumpState == PumpState.Open) Commander.Pump.SetOpen();
+                if (OldSyringePumpState == SyringePumpState.Open) Commander.SyringePump.SetOpen();
                 if (OldFlashState == BeamFlagState.Open && OldLaserState == BeamFlagState.Open)
                     Commander.BeamFlag.OpenLaserAndFlash();
                 else if (OldFlashState == BeamFlagState.Open)
@@ -404,9 +398,9 @@ namespace LUI.tabs
             wait = false;
         }
 
-        protected void OpenPump(bool discard)
+        protected void OpenSyringePump(bool discard)
         {
-            Commander.Pump.SetOpen();
+            Commander.SyringePump.SetOpen();
             if (discard) TryAcquire();
         }
 

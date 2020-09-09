@@ -1,6 +1,6 @@
 ﻿using lasercom;
 using lasercom.camera;
-using lasercom.syringepump;
+using lasercom.polarizer;
 using lasercom.ddg;
 using lasercom.io;
 using LUI.config;
@@ -17,7 +17,7 @@ using System.Windows.Forms;
 
 namespace LUI.tabs
 {
-    public partial class TroaControl : LuiTab
+    public partial class TrldControl : LuiTab
     {
         public enum Dialog
         {
@@ -32,24 +32,30 @@ namespace LUI.tabs
             TEMPERATURE
         }
 
-        public enum SyringePumpMode
-        {
-            NEVER,
-            TRANS,
-            ALWAYS
-        }
-
         MatFile DataFile;
         MatVar<double> LuiData;
         MatVar<int> RawData;
 
         readonly BindingList<TimesRow> TimesList = new BindingList<TimesRow>();
 
-        public TroaControl(LuiConfig Config) : base(Config)
+        IList<double> Times
+        {
+            get { return TimesList.Select(x => x.Value).ToList(); }
+            set
+            {
+                TimesList.Clear();
+                foreach (var d in value)
+                    TimesList.Add(new TimesRow { Value = d });
+            }
+        }
+
+        public TrldControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
             Init();
-
+                
+            Beta.ValueChanged += Beta_ValueChanged;
+                
             TimesList.AllowEdit = false;
             TimesView.DefaultValuesNeeded += (sender, e) => { e.Row.Cells["Value"].Value = 0; };
             TimesView.DataSource = new BindingSource(TimesList, null);
@@ -62,17 +68,6 @@ namespace LUI.tabs
             DdgConfigBox.Commander = Commander;
             DdgConfigBox.AllowZero = false;
             DdgConfigBox.HandleParametersChanged(this, EventArgs.Empty);
-        }
-
-        IList<double> Times
-        {
-            get { return TimesList.Select(x => x.Value).ToList(); }
-            set
-            {
-                TimesList.Clear();
-                foreach (var d in value)
-                    TimesList.Add(new TimesRow { Value = d });
-            }
         }
 
         void Init()
@@ -90,14 +85,18 @@ namespace LUI.tabs
             };
 
             SaveData.Enabled = false;
-
             ResumeLayout();
         }
 
         protected override void OnLoad(EventArgs e)
         {
-            SyringePumpBox.ObjectChanged += HandleSyringePumpChanged;
+            PolarizerBox.ObjectChanged += HandlePolarizerChanged;
             base.OnLoad(e);
+        }
+
+        void Beta_ValueChanged(object sender, EventArgs e)
+        {
+            Commander.Polarizer.PolarizerBeta = (int)Beta.Value;
         }
 
         public override void HandleParametersChanged(object sender, EventArgs e)
@@ -105,21 +104,34 @@ namespace LUI.tabs
             base.HandleParametersChanged(sender, e); // Takes care of ObjectSelectPanel.
             DdgConfigBox.HandleParametersChanged(sender, e);
 
-            var SyringePumpsAvailable = Config.GetParameters(typeof(SyringePumpParameters));
-            if (SyringePumpsAvailable.Count() > 0)
+            var PolarizersAvailable = Config.GetParameters(typeof(PolarizerParameters));
+            if (PolarizersAvailable.Count() > 0)
             {
-                var selectedSyringePump = SyringePumpBox.SelectedObject;
-                SyringePumpBox.Objects.Items.Clear();
-                foreach (var p in SyringePumpsAvailable)
-                    SyringePumpBox.Objects.Items.Add(p);
+                var selectedPolarizer = PolarizerBox.SelectedObject;
+                PolarizerBox.Objects.Items.Clear();
+                foreach (var p in PolarizersAvailable)
+                {
+                    PolarizerBox.Objects.Items.Add(p);
+                }
                 // One of next two lines will trigger CameraChanged event.
-                SyringePumpBox.SelectedObject = selectedSyringePump;
-                if (SyringePumpBox.Objects.SelectedItem == null) SyringePumpBox.Objects.SelectedIndex = 0;
-                SyringePumpBox.Enabled = true;
+                PolarizerBox.SelectedObject = selectedPolarizer;
+                if (PolarizerBox.Objects.SelectedItem == null)
+                {
+                    PolarizerBox.Objects.SelectedIndex = 0;
+                }
+
+                Beta.Minimum = Commander.Polarizer.MinBeta;
+                Beta.Maximum = Commander.Polarizer.MaxBeta;
+                Beta.Value = Commander.Polarizer.PolarizerBeta;
+
+                PolarizerBox.Enabled = true;
             }
             else
             {
-                SyringePumpBox.Enabled = false;
+                Beta.Minimum = 0;
+                Beta.Maximum = 0;
+                Beta.Value = 0;
+                PolarizerBox.Enabled = false;
             }
         }
 
@@ -129,10 +141,10 @@ namespace LUI.tabs
             DdgConfigBox.UpdatePrimaryDelayValue();
         }
 
-        public virtual void HandleSyringePumpChanged(object sender, EventArgs e)
+        public virtual void HandlePolarizerChanged(object sender, EventArgs e)
         {
-            Commander.SyringePump?.SetClosed();
-            Commander.SyringePump = (ISyringePump)Config.GetObject(SyringePumpBox.SelectedObject);
+            Commander.Polarizer?.PolarizerToCrossed();
+            Commander.Polarizer = (IPolarizer)Config.GetObject(PolarizerBox.SelectedObject);
         }
 
         protected override void LoadSettings()
@@ -203,16 +215,12 @@ namespace LUI.tabs
             Graph.Invalidate();
 
             var N = (int)NScan.Value;
-            SyringePumpMode Mode;
-            if (SyringePumpNever.Checked) Mode = SyringePumpMode.NEVER;
-            else if (SyringePumpTs.Checked) Mode = SyringePumpMode.TRANS;
-            else Mode = SyringePumpMode.ALWAYS;
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
             SetupWorker();
             worker.RunWorkerAsync(new WorkArgs(N, Times, DdgConfigBox.PrimaryDelayDelay,
-                DdgConfigBox.PrimaryDelayTrigger, Mode, Discard.Checked));
+                DdgConfigBox.PrimaryDelayTrigger));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -220,7 +228,7 @@ namespace LUI.tabs
         {
             base.OnTaskStarted(e);
             DdgConfigBox.Enabled = false;
-            SyringePumpBox.Enabled = false;
+            PolarizerBox.Enabled = false;
             LoadTimes.Enabled = SaveData.Enabled = false;
             ScanProgress.Text = "0";
             TimeProgress.Text = "0";
@@ -230,7 +238,7 @@ namespace LUI.tabs
         {
             base.OnTaskFinished(e);
             DdgConfigBox.Enabled = true;
-            SyringePumpBox.Enabled = true;
+            PolarizerBox.Enabled = true;
             LoadTimes.Enabled = SaveData.Enabled = true;
         }
 
@@ -307,127 +315,98 @@ namespace LUI.tabs
             #region Initialize buffers for acuisition data
             var AcqBuffer = new int[AcqSize];
             var AcqRow = new int[AcqWidth];
-            var Drk = new int[AcqWidth];
-            var Gnd1 = new int[AcqWidth];
-            var Gnd2 = new int[AcqWidth];
-            var Exc = new int[AcqWidth];
-            var Ground = new double[AcqWidth];
-            var Excited = new double[AcqWidth];
+            var DarkBuffer = new int[AcqWidth];
+            var PlusBetaBuffer = new int[AcqWidth];
+            var MinusBetaBuffer = new int[AcqWidth];
+            var PlusBeta = new double[AcqWidth];
+            var MinusBeta = new double[AcqWidth];
             var Dark = new double[AcqWidth];
             #endregion
 
             /* 
-             * Collect TROA procedure
+             * Collect LD procedure
              * A. Collect dark spectrum at 32 ns
              *      1. Set up dark enviornment
              *      2. Acquire data
-             * B. Collect ground state  
-             *      1. Open probe beam shutter.
-             *      2. Acquire partial data for t<0
-             * C. Collect excited state 
+             * B. Plus beta intensity
              *      1. Set time delay
-             *      2. Open pump beam shutter
-             *      3. Acquire excited state data
-             *      4. Close probe beam shutter
-             *      5. Collect partial ground state at t>0 
+             *      2. Move polarizer to plus beta
+             *      3. Open pump and probe beam shutters
+             *      4. Acquire data
+             *      5. Close beam shutters
+             * C.
+             *      1. Move polarizer to minus beta
+             *      2. Open pump and probe beam shutters
+             *      3. Acquire data
+             *      4. Close beam shutters
              */
 
-            // A1. Close the pump and probe beam shutters 
+            // A1. Set up to collect dark spectrum at 32 ns 
             Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8);
             Commander.BeamFlag.CloseLaserAndFlash();
+            Commander.Polarizer.PolarizerToCrossed();
 
-            // A2. Acquire data
+            // A2. Acquire data 
             DoAcq(AcqBuffer,
                   AcqRow,
-                  Drk,
+                  DarkBuffer,
                   N,
                   p => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_DARK)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
-            Data.Accumulate(Dark, Drk);
+            Data.Accumulate(Dark, DarkBuffer);
             Data.DivideArray(Dark, N);
-            
-            // Check syringe pump
-            if (args.SyringePump == SyringePumpMode.ALWAYS)
-            {
-                OpenSyringePump(args.DiscardFirst);
-            }
-
-            // B1. Open probe beam shutter
-            Commander.BeamFlag.OpenFlash(); 
-
-            // B2. Acquire data
-            DoAcq(AcqBuffer,
-                  AcqRow,
-                  Gnd1,
-                  half,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
-            if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
 
             for (int i = 0; i < Times.Count; i++)
             {
-                // Check syringe pump
-                if (args.SyringePump == SyringePumpMode.TRANS)
-                {
-                    OpenSyringePump(args.DiscardFirst);
-                }
-
-                // C1. Set time delay.
+                // B1. Set time delay 
                 var Delay = Times[i];
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay);
-
-                // C2. Open pump beam shutter
-                Commander.BeamFlag.OpenLaser();
-
-                // C3. Acquire excited state data
+                // B2. Move polarizer to plus beta 
+                Commander.Polarizer.PolarizerToPlusBeta();
+                // B3. Open pump and probe beam shutters
+                Commander.BeamFlag.OpenLaserAndFlash();
+                // B4. Acquire data
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, Delay, Dialog.PROGRESS_TIME))) return;
                 DoAcq(AcqBuffer,
                       AcqRow,
-                      Exc,
+                      PlusBetaBuffer,
                       N,
                       p => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
+                // B5. Close beam shutters
+                Commander.BeamFlag.CloseLaserAndFlash();
+                // C1. Move polarizer to minus beta 
+                Commander.Polarizer.PolarizerToMinusBeta();
+                // C2. Open pump and probe beam shutters
+                Commander.BeamFlag.OpenLaserAndFlash();
+                // C3. Acquire data
+                if (PauseCancelProgress(e, -1, new ProgressObject(null, Delay, Dialog.PROGRESS_TIME))) return;
+                DoAcq(AcqBuffer,
+                      AcqRow,
+                      MinusBetaBuffer,
+                      N,
+                      p => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
+                if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
+                // C4. Close beam shutters
+                Commander.BeamFlag.CloseLaserAndFlash();
 
-                // Check syringe pump
-                if (args.SyringePump == SyringePumpMode.TRANS)
+                Data.Accumulate(PlusBeta, PlusBetaBuffer);
+                Data.DivideArray(PlusBeta, N);
+
+                Data.Accumulate(MinusBeta, MinusBetaBuffer);
+                Data.DivideArray(MinusBeta, N);
+
+                var S = Data.S(PlusBeta, MinusBeta, Dark);
+                LuiData.Write(S, new long[] { i + 1, 1 }, RowSize);
+                if (PauseCancelProgress(e, i, new ProgressObject(S, Delay, Dialog.PROGRESS_TIME_COMPLETE)))
                 {
-                    Commander.SyringePump.SetClosed();
+                    return;
                 }
-
-                // C4. Close pump beam shutter
-                Commander.BeamFlag.CloseLaser();
-
-                // C5. Collect partial ground state 
-                // Update ground state every other time point.
-                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); 
-                if (i % 2 == 0)  
-                {
-                    DoAcq(AcqBuffer, AcqRow, Gnd2, half,
-                        p => PauseCancelProgress(e, p % half + half,
-                            new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
-                    if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
-                }
-                else
-                {
-                    DoAcq(AcqBuffer, AcqRow, Gnd1, half,
-                        p => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
-                    if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
-                }
-
-                Data.Accumulate(Ground, Gnd1);
-                Data.Accumulate(Ground, Gnd2);
-                Data.DivideArray(Ground, N);
-                Data.Accumulate(Excited, Exc);
-                Data.DivideArray(Excited, N);
-                var deltaOD = Data.DeltaOD(Ground, Excited, Dark);
-                LuiData.Write(deltaOD, new long[] { i + 1, 1 }, RowSize);
-                if (PauseCancelProgress(e, i, new ProgressObject(deltaOD, Delay, Dialog.PROGRESS_TIME_COMPLETE))
-                ) return;
-                Array.Clear(Ground, 0, Ground.Length);
-                Array.Clear(Excited, 0, Excited.Length);
+                Array.Clear(PlusBeta, 0, PlusBeta.Length);
+                Array.Clear(MinusBeta, 0, MinusBeta.Length);
             }
-
             Commander.BeamFlag.CloseLaserAndFlash();
-            if (args.SyringePump != SyringePumpMode.NEVER) Commander.SyringePump.SetClosed();
+            Commander.Polarizer.PolarizerToCrossed();
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
@@ -481,7 +460,7 @@ namespace LUI.tabs
         protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
             Commander.BeamFlag.CloseLaserAndFlash();
-            Commander.SyringePump.SetClosed();
+            Commander.Polarizer.PolarizerToCrossed();
             if (e.Error != null)
             {
                 // Handle the exception thrown in the worker thread.
@@ -675,23 +654,16 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger,
-                SyringePumpMode SyringePump, bool DiscardFirst)
+            public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger)
             {
                 this.N = N;
                 this.Times = new List<double>(Times);
                 this.PrimaryDelayName = PrimaryDelayName;
                 TriggerName = PrimaryDelayTrigger;
-                //this.GateName = new Tuple<char, char>(Gate.Delay[0], Gate.Delay[1]);
-                //this.GateTriggerName = Gate.Trigger[0];
-                //this.Gate = Gate.DelayValue;
-                //this.GateDelay = Gate.DelayValue;
                 GateName = null;
                 GateTriggerName = '\0';
                 Gate = double.NaN;
                 GateDelay = double.NaN;
-                this.SyringePump = SyringePump;
-                this.DiscardFirst = DiscardFirst;
             }
 
             public readonly int N;
@@ -702,8 +674,6 @@ namespace LUI.tabs
             public readonly char GateTriggerName;
             public readonly double GateDelay;
             public readonly double Gate;
-            public readonly SyringePumpMode SyringePump;
-            public readonly bool DiscardFirst;
         }
 
         struct ProgressObject

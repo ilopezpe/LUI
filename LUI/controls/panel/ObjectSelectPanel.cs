@@ -1,6 +1,5 @@
 ﻿using Extensions;
 using lasercom.camera;
-using lasercom.syringepump;
 using lasercom.beamflags;
 using System;
 using System.Windows.Forms;
