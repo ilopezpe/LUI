@@ -29,11 +29,13 @@ namespace LUI.controls
                 Dock = DockStyle.Fill
             };
 
-            Flow = new FlowLayoutPanel();
-            Flow.FlowDirection = FlowDirection.TopDown;
-            Flow.AutoSize = true;
-            Flow.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            Flow.Dock = DockStyle.Fill;
+            Flow = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.TopDown,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Dock = DockStyle.Fill
+            };
 
             _Objects = new LabeledControl<ComboBox>(new ComboBox(), "Device:");
             Objects.DropDownStyle = ComboBoxStyle.DropDownList;

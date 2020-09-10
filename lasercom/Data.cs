@@ -142,7 +142,7 @@ namespace lasercom
         /// <param name="PlusB"></param>
         /// <param name="MinusB"></param>
         /// <param name="Dark"></param>
-        /// <returns>Delta OD</returns>
+        /// <returns>LD</returns>
         public static double[] S(IList<double> PlusB, IList<double> MinusB, IList<double> Dark)
         {
             var S = new double[PlusB.Count];
@@ -150,6 +150,20 @@ namespace lasercom
                 S[i] = (PlusB[i] - MinusB[i]) / (PlusB[i] + MinusB[i] - 2*Dark[i]);
             return S;
         }
+
+        /// <summary>
+        /// dO NOTHING
+        /// </summary>
+        /// <param name="Y"></param>
+        /// <returns>clean Y</returns>
+        public static double[] returnY(IList<double> Y)
+        {
+            var newY = new double[Y.Count];
+            for (var i = 0; i < newY.Length; i++)
+                newY[i] = (Y[i]);
+            return newY;
+        }
+
 
         /// <summary>
         ///     Computes OD from Sample and Blank counts, subtracting Dark counts from both.

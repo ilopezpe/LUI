@@ -86,6 +86,10 @@
     <Reference Include="ATMCD32CS">
       <HintPath>..\lib\ATMCD32CS.dll</HintPath>
     </Reference>
+    <Reference Include="HDF5DotNet, Version=1.8.9.0, Culture=neutral, PublicKeyToken=a4952c8df86d6e8c, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\LUI\bin\Debug\HDF5DotNet.dll</HintPath>
+    </Reference>
     <Reference Include="NationalInstruments.Common, Version=9.1.40.159, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\NationalInstruments.Common.dll</HintPath>

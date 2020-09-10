@@ -203,6 +203,12 @@ namespace LUI.tabs
                 return;
             }
 
+            if (PolarizerBox.Objects.SelectedItem == null)
+            {
+                MessageBox.Show("Polarizer controller must be configured.", "Error", MessageBoxButtons.OK);
+                return;
+            }
+
             if (Times.Count < 1)
             {
                 MessageBox.Show("Time delay series must be configured.", "Error", MessageBoxButtons.OK);

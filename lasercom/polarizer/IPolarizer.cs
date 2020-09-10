@@ -14,6 +14,12 @@
     public interface IPolarizer
     {
         /// <summary>
+        /// Absolute move to position, accepts degrees
+        /// </summary>
+        /// <param name="angle"></param>
+        void SetAngle(float angle);
+
+        /// <summary>
         /// This holds the current position of the polarizer
         /// </summary>
         PolarizerPosition CurrentPosition { get; }

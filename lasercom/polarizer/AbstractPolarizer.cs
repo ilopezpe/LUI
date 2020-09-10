@@ -9,6 +9,8 @@ namespace lasercom.polarizer
     public abstract class AbstractPolarizer : LuiObject<PolarizerParameters>, IPolarizer
     {
 
+        public abstract void SetAngle(float angle);
+
         public PolarizerPosition CurrentPosition { get; protected set; }
 
         public virtual int PolarizerBeta { get; set; }

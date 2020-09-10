@@ -22,6 +22,7 @@ namespace LUI
             IDLE,
             TROA,
             TRLD,
+            CROSS,
             CALIBRATE,
             ALIGN,
             POWER,
@@ -51,6 +52,9 @@ namespace LUI
 
         readonly TrldControl TRLDControl;
         readonly TabPage TRLDPage;
+
+        readonly CrossControl CROSSControl;
+        readonly TabPage CROSSPage;
 
         public ParentForm(LuiConfig config)
         {
@@ -83,6 +87,7 @@ namespace LUI
             SpecPage = new TabPage();
             TROAPage = new TabPage();
             TRLDPage = new TabPage();
+            CROSSPage = new TabPage();
             ResidualsPage = new TabPage();
             CalibrationPage = new TabPage();
             PowerPage = new TabPage();
@@ -114,6 +119,12 @@ namespace LUI
             TRLDPage.TabIndex = 0;
             TRLDPage.Text = "TRLD";
 
+            CROSSPage.BackColor = SystemColors.Control;
+            CROSSPage.Margin = new Padding(2, 2, 2, 2);
+            CROSSPage.Name = "CROSSPage";
+            CROSSPage.Padding = new Padding(2, 2, 2, 2);
+            CROSSPage.TabIndex = 0;
+            CROSSPage.Text = "CROSS";
 
             ResidualsPage.BackColor = SystemColors.Control;
             ResidualsPage.Margin = new Padding(2, 2, 2, 2);
@@ -144,6 +155,7 @@ namespace LUI
             Tabs.TabPages.Add(SpecPage);
             Tabs.TabPages.Add(TROAPage);
             Tabs.TabPages.Add(TRLDPage);
+            Tabs.TabPages.Add(CROSSPage);
             Tabs.TabPages.Add(ResidualsPage);
             Tabs.TabPages.Add(CalibrationPage);
             Tabs.TabPages.Add(PowerPage);
@@ -173,6 +185,9 @@ namespace LUI
 
             TRLDControl = new TrldControl(Config);
             TRLDPage.Controls.Add(TRLDControl);
+
+            CROSSControl = new CrossControl(Config);
+            CROSSPage.Controls.Add(CROSSControl);
 
             LaserPowerControl = new LaserPowerControl(Config);
             PowerPage.Controls.Add(LaserPowerControl);
@@ -213,6 +228,7 @@ namespace LUI
                 if (CalibrateControl.IsBusy) return TaskState.CALIBRATE;
                 if (TROAControl.IsBusy) return TaskState.TROA;
                 if (TRLDControl.IsBusy) return TaskState.TRLD;
+                if (CROSSControl.IsBusy) return TaskState.CROSS;
                 if (LaserPowerControl.IsBusy) return TaskState.POWER;
                 if (SpecControl.IsBusy) return TaskState.SPEC;
                 return TaskState.IDLE;
@@ -246,7 +262,7 @@ namespace LUI
         {
             try
             {
-                DisableTabs(TROAPage, TRLDPage, CalibrationPage, ResidualsPage, PowerPage, SpecPage, OptionsPage);
+                DisableTabs(TROAPage, TRLDPage, CROSSPage, CalibrationPage, ResidualsPage, PowerPage, SpecPage, OptionsPage);
                 var Instantiation = Config.InstantiateConfigurationAsync();
                 await Instantiation;
                 Config.OnParametersChanged(sender, e);
@@ -371,6 +387,10 @@ namespace LUI
 
                     case TaskState.TRLD:
                         Task = "TRLD program";
+                        break;
+
+                    case TaskState.CROSS:
+                        Task = "CROSS program";
                         break;
                 }
 

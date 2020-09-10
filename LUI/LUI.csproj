@@ -282,6 +282,12 @@
     <Compile Include="tabs\SpecControl.Designer.cs">
       <DependentUpon>SpecControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="tabs\CrossControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="tabs\CrossControl.Designer.cs">
+      <DependentUpon>CrossControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="tabs\TrldControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -327,9 +333,13 @@
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\LuiTab.resx">
       <DependentUpon>LuiTab.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\SpecControl.resx">
       <DependentUpon>SpecControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="tabs\CrossControl.resx">
+      <DependentUpon>CrossControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\TrldControl.resx">
       <DependentUpon>TrldControl.cs</DependentUpon>

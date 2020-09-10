@@ -12,15 +12,17 @@ namespace lasercom.polarizer
     {
         #region Constants 
         // Serial commands to move polarizer
-        public const string PolarizerAlignCommand = "MOVETO 0.0\r\n";
-        public const string PolarizerCrossCommand = "MOVETO 90.0\r\n";
+        public const float PolarizerAlign = 0.00f;
+        public const float PolarizerCross = 90.00f;
         public const string PolarizerMoveCommand = "MOVETO";
         public const string PolarizerSetPosCommand = "SETPOS";
         public const string PolarizerStopCommand = "STOP\r\n";
         #endregion
 
+        private int stepsPerUnit = 50;
+
         // Approximate time in ms for stepper to complete a move.
-        public const int DefaultDelay = 10000; // 10 second
+        public const int DefaultDelay = 15000; // 15 second
 
         SerialPort _port;
 
@@ -59,17 +61,29 @@ namespace lasercom.polarizer
                 Handshake = Handshake.None,
                 RtsEnable = true,
                 DtrEnable = false //do not enable! will reset arduino
-        };
+            };
             if (!_port.IsOpen)
                 _port.Open();
 
-            // _port.DiscardInBuffer();
-            // make sure polarizer is not moving
-            // _port.Write(PolarizerStopCommand); 
+            _port.DiscardInBuffer();
             Thread.Sleep(10);
-            //_port.DiscardOutBuffer();
+            _port.DiscardOutBuffer();
+        }
 
-            //PolarizerToCrossed();
+        private float ToStep(float angle)
+        {
+            float NSteps = angle * stepsPerUnit;
+            Math.Round(NSteps, 2);
+            return NSteps;
+        }
+
+        public override void SetAngle(float angle)
+        {
+            float NSteps = ToStep(angle);
+            _port.DiscardInBuffer();
+            _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
+            Thread.Sleep(Delay);
+            _port.DiscardInBuffer();
         }
 
         public override PolarizerPosition Toggle()
@@ -114,9 +128,11 @@ namespace lasercom.polarizer
         /// <param name="wait"></param>
         void PolarizerToAligned(bool wait)
         {
+            float NSteps = ToStep(PolarizerAlign);
+
             _port.DiscardInBuffer();
-            _port.Write(PolarizerAlignCommand);
-            if (wait) Thread.Sleep(Delay);
+            _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
+            if (wait) Thread.Sleep(Delay*3); // much longer
             CurrentPosition = PolarizerPosition.Aligned;
             _port.DiscardOutBuffer();
         }
@@ -133,9 +149,11 @@ namespace lasercom.polarizer
         /// <param name="wait"></param>
         void PolarizerToCrossed(bool wait)
         {
+            float NSteps = ToStep(PolarizerCross);
+
             _port.DiscardInBuffer();
-            _port.Write(PolarizerCrossCommand);
-            if (wait) Thread.Sleep(Delay);
+            _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
+            if (wait) Thread.Sleep(Delay*3);
             CurrentPosition = PolarizerPosition.Crossed;
             _port.DiscardOutBuffer();
         }
@@ -152,9 +170,10 @@ namespace lasercom.polarizer
         /// <param name="wait"></param>
         void PolarizerToPlusBeta(bool wait)
         {
-            int NewPosition = PolarizerBeta + 90;
+            float NSteps = ToStep(PolarizerCross + PolarizerBeta);
+
             _port.DiscardInBuffer();
-            _port.Write(PolarizerMoveCommand + " " + NewPosition.ToString() + "\r\n");
+            _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
             if (wait) Thread.Sleep(Delay);
             CurrentPosition = PolarizerPosition.Plus;
             _port.DiscardOutBuffer();
@@ -172,9 +191,10 @@ namespace lasercom.polarizer
         /// <param name="wait"></param>
         void PolarizerToMinusBeta(bool wait)
         {
-            int NewPosition = PolarizerBeta - 90;
+            float NSteps = ToStep(PolarizerCross + PolarizerBeta);
+
             _port.DiscardInBuffer();
-            _port.Write(PolarizerMoveCommand + " " + NewPosition.ToString() + "\r\n");
+            _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
             if (wait) Thread.Sleep(Delay);
             CurrentPosition = PolarizerPosition.Minus;
             _port.DiscardOutBuffer();

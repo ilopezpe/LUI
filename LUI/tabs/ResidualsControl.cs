@@ -196,7 +196,9 @@ namespace LUI.tabs
             Commander.BeamFlag.CloseLaserAndFlash();
 
             if (CollectLaser.Checked)
+            {
                 DdgConfigBox.ApplyPrimaryDelayValue();
+            }
 
             LastAcqWidth = Commander.Camera.AcqWidth;
             LastImage = Commander.Camera.Image;
@@ -270,9 +272,13 @@ namespace LUI.tabs
             InitDataFile(finalSize, args.NScans);
 
             if (args.CollectLaser)
+            {
                 Commander.BeamFlag.OpenLaserAndFlash();
+            }
             else
+            {
                 Commander.BeamFlag.OpenFlash();
+            }
 
             for (var i = 0; i < args.NScans; i++)
             {
@@ -281,12 +287,14 @@ namespace LUI.tabs
                 var sum = 0;
                 var peak = int.MinValue;
                 for (var k = 0; k < Commander.Camera.AcqSize / Commander.Camera.AcqWidth; k++)
+                {
                     for (var j = LowerBound; j <= UpperBound; j++)
                     {
                         var idx = k * Commander.Camera.Image.Width + j;
                         sum += DataBuffer[idx];
                         if (DataBuffer[idx] > peak) peak = DataBuffer[idx];
                     }
+                }
 
                 double vartemp;
                 var delta = sum - cmasum;
@@ -298,8 +306,6 @@ namespace LUI.tabs
                 cmapeak += delta / (i + 1);
                 vartemp = delta * (peak - cmapeak);
                 varpeak += Math.Sqrt(Math.Abs(vartemp));
-                //cmasum = (sum + i * cmasum) / (i + 1);
-                //cmapeak = (peak + i * cmapeak) / (i + 1);
 
                 var n = i % args.NAvg;
                 pastsums[n] = sum;
@@ -309,8 +315,6 @@ namespace LUI.tabs
                 var localN = i < args.NAvg ? n : args.NAvg;
                 for (var j = 0; j < localN; j++)
                 {
-                    //nsum = (sum + n * nsum) / (n + 1);
-                    //npeak = (peak + n * npeak) / (n + 1);
                     delta = pastsums[j] - nsum;
                     nsum += delta / (j + 1);
                     vartemp = delta * (pastsums[j] - nsum);

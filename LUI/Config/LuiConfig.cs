@@ -49,13 +49,17 @@ namespace LUI.config
 
             // Prepopulate tab settings using all LuiTab subclasses.
             foreach (var type in typeof(LuiTab).GetSubclasses(true))
+            {
                 TabSettings.Add(type.Name, new Dictionary<string, string>());
+            }
 
             LuiObjectTableIndex = new Dictionary<Type, Dictionary<LuiObjectParameters, ILuiObject>>();
 
             // Prepopulate parameter lists using all concrete LuiObjectParameters subclasses.
             foreach (var type in typeof(LuiObjectParameters).GetSubclasses(true))
+            {
                 LuiObjectTableIndex.Add(type, new Dictionary<LuiObjectParameters, ILuiObject>());
+            }
         }
 
         public Dictionary<Type, Dictionary<LuiObjectParameters, ILuiObject>> LuiObjectTableIndex { get; set; }
@@ -234,18 +238,9 @@ namespace LUI.config
             fileAppender.ActivateOptions();
             hierarchy.Root.AddAppender(fileAppender);
 
-            //TextBoxAppender textBoxAppender = new TextBoxAppender();
-            //textBoxAppender.FormName = "";
-            //textBoxAppender.TextBoxName = "";
-            //hierarchy.Root.AddAppender(textBoxAppender);
-
             hierarchy.Root.Level = hierarchy.LevelMap[LogLevel];
             hierarchy.Configured = true;
         }
-
-        //public T GetObject<P, T>(P p)
-        //    where P : LuiObjectParameters<P>
-        //    where T : ILuiObject<P>; // This signature could be sweet if ILuiObject<P> where P:LuiObjectParameters<P>
 
         public ILuiObject GetObject(LuiObjectParameters p)
         {
