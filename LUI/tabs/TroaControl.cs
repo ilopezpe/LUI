@@ -1,8 +1,8 @@
 ﻿using lasercom;
 using lasercom.camera;
-using lasercom.syringepump;
 using lasercom.ddg;
 using lasercom.io;
+using lasercom.syringepump;
 using LUI.config;
 using LUI.controls;
 using System;
@@ -345,7 +345,7 @@ namespace LUI.tabs
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
             Data.Accumulate(Dark, Drk);
             Data.DivideArray(Dark, N);
-            
+
             // Check syringe pump
             if (args.SyringePump == SyringePumpMode.ALWAYS)
             {
@@ -353,7 +353,7 @@ namespace LUI.tabs
             }
 
             // B1. Open probe beam shutter
-            Commander.BeamFlag.OpenFlash(); 
+            Commander.BeamFlag.OpenFlash();
 
             // B2. Acquire data
             DoAcq(AcqBuffer,
@@ -398,8 +398,8 @@ namespace LUI.tabs
 
                 // C5. Collect partial ground state 
                 // Update ground state every other time point.
-                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); 
-                if (i % 2 == 0)  
+                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8);
+                if (i % 2 == 0)
                 {
                     DoAcq(AcqBuffer, AcqRow, Gnd2, half,
                         p => PauseCancelProgress(e, p % half + half,

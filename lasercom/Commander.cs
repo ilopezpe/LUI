@@ -1,11 +1,11 @@
-﻿using lasercom.camera;
-using lasercom.syringepump;
-using lasercom.beamflags;
+﻿using lasercom.beamflags;
+using lasercom.camera;
 using lasercom.ddg;
+using lasercom.polarizer;
+using lasercom.syringepump;
 using log4net;
 using System.Collections.Generic;
 using System.Reflection;
-using lasercom.polarizer;
 
 namespace lasercom
 {

@@ -34,9 +34,7 @@
             this.PolarizerBox = new LUI.controls.ObjectCommandPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.Beta = new System.Windows.Forms.NumericUpDown();
-            this.TimeProgress = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -51,16 +49,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.Beta)).BeginInit();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // StatusBox
-            // 
-            this.StatusBox.Controls.Add(this.label2);
-            this.StatusBox.Controls.Add(this.TimeProgress);
             this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
             this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
             this.StatusBox.Controls.SetChildIndex(this.ScanProgress, 0);
-            this.StatusBox.Controls.SetChildIndex(this.TimeProgress, 0);
-            this.StatusBox.Controls.SetChildIndex(this.label2, 0);
             // 
             // NScan
             // 
@@ -161,6 +152,12 @@
             // 
             // Beta
             // 
+            this.Beta.DecimalPlaces = 2;
+            this.Beta.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
             this.Beta.Location = new System.Drawing.Point(80, 10);
             this.Beta.Margin = new System.Windows.Forms.Padding(4);
             this.Beta.Maximum = new decimal(new int[] {
@@ -172,15 +169,6 @@
             this.Beta.Size = new System.Drawing.Size(67, 20);
             this.Beta.TabIndex = 10;
             // 
-            // TimeProgress
-            // 
-            this.TimeProgress.Location = new System.Drawing.Point(151, 37);
-            this.TimeProgress.Name = "TimeProgress";
-            this.TimeProgress.ReadOnly = true;
-            this.TimeProgress.Size = new System.Drawing.Size(58, 20);
-            this.TimeProgress.TabIndex = 14;
-            this.TimeProgress.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
             // panel2
             // 
             this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -191,15 +179,6 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(142, 38);
             this.panel2.TabIndex = 16;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(110, 40);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 13);
-            this.label2.TabIndex = 15;
-            this.label2.Text = "Times";
             // 
             // LdalignControl
             // 
@@ -238,9 +217,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label PolarizerBetaLabel;
         private System.Windows.Forms.NumericUpDown Beta;
-        protected System.Windows.Forms.TextBox TimeProgress;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label label2;
 
     }
 }

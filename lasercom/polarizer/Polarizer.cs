@@ -19,10 +19,11 @@ namespace lasercom.polarizer
         public const string PolarizerStopCommand = "STOP\r\n";
         #endregion
 
-        private int stepsPerUnit = 50;
+        private int stepsPerUnit = 50; // 50 steps per deg 
+        private int scanSpeed = 300; // 300 ms per deg
 
         // Approximate time in ms for stepper to complete a move.
-        public const int DefaultDelay = 2000; // 15 second
+        public const int DefaultDelay = 10000; 
 
         SerialPort _port;
 
@@ -42,7 +43,7 @@ namespace lasercom.polarizer
             Init(portName);
         }
 
-        public override float PolarizerBeta { get; set; } = 10;
+        public override float PolarizerBeta { get; set; } = 2.00F;
         public override int MinBeta { get; set; } = 0;
         public override int MaxBeta { get; set; } = 90;
 
@@ -66,7 +67,6 @@ namespace lasercom.polarizer
                 _port.Open();
 
             _port.DiscardInBuffer();
-            Thread.Sleep(10);
             _port.DiscardOutBuffer();
         }
 
@@ -123,7 +123,7 @@ namespace lasercom.polarizer
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
-            if (wait) Thread.Sleep(35000); // much longer
+            if (wait) Thread.Sleep(Delay+(int)PolarizerCross*scanSpeed); // 37 seconds
             CurrentPosition = PolarizerPosition.Aligned;
             _port.DiscardOutBuffer();
         }
@@ -144,7 +144,7 @@ namespace lasercom.polarizer
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
-            if (wait) Thread.Sleep(35000);
+            if (wait) Thread.Sleep(Delay + (int)PolarizerCross * scanSpeed);
             CurrentPosition = PolarizerPosition.Crossed;
             _port.DiscardOutBuffer();
         }
@@ -165,7 +165,7 @@ namespace lasercom.polarizer
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
-            if (wait) Thread.Sleep(Delay);
+            if (wait) Thread.Sleep(Delay + (int)Math.Ceiling(PolarizerBeta)*scanSpeed);
             CurrentPosition = PolarizerPosition.Plus;
             _port.DiscardOutBuffer();
         }
@@ -186,14 +186,14 @@ namespace lasercom.polarizer
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
-            if (wait) Thread.Sleep(Delay*(int)Math.Ceiling(PolarizerBeta));
+            if (wait) Thread.Sleep(Delay + (int)Math.Ceiling(PolarizerBeta) * scanSpeed);
             CurrentPosition = PolarizerPosition.Minus;
             _port.DiscardOutBuffer();
         }
 
         public override void PolarizerToZeroBeta()
         {
-            PolarizerToMinusBeta(true);
+            PolarizerToZeroBeta(true);
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace lasercom.polarizer
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
-            if (wait) Thread.Sleep(Delay * (int)Math.Ceiling(PolarizerBeta));
+            if (wait) Thread.Sleep(Delay + (int)Math.Ceiling(PolarizerBeta) * scanSpeed);
             CurrentPosition = PolarizerPosition.Minus;
             _port.DiscardOutBuffer();
         }
@@ -225,7 +225,7 @@ namespace lasercom.polarizer
         {
             if (disposing)
             {
-                PolarizerToCrossed();
+                PolarizerToZeroBeta();
                 EnsurePortDisposed();
             }
         }

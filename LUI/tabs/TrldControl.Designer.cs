@@ -212,6 +212,12 @@
             // 
             // Beta
             // 
+            this.Beta.DecimalPlaces = 2;
+            this.Beta.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
             this.Beta.Location = new System.Drawing.Point(80, 10);
             this.Beta.Margin = new System.Windows.Forms.Padding(4);
             this.Beta.Maximum = new decimal(new int[] {

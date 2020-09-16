@@ -18,8 +18,8 @@ namespace LUI.controls
             Controls.Add(COMPort);
 
             Delay = new LabeledControl<NumericUpDown>(new NumericUpDown(), "Delay after open (ms):");
-            Delay.Control.Minimum = 25;
-            Delay.Control.Maximum = 800;
+            Delay.Control.Minimum = 300;
+            Delay.Control.Maximum = 1000;
             Delay.Control.Value = BeamFlags.DefaultDelay;
             Delay.Control.ValueChanged += OnOptionsChanged;
             Controls.Add(Delay);

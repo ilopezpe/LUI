@@ -1,9 +1,8 @@
 ﻿using CsvHelper;
 using lasercom;
 using lasercom.camera;
-using lasercom.syringepump;
-using lasercom.beamflags;
 using lasercom.io;
+using lasercom.syringepump;
 using LUI.config;
 using LUI.controls;
 using System;

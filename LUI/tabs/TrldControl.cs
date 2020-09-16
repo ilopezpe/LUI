@@ -1,8 +1,8 @@
 ﻿using lasercom;
 using lasercom.camera;
-using lasercom.polarizer;
 using lasercom.ddg;
 using lasercom.io;
+using lasercom.polarizer;
 using LUI.config;
 using LUI.controls;
 using System;
@@ -53,9 +53,9 @@ namespace LUI.tabs
         {
             InitializeComponent();
             Init();
-                
+
             Beta.ValueChanged += Beta_ValueChanged;
-                
+
             TimesList.AllowEdit = false;
             TimesView.DefaultValuesNeeded += (sender, e) => { e.Row.Cells["Value"].Value = 0; };
             TimesView.DataSource = new BindingSource(TimesList, null);
@@ -300,7 +300,7 @@ namespace LUI.tabs
             var AcqWidth = Commander.Camera.AcqWidth;
 
             // minus + plus + dark
-            var TotalScans = N + Times.Count*N*2;
+            var TotalScans = N + Times.Count * N * 2;
             #endregion
 
             #region initialize data files

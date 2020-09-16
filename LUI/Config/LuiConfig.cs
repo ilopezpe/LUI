@@ -1,7 +1,7 @@
 ﻿using Extensions;
 using lasercom;
-using lasercom.camera;
 using lasercom.beamflags;
+using lasercom.camera;
 using lasercom.ddg;
 using lasercom.objects;
 using log4net;

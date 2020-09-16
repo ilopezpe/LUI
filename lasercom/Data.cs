@@ -147,7 +147,7 @@ namespace lasercom
         {
             var S = new double[PlusB.Count];
             for (var i = 0; i < S.Length; i++)
-                S[i] = (PlusB[i] - MinusB[i]) / (PlusB[i] + MinusB[i] - 2*Dark[i]);
+                S[i] = (PlusB[i] - MinusB[i]) / (PlusB[i] + MinusB[i] - 2 * Dark[i]);
             return S;
         }
 

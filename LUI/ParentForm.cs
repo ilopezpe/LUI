@@ -265,7 +265,7 @@ namespace LUI
         {
             try
             {
-                DisableTabs(AbsPage, TransientAbsPage, TROAPage, LDAlignPage, TRLDPage, CalibrationPage, ResidualsPage,  OptionsPage);
+                DisableTabs(AbsPage, TransientAbsPage, TROAPage, LDAlignPage, TRLDPage, CalibrationPage, ResidualsPage, OptionsPage);
                 var Instantiation = Config.InstantiateConfigurationAsync();
                 await Instantiation;
                 Config.OnParametersChanged(sender, e);
