@@ -16,7 +16,7 @@ using System.Windows.Forms;
 
 namespace LUI.tabs
 {
-    public partial class SpecControl : LuiTab
+    public partial class AbsorbanceControl : LuiTab
     {
         public enum Dialog
         {
@@ -38,7 +38,7 @@ namespace LUI.tabs
         int _SelectedChannel = -1;
         int[] BlankBuffer;
 
-        public SpecControl(LuiConfig Config) : base(Config)
+        public AbsorbanceControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
 

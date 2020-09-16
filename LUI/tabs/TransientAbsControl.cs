@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace LUI.tabs
 {
-    public partial class LaserPowerControl : LuiTab
+    public partial class TransientAbsControl : LuiTab
     {
         public enum Dialog
         {
@@ -35,7 +35,7 @@ namespace LUI.tabs
 
         double[] Light;
 
-        public LaserPowerControl(LuiConfig Config) : base(Config)
+        public TransientAbsControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
         }

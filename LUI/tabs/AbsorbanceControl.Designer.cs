@@ -1,6 +1,6 @@
 ﻿namespace LUI.tabs
 {
-    partial class SpecControl
+    partial class AbsorbanceControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -199,11 +199,11 @@
             this.CurvesView.Size = new System.Drawing.Size(288, 150);
             this.CurvesView.TabIndex = 16;
             // 
-            // SpecControl
+            // AbsControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Name = "SpecControl";
+            this.Name = "AbsControl";
             this.ParentPanel.ResumeLayout(false);
             this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);

@@ -1,6 +1,6 @@
 ﻿namespace LUI.tabs
 {
-    partial class LaserPowerControl
+    partial class TransientAbsControl
     {
         /// <summary>
         /// Required designer variable.
@@ -162,10 +162,10 @@
             this.Discard.Text = "Discard First";
             this.Discard.UseVisualStyleBackColor = true;
             // 
-            // LaserPowerControl
+            // TransientAbsControl
             // 
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.Name = "LaserPowerControl";
+            this.Name = "TransientAbsControl";
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);

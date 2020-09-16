@@ -196,7 +196,7 @@ namespace lasercom.camera
             caller = new StackFrame(frame, true).GetFileName();
             var line = new StackFrame(frame, true).GetFileLineNumber();
             int[] data = null;
-            if (caller.Contains("SpecControl"))
+            if (caller.Contains("AbsControl"))
                 data = Spec(line);
             else if (caller.Contains("TroaControl"))
                 data = Troa(line);
@@ -204,7 +204,7 @@ namespace lasercom.camera
                 data = Calibrate(line);
             else if (caller.Contains("ResidualsControl"))
                 data = Residuals();
-            else if (caller.Contains("LaserPowerControl"))
+            else if (caller.Contains("TransientAbsControl"))
                 data = LaserPower(line);
             else if (caller.Contains("DetectorTestForm")) data = Blank();
 

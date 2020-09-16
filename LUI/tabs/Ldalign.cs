@@ -17,7 +17,7 @@ using System.Windows.Forms;
 
 namespace LUI.tabs
 {
-    public partial class TrldControl : LuiTab
+    public partial class LdalignControl : LuiTab
     {
         public enum Dialog
         {
@@ -49,7 +49,7 @@ namespace LUI.tabs
             }
         }
 
-        public TrldControl(LuiConfig Config) : base(Config)
+        public LdalignControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
             Init();

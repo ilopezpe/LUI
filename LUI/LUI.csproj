@@ -245,11 +245,11 @@
       <DependentUpon>CalibrateControl.cs</DependentUpon>
     </Compile>
     <Compile Include="config\LuiConfig.cs" />
-    <Compile Include="tabs\LaserPowerControl.cs">
+    <Compile Include="tabs\TransientAbsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="tabs\LaserPowerControl.Designer.cs">
-      <DependentUpon>LaserPowerControl.cs</DependentUpon>
+    <Compile Include="tabs\TransientAbsControl.Designer.cs">
+      <DependentUpon>TransientAbsControl.cs</DependentUpon>
     </Compile>
     <Compile Include="tabs\ResidualsControl.cs">
       <SubType>UserControl</SubType>
@@ -280,11 +280,17 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
-    <Compile Include="tabs\SpecControl.cs">
+    <Compile Include="tabs\AbsorbanceControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="tabs\SpecControl.Designer.cs">
-      <DependentUpon>SpecControl.cs</DependentUpon>
+    <Compile Include="tabs\AbsorbanceControl.Designer.cs">
+      <DependentUpon>AbsorbanceControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="tabs\Ldalign.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="tabs\Ldalign.Designer.cs">
+      <DependentUpon>Ldalign.cs</DependentUpon>
     </Compile>
     <Compile Include="tabs\TrldControl.cs">
       <SubType>UserControl</SubType>
@@ -323,8 +329,8 @@
     <EmbeddedResource Include="tabs\CalibrateControl.resx">
       <DependentUpon>CalibrateControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="tabs\LaserPowerControl.resx">
-      <DependentUpon>LaserPowerControl.cs</DependentUpon>
+    <EmbeddedResource Include="tabs\TransientAbsControl.resx">
+      <DependentUpon>TransientAbsControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\ResidualsControl.resx">
       <DependentUpon>ResidualsControl.cs</DependentUpon>
@@ -333,8 +339,11 @@
       <DependentUpon>LuiTab.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="tabs\SpecControl.resx">
-      <DependentUpon>SpecControl.cs</DependentUpon>
+    <EmbeddedResource Include="tabs\AbsorbanceControl.resx">
+      <DependentUpon>AbsorbanceControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="tabs\Ldalign.resx">
+      <DependentUpon>Ldalign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\TrldControl.resx">
       <DependentUpon>TrldControl.cs</DependentUpon>

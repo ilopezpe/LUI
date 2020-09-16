@@ -1,6 +1,6 @@
 ﻿namespace LUI.tabs
 {
-    partial class TrldControl
+    partial class LdalignControl
     {
         /// <summary>
         /// Required designer variable.
@@ -28,11 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.PolarizerBetaLabel = new System.Windows.Forms.Label();
-            this.LoadTimes = new System.Windows.Forms.Button();
-            this.TimesView = new System.Windows.Forms.DataGridView();
-            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SaveData = new System.Windows.Forms.Button();
             this.DdgConfigBox = new LUI.controls.DdgCommandPanel();
             this.PolarizerBox = new LUI.controls.ObjectCommandPanel();
@@ -50,7 +46,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             this.RightChildArea.SuspendLayout();
             this.LeftPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TimesView)).BeginInit();
             this.PolarizerBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Beta)).BeginInit();
@@ -86,7 +81,6 @@
             this.Graph.InitialYMax = 1F;
             this.Graph.InitialYMin = -1F;
             this.Graph.ScaleHeight = 2F;
-            this.Graph.Size = new System.Drawing.Size(1176, 583);
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
             this.Graph.YMax = 1F;
@@ -96,8 +90,6 @@
             // 
             this.LeftChildArea.Controls.Add(this.panel2);
             this.LeftChildArea.Controls.Add(this.DdgConfigBox);
-            this.LeftChildArea.Location = new System.Drawing.Point(0, 583);
-            this.LeftChildArea.Size = new System.Drawing.Size(1176, 238);
             // 
             // RightChildArea
             // 
@@ -113,52 +105,9 @@
             this.PolarizerBetaLabel.TabIndex = 10;
             this.PolarizerBetaLabel.Text = "Beta";
             // 
-            // LoadTimes
-            // 
-            this.LoadTimes.Location = new System.Drawing.Point(3, 2);
-            this.LoadTimes.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.LoadTimes.Name = "LoadTimes";
-            this.LoadTimes.Size = new System.Drawing.Size(136, 34);
-            this.LoadTimes.TabIndex = 10;
-            this.LoadTimes.Text = "Load Times";
-            this.LoadTimes.UseVisualStyleBackColor = true;
-            this.LoadTimes.Click += new System.EventHandler(this.LoadTimes_Click);
-            // 
-            // TimesView
-            // 
-            this.TimesView.AllowUserToAddRows = false;
-            this.TimesView.AllowUserToDeleteRows = false;
-            this.TimesView.AllowUserToOrderColumns = true;
-            this.TimesView.AllowUserToResizeColumns = false;
-            this.TimesView.AllowUserToResizeRows = false;
-            this.TimesView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.TimesView.BackgroundColor = System.Drawing.SystemColors.Control;
-            this.TimesView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.TimesView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Value});
-            this.TimesView.Location = new System.Drawing.Point(3, 41);
-            this.TimesView.MultiSelect = false;
-            this.TimesView.Name = "TimesView";
-            this.TimesView.RowHeadersVisible = false;
-            this.TimesView.RowTemplate.Height = 24;
-            this.TimesView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.TimesView.ShowEditingIcon = false;
-            this.TimesView.Size = new System.Drawing.Size(136, 150);
-            this.TimesView.TabIndex = 11;
-            // 
-            // Value
-            // 
-            this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Value.HeaderText = "Delay (s)";
-            this.Value.Name = "Value";
-            this.Value.ReadOnly = true;
-            this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
             // SaveData
             // 
-            this.SaveData.Location = new System.Drawing.Point(3, 196);
+            this.SaveData.Location = new System.Drawing.Point(3, 2);
             this.SaveData.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SaveData.Name = "SaveData";
             this.SaveData.Size = new System.Drawing.Size(136, 34);
@@ -237,12 +186,10 @@
             this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.panel2.AutoSize = true;
             this.panel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.panel2.Controls.Add(this.LoadTimes);
-            this.panel2.Controls.Add(this.TimesView);
             this.panel2.Controls.Add(this.SaveData);
             this.panel2.Location = new System.Drawing.Point(1028, 3);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(142, 232);
+            this.panel2.Size = new System.Drawing.Size(142, 38);
             this.panel2.TabIndex = 16;
             // 
             // label2
@@ -254,10 +201,10 @@
             this.label2.TabIndex = 15;
             this.label2.Text = "Times";
             // 
-            // TrldControl
+            // LdalignControl
             // 
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.Name = "TrldControl";
+            this.Name = "LdalignControl";
             this.ParentPanel.ResumeLayout(false);
             this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
@@ -274,7 +221,6 @@
             this.RightChildArea.PerformLayout();
             this.LeftPanel.ResumeLayout(false);
             this.LeftPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TimesView)).EndInit();
             this.PolarizerBox.Flow.ResumeLayout(false);
             this.PolarizerBox.Flow.PerformLayout();
             this.panel1.ResumeLayout(false);
@@ -286,9 +232,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button LoadTimes;
-        private System.Windows.Forms.DataGridView TimesView;
         private System.Windows.Forms.Button SaveData;
         private controls.DdgCommandPanel DdgConfigBox;
         private controls.ObjectCommandPanel PolarizerBox;
@@ -298,7 +241,6 @@
         protected System.Windows.Forms.TextBox TimeProgress;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Value;
 
     }
 }

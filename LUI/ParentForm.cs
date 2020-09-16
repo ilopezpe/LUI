@@ -22,12 +22,12 @@ namespace LUI
             IDLE,
             TROA,
             TRLD,
-            CROSS,
+            LDALIGN,
             CALIBRATE,
             ALIGN,
-            POWER,
+            TA,
             RESIDUALS,
-            SPEC
+            ABS
         }
 
         static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -36,22 +36,23 @@ namespace LUI
 
         readonly LuiConfig Config;
         readonly TabPage HomePage;
-        readonly LaserPowerControl LaserPowerControl;
-        readonly OptionsControl OptionsControl;
-        readonly TabPage OptionsPage;
-        readonly TabPage PowerPage;
+        readonly AbsorbanceControl AbsControl;
+        readonly TabPage AbsPage;
+        readonly TransientAbsControl TransientAbsControl;
+        readonly TabPage TransientAbsPage;
+        readonly TroaControl TROAControl;
+        readonly TabPage TROAPage;
+        readonly LdalignControl LDAlignControl;
+        readonly TabPage LDAlignPage;
+        readonly TrldControl TRLDControl;
+        readonly TabPage TRLDPage;
         readonly ResidualsControl ResidualsControl;
         readonly TabPage ResidualsPage;
-        readonly SpecControl SpecControl;
-        readonly TabPage SpecPage;
+        readonly OptionsControl OptionsControl;
+        readonly TabPage OptionsPage;
 
         readonly TabControl Tabs;
 
-        readonly TroaControl TROAControl;
-        readonly TabPage TROAPage;
-
-        readonly TrldControl TRLDControl;
-        readonly TabPage TRLDPage;
 
         public ParentForm(LuiConfig config)
         {
@@ -81,25 +82,33 @@ namespace LUI
             Tabs.TabIndex = 0;
 
             HomePage = new TabPage();
-            SpecPage = new TabPage();
+            AbsPage = new TabPage();
+            TransientAbsPage = new TabPage();
             TROAPage = new TabPage();
+            LDAlignPage = new TabPage();
             TRLDPage = new TabPage();
             ResidualsPage = new TabPage();
             CalibrationPage = new TabPage();
-            PowerPage = new TabPage();
             OptionsPage = new TabPage();
 
+            #region page properties 
             HomePage.BackColor = SystemColors.Control;
             HomePage.Margin = new Padding(2, 2, 2, 2);
             HomePage.Name = "HomePage";
             HomePage.TabIndex = 2;
             HomePage.Text = "Home";
 
-            SpecPage.BackColor = SystemColors.Control;
-            SpecPage.Margin = new Padding(2, 2, 2, 2);
-            SpecPage.Name = "SpecPage";
-            SpecPage.TabIndex = 3;
-            SpecPage.Text = "Spectrum";
+            AbsPage.BackColor = SystemColors.Control;
+            AbsPage.Margin = new Padding(2, 2, 2, 2);
+            AbsPage.Name = "AbsPage";
+            AbsPage.TabIndex = 3;
+            AbsPage.Text = "Absorbance";
+
+            TransientAbsPage.BackColor = SystemColors.Control;
+            TransientAbsPage.Margin = new Padding(2, 2, 2, 2);
+            TransientAbsPage.Name = "TransientAbsPage";
+            TransientAbsPage.TabIndex = 5;
+            TransientAbsPage.Text = "Transient Abs";
 
             TROAPage.BackColor = SystemColors.Control;
             TROAPage.Margin = new Padding(2, 2, 2, 2);
@@ -107,6 +116,13 @@ namespace LUI
             TROAPage.Padding = new Padding(2, 2, 2, 2);
             TROAPage.TabIndex = 0;
             TROAPage.Text = "TROA";
+
+            LDAlignPage.BackColor = SystemColors.Control;
+            LDAlignPage.Margin = new Padding(2, 2, 2, 2);
+            LDAlignPage.Name = "LDAlignPage";
+            LDAlignPage.Padding = new Padding(2, 2, 2, 2);
+            LDAlignPage.TabIndex = 0;
+            LDAlignPage.Text = "LD Align";
 
             TRLDPage.BackColor = SystemColors.Control;
             TRLDPage.Margin = new Padding(2, 2, 2, 2);
@@ -126,13 +142,7 @@ namespace LUI
             CalibrationPage.Name = "CalibrationPage";
             CalibrationPage.Padding = new Padding(2, 2, 2, 2);
             CalibrationPage.TabIndex = 1;
-            CalibrationPage.Text = "Calibration";
-
-            PowerPage.BackColor = SystemColors.Control;
-            PowerPage.Margin = new Padding(2, 2, 2, 2);
-            PowerPage.Name = "PowerPage";
-            PowerPage.TabIndex = 5;
-            PowerPage.Text = "Laser Power";
+            CalibrationPage.Text = "WL Cal";
 
             OptionsPage.BackColor = SystemColors.Control;
             OptionsPage.Margin = new Padding(2, 2, 2, 2);
@@ -141,13 +151,15 @@ namespace LUI
             OptionsPage.Text = "Options";
 
             Tabs.TabPages.Add(HomePage);
-            Tabs.TabPages.Add(SpecPage);
+            Tabs.TabPages.Add(AbsPage);
+            Tabs.TabPages.Add(TransientAbsPage);
             Tabs.TabPages.Add(TROAPage);
+            Tabs.TabPages.Add(LDAlignPage);
             Tabs.TabPages.Add(TRLDPage);
             Tabs.TabPages.Add(ResidualsPage);
             Tabs.TabPages.Add(CalibrationPage);
-            Tabs.TabPages.Add(PowerPage);
             Tabs.TabPages.Add(OptionsPage);
+            #endregion
 
             Controls.Add(Tabs);
 
@@ -162,28 +174,34 @@ namespace LUI
             {
                 Dock = DockStyle.Fill
             };
-            OptionsPage.Controls.Add(OptionsControl);
-            OptionsControl.OptionsApplied += HandleOptionsApplied;
 
-            CalibrateControl = new CalibrateControl(Config);
-            CalibrationPage.Controls.Add(CalibrateControl);
+            #region add controls
+            HomePage.Controls.Add(new Panel()); // Just a placeholder.
+
+            AbsControl = new AbsorbanceControl(Config);
+            AbsPage.Controls.Add(AbsControl);
+
+            TransientAbsControl = new TransientAbsControl(Config);
+            TransientAbsPage.Controls.Add(TransientAbsControl);
 
             TROAControl = new TroaControl(Config);
             TROAPage.Controls.Add(TROAControl);
 
+            LDAlignControl = new LdalignControl(Config);
+            LDAlignPage.Controls.Add(LDAlignControl);
+
             TRLDControl = new TrldControl(Config);
             TRLDPage.Controls.Add(TRLDControl);
 
-            LaserPowerControl = new LaserPowerControl(Config);
-            PowerPage.Controls.Add(LaserPowerControl);
+            CalibrateControl = new CalibrateControl(Config);
+            CalibrationPage.Controls.Add(CalibrateControl);
 
             ResidualsControl = new ResidualsControl(Config);
             ResidualsPage.Controls.Add(ResidualsControl);
 
-            SpecControl = new SpecControl(Config);
-            SpecPage.Controls.Add(SpecControl);
-
-            HomePage.Controls.Add(new Panel()); // Just a placeholder.
+            OptionsPage.Controls.Add(OptionsControl);
+            OptionsControl.OptionsApplied += HandleOptionsApplied;
+            #endregion
 
             foreach (TabPage page in Tabs.TabPages)
             {
@@ -209,12 +227,13 @@ namespace LUI
         {
             get
             {
+                if (AbsControl.IsBusy) return TaskState.ABS;
+                if (TransientAbsControl.IsBusy) return TaskState.TA;
+                if (TROAControl.IsBusy) return TaskState.TROA;
+                if (LDAlignControl.IsBusy) return TaskState.LDALIGN;
+                if (TRLDControl.IsBusy) return TaskState.TRLD;
                 if (ResidualsControl.IsBusy) return TaskState.RESIDUALS;
                 if (CalibrateControl.IsBusy) return TaskState.CALIBRATE;
-                if (TROAControl.IsBusy) return TaskState.TROA;
-                if (TRLDControl.IsBusy) return TaskState.TRLD;
-                if (LaserPowerControl.IsBusy) return TaskState.POWER;
-                if (SpecControl.IsBusy) return TaskState.SPEC;
                 return TaskState.IDLE;
             }
         }
@@ -246,7 +265,7 @@ namespace LUI
         {
             try
             {
-                DisableTabs(TROAPage, TRLDPage, CalibrationPage, ResidualsPage, PowerPage, SpecPage, OptionsPage);
+                DisableTabs(AbsPage, TransientAbsPage, TROAPage, LDAlignPage, TRLDPage, CalibrationPage, ResidualsPage,  OptionsPage);
                 var Instantiation = Config.InstantiateConfigurationAsync();
                 await Instantiation;
                 Config.OnParametersChanged(sender, e);
@@ -353,28 +372,28 @@ namespace LUI
                         Task = "Alignment";
                         break;
 
-                    case TaskState.CALIBRATE:
-                        Task = "Calibration";
-                        break;
-
-                    case TaskState.POWER:
-                        Task = "Laser power";
-                        break;
-
-                    case TaskState.RESIDUALS:
-                        Task = "Residuals measurement";
+                    case TaskState.TA:
+                        Task = "Transient Abs";
                         break;
 
                     case TaskState.TROA:
                         Task = "TROA program";
                         break;
 
+                    case TaskState.LDALIGN:
+                        Task = "LD Align program";
+                        break;
+
                     case TaskState.TRLD:
                         Task = "TRLD program";
                         break;
 
-                    case TaskState.CROSS:
-                        Task = "CROSS program";
+                    case TaskState.RESIDUALS:
+                        Task = "Residuals measurement";
+                        break;
+
+                    case TaskState.CALIBRATE:
+                        Task = "Calibration";
                         break;
                 }
 
