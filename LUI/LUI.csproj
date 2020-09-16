@@ -129,6 +129,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HDF5DotNet, Version=1.8.9.0, Culture=neutral, PublicKeyToken=a4952c8df86d6e8c, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\HDF5DotNet.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -282,12 +286,6 @@
     <Compile Include="tabs\SpecControl.Designer.cs">
       <DependentUpon>SpecControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="tabs\CrossControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="tabs\CrossControl.Designer.cs">
-      <DependentUpon>CrossControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="tabs\TrldControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -338,9 +336,6 @@
     <EmbeddedResource Include="tabs\SpecControl.resx">
       <DependentUpon>SpecControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="tabs\CrossControl.resx">
-      <DependentUpon>CrossControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="tabs\TrldControl.resx">
       <DependentUpon>TrldControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -382,9 +377,6 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper">
       <Version>15.0.5</Version>
-    </PackageReference>
-    <PackageReference Include="HDF5DotNet.x86">
-      <Version>1.8.9</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>1.2.10</Version>

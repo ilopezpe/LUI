@@ -26,8 +26,8 @@ namespace LUI.tabs
             PROGRESS_DARK,
             PROGRESS_TIME,
             PROGRESS_TIME_COMPLETE,
-            PROGRESS_FLASH,
-            PROGRESS_TRANS,
+            PROGRESS_PLUS,
+            PROGRESS_MINUS,
             CALCULATE,
             TEMPERATURE
         }
@@ -122,7 +122,7 @@ namespace LUI.tabs
 
                 Beta.Minimum = Commander.Polarizer.MinBeta;
                 Beta.Maximum = Commander.Polarizer.MaxBeta;
-                Beta.Value = Commander.Polarizer.PolarizerBeta;
+                Beta.Value = (decimal)Commander.Polarizer.PolarizerBeta;
 
                 PolarizerBox.Enabled = true;
             }
@@ -143,7 +143,7 @@ namespace LUI.tabs
 
         public virtual void HandlePolarizerChanged(object sender, EventArgs e)
         {
-            Commander.Polarizer?.PolarizerToCrossed();
+            Commander.Polarizer?.PolarizerToZeroBeta();
             Commander.Polarizer = (IPolarizer)Config.GetObject(PolarizerBox.SelectedObject);
         }
 
@@ -222,8 +222,6 @@ namespace LUI.tabs
 
             var N = (int)NScan.Value;
 
-            Commander.BeamFlag.CloseLaserAndFlash();
-
             SetupWorker();
             worker.RunWorkerAsync(new WorkArgs(N, Times, DdgConfigBox.PrimaryDelayDelay,
                 DdgConfigBox.PrimaryDelayTrigger));
@@ -296,13 +294,12 @@ namespace LUI.tabs
 
             var args = (WorkArgs)e.Argument;
             var N = args.N; // Save typing for later.
-            var half = N / 2; // N is always even.
             var Times = args.Times;
             var AcqSize = Commander.Camera.AcqSize;
             var AcqWidth = Commander.Camera.AcqWidth;
 
-            // Total scans = dark scans + ground state scans + plus time series scans.
-            var TotalScans = N + half + Times.Count * (half + N);
+            // minus + plus + dark
+            var TotalScans = N + Times.Count *N*2;
 
             // Create the data store.
             InitDataFile(AcqWidth, TotalScans, Times.Count);
@@ -350,7 +347,6 @@ namespace LUI.tabs
             // A1. Set up to collect dark spectrum at 32 ns 
             Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8);
             Commander.BeamFlag.CloseLaserAndFlash();
-            Commander.Polarizer.PolarizerToCrossed();
 
             // A2. Acquire data 
             DoAcq(AcqBuffer,
@@ -377,7 +373,7 @@ namespace LUI.tabs
                       AcqRow,
                       PlusBetaBuffer,
                       N,
-                      p => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
+                      p => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_PLUS)));
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
                 // B5. Close beam shutters
                 Commander.BeamFlag.CloseLaserAndFlash();
@@ -391,7 +387,7 @@ namespace LUI.tabs
                       AcqRow,
                       MinusBetaBuffer,
                       N,
-                      p => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
+                      p => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_MINUS)));
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
                 // C4. Close beam shutters
                 Commander.BeamFlag.CloseLaserAndFlash();
@@ -411,8 +407,6 @@ namespace LUI.tabs
                 Array.Clear(PlusBeta, 0, PlusBeta.Length);
                 Array.Clear(MinusBeta, 0, MinusBeta.Length);
             }
-            Commander.BeamFlag.CloseLaserAndFlash();
-            Commander.Polarizer.PolarizerToCrossed();
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
@@ -443,13 +437,13 @@ namespace LUI.tabs
                     Display(progress.Data);
                     break;
 
-                case Dialog.PROGRESS_FLASH:
-                    ProgressLabel.Text = "Collecting ground";
+                case Dialog.PROGRESS_PLUS:
+                    ProgressLabel.Text = "Collecting plus Beta";
                     ScanProgress.Text = progressValue + "/" + NScan.Value;
                     break;
 
-                case Dialog.PROGRESS_TRANS:
-                    ProgressLabel.Text = "Collecting transient";
+                case Dialog.PROGRESS_MINUS:
+                    ProgressLabel.Text = "Collecting minus Beta";
                     ScanProgress.Text = progressValue + "/" + NScan.Value;
                     break;
 
@@ -466,7 +460,7 @@ namespace LUI.tabs
         protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
             Commander.BeamFlag.CloseLaserAndFlash();
-            Commander.Polarizer.PolarizerToCrossed();
+            Commander.Polarizer.PolarizerToZeroBeta();
             if (e.Error != null)
             {
                 // Handle the exception thrown in the worker thread.
