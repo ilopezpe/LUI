@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.PolarizerBetaLabel = new System.Windows.Forms.Label();
             this.LoadTimes = new System.Windows.Forms.Button();
             this.TimesView = new System.Windows.Forms.DataGridView();
@@ -145,8 +145,8 @@
             // Value
             // 
             this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
             this.Value.HeaderText = "Delay (s)";
             this.Value.Name = "Value";
             this.Value.ReadOnly = true;
@@ -206,18 +206,25 @@
             this.panel1.Size = new System.Drawing.Size(151, 34);
             this.panel1.TabIndex = 1;
             // 
-            // PolarizerBeta
+            // Beta
             // 
+            this.Beta.DecimalPlaces = 2;
+            this.Beta.Increment = new decimal(new int[] {
+            2,
+            0,
+            0,
+            131072});
             this.Beta.Location = new System.Drawing.Point(80, 10);
             this.Beta.Margin = new System.Windows.Forms.Padding(4);
             this.Beta.Maximum = new decimal(new int[] {
-            500,
+            20,
             0,
             0,
             0});
-            this.Beta.Name = "PolarizerBeta";
+            this.Beta.Name = "Beta";
             this.Beta.Size = new System.Drawing.Size(67, 20);
             this.Beta.TabIndex = 10;
+            this.Beta.ValueChanged += new System.EventHandler(this.Beta_ValueChanged);
             // 
             // TimeProgress
             // 
@@ -290,11 +297,10 @@
         private controls.ObjectCommandPanel PolarizerBox;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label PolarizerBetaLabel;
-        private System.Windows.Forms.NumericUpDown Beta;
         protected System.Windows.Forms.TextBox TimeProgress;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;
-
+        private System.Windows.Forms.NumericUpDown Beta;
     }
 }

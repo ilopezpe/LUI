@@ -204,7 +204,6 @@ namespace LUI.tabs
             Settings["BeamFlag"] = BeamFlagBox.SelectedObject?.Name;
         }
 
-        // XXX add polarizer??
         protected bool PauseCancelProgress(DoWorkEventArgs e, int percentProgress, object progress)
         {
             if (CancelCheck(e)) return true; // If cancelling, set e.Cancel and return true.

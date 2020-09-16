@@ -37,9 +37,15 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
             this.Flow = new System.Windows.Forms.FlowLayoutPanel();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.PolarizerBetaLabel = new System.Windows.Forms.Label();
             this.Beta = new System.Windows.Forms.NumericUpDown();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.CameraTemperature = new System.Windows.Forms.NumericUpDown();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.ImageMode = new System.Windows.Forms.RadioButton();
+            this.FvbMode = new System.Windows.Forms.RadioButton();
             this.PolarizerBox = new LUI.controls.ObjectCommandPanel();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
@@ -53,7 +59,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.AnglesView)).BeginInit();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Beta)).BeginInit();
-            this.PolarizerBox.Flow.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CameraTemperature)).BeginInit();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // StatusBox
@@ -77,15 +89,9 @@
             // 
             // Graph
             // 
-            this.Graph.InitialScaleHeight = 2F;
-            this.Graph.InitialYMax = 1F;
-            this.Graph.InitialYMin = -1F;
-            this.Graph.ScaleHeight = 2F;
             this.Graph.Size = new System.Drawing.Size(1176, 583);
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
-            this.Graph.YMax = 1F;
-            this.Graph.YMin = -1F;
             // 
             // LeftChildArea
             // 
@@ -95,7 +101,7 @@
             // 
             // RightChildArea
             // 
-            this.RightChildArea.Controls.Add(this.PolarizerBox);
+            this.RightChildArea.Controls.Add(this.splitContainer1);
             // 
             // LoadAngles
             // 
@@ -194,14 +200,6 @@
             this.Flow.Size = new System.Drawing.Size(294, 73);
             this.Flow.TabIndex = 0;
             // 
-            // panel1
-            // 
-            this.panel1.AutoSize = true;
-            this.panel1.Location = new System.Drawing.Point(3, 36);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(0, 0);
-            this.panel1.TabIndex = 1;
-            // 
             // PolarizerBetaLabel
             // 
             this.PolarizerBetaLabel.AutoSize = true;
@@ -224,6 +222,88 @@
             this.Beta.Size = new System.Drawing.Size(67, 20);
             this.Beta.TabIndex = 10;
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.PolarizerBox);
+            this.splitContainer1.Size = new System.Drawing.Size(300, 286);
+            this.splitContainer1.SplitterDistance = 110;
+            this.splitContainer1.TabIndex = 0;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.AutoSize = true;
+            this.groupBox2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.groupBox2.Controls.Add(this.label7);
+            this.groupBox2.Controls.Add(this.CameraTemperature);
+            this.groupBox2.Controls.Add(this.panel3);
+            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox2.Location = new System.Drawing.Point(0, 0);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(300, 101);
+            this.groupBox2.TabIndex = 19;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Additional Camera Options";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 64);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(129, 13);
+            this.label7.TabIndex = 25;
+            this.label7.Text = "Camera Temperature (°C):";
+            // 
+            // CameraTemperature
+            // 
+            this.CameraTemperature.Location = new System.Drawing.Point(141, 62);
+            this.CameraTemperature.Name = "CameraTemperature";
+            this.CameraTemperature.Size = new System.Drawing.Size(48, 20);
+            this.CameraTemperature.TabIndex = 24;
+            // 
+            // panel3
+            // 
+            this.panel3.AutoSize = true;
+            this.panel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel3.Controls.Add(this.ImageMode);
+            this.panel3.Controls.Add(this.FvbMode);
+            this.panel3.Location = new System.Drawing.Point(6, 19);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(183, 23);
+            this.panel3.TabIndex = 23;
+            // 
+            // ImageMode
+            // 
+            this.ImageMode.AutoSize = true;
+            this.ImageMode.Location = new System.Drawing.Point(126, 3);
+            this.ImageMode.Name = "ImageMode";
+            this.ImageMode.Size = new System.Drawing.Size(54, 17);
+            this.ImageMode.TabIndex = 1;
+            this.ImageMode.Text = "Image";
+            this.ImageMode.UseVisualStyleBackColor = true;
+            // 
+            // FvbMode
+            // 
+            this.FvbMode.AutoSize = true;
+            this.FvbMode.Checked = true;
+            this.FvbMode.Location = new System.Drawing.Point(3, 3);
+            this.FvbMode.Name = "FvbMode";
+            this.FvbMode.Size = new System.Drawing.Size(117, 17);
+            this.FvbMode.TabIndex = 0;
+            this.FvbMode.TabStop = true;
+            this.FvbMode.Text = "Full Vertical Binning";
+            this.FvbMode.UseVisualStyleBackColor = true;
+            // 
             // PolarizerBox
             // 
             this.PolarizerBox.AutoSize = true;
@@ -234,18 +314,17 @@
             // 
             this.PolarizerBox.Flow.AutoSize = true;
             this.PolarizerBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PolarizerBox.Flow.Controls.Add(this.panel1);
             this.PolarizerBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PolarizerBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.PolarizerBox.Flow.Location = new System.Drawing.Point(3, 16);
             this.PolarizerBox.Flow.Name = "Flow";
-            this.PolarizerBox.Flow.Size = new System.Drawing.Size(294, 39);
+            this.PolarizerBox.Flow.Size = new System.Drawing.Size(294, 33);
             this.PolarizerBox.Flow.TabIndex = 0;
             this.PolarizerBox.Location = new System.Drawing.Point(0, 0);
             this.PolarizerBox.Name = "PolarizerBox";
             this.PolarizerBox.SelectedObject = null;
-            this.PolarizerBox.Size = new System.Drawing.Size(300, 58);
-            this.PolarizerBox.TabIndex = 0;
+            this.PolarizerBox.Size = new System.Drawing.Size(300, 52);
+            this.PolarizerBox.TabIndex = 18;
             this.PolarizerBox.Text = "Polarizer";
             // 
             // CrossControl
@@ -265,14 +344,22 @@
             this.LeftChildArea.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
             this.RightChildArea.ResumeLayout(false);
-            this.RightChildArea.PerformLayout();
             this.LeftPanel.ResumeLayout(false);
             this.LeftPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AnglesView)).EndInit();
             this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.Beta)).EndInit();
-            this.PolarizerBox.Flow.ResumeLayout(false);
-            this.PolarizerBox.Flow.PerformLayout();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CameraTemperature)).EndInit();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -286,10 +373,16 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;
-        private controls.ObjectCommandPanel PolarizerBox;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.FlowLayoutPanel Flow;
         private System.Windows.Forms.Label PolarizerBetaLabel;
         private System.Windows.Forms.NumericUpDown Beta;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private controls.ObjectCommandPanel PolarizerBox;
+        private System.Windows.Forms.FlowLayoutPanel Flow;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.NumericUpDown CameraTemperature;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.RadioButton ImageMode;
+        private System.Windows.Forms.RadioButton FvbMode;
     }
 }

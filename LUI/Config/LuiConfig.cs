@@ -286,8 +286,12 @@ namespace LUI.config
         public LuiObjectParameters GetFirstParameters(Type t, string Name)
         {
             foreach (var p in GetParameters(t))
+            {
                 if (p.Name == Name)
+                {
                     return p;
+                }
+            }
             return null;
         }
 

@@ -13,7 +13,7 @@ namespace lasercom.polarizer
 
         public PolarizerPosition CurrentPosition { get; protected set; }
 
-        public virtual int PolarizerBeta { get; set; }
+        public virtual float PolarizerBeta { get; set; }
 
         public virtual int MinBeta { get; set; }
 

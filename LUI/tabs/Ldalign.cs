@@ -6,7 +6,6 @@ using lasercom.io;
 using LUI.config;
 using LUI.controls;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -18,15 +17,15 @@ using System.Threading;
 
 namespace LUI.tabs
 {
-    public partial class CrossControl : LuiTab
+    public partial class LdalignControl : LuiTab
     {
         public enum Dialog
         {
             INITIALIZE,
             PROGRESS,
             PROGRESS_DARK,
-            PROGRESS_ANGLE,
-            PROGRESS_WORK,
+            PROGRESS_PLUS,
+            PROGRESS_MINUS,
             PROGRESS_WORK_COMPLETE,
             CALCULATE,
             TEMPERATURE
@@ -37,34 +36,21 @@ namespace LUI.tabs
         MatVar<int> RawData;
         CancellationTokenSource TemperatureCts;
 
-        readonly BindingList<AnglesRow> AnglesList = new BindingList<AnglesRow>();
-
-        IList<double> Angles
-        {
-            get { return AnglesList.Select(x => x.Value).ToList(); }
-            set
-            {
-                AnglesList.Clear();
-                foreach (var d in value)
-                    AnglesList.Add(new AnglesRow { Value = d });
-            }
-        }
-
-        public CrossControl(LuiConfig Config) : base(Config)
+        public LdalignControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
             Init();
 
             PolarizerBox.Enabled = false;
             Beta.ValueChanged += Beta_ValueChanged;
-                
-            AnglesList.AllowEdit = false;
-            AnglesView.DefaultValuesNeeded += (sender, e) => { e.Row.Cells["Value"].Value = 0; };
-            AnglesView.DataSource = new BindingSource(AnglesList, null);
-            AnglesView.CellValidating += AnglesView_CellValidating;
-            AnglesView.CellEndEdit += AnglesView_CellEndEdit;
 
             CameraTemperature.Enabled = false;
+
+            DdgConfigBox.Config = Config;
+            DdgConfigBox.Commander = Commander;
+            DdgConfigBox.AllowZero = false;
+            DdgConfigBox.HandleParametersChanged(this, EventArgs.Empty);
+
             SaveData.Click += (sender, e) => SaveOutput();
         }
 
@@ -73,7 +59,6 @@ namespace LUI.tabs
             SuspendLayout();
 
             ScanProgress.Text = "0";
-            AngleProgress.Text = "0";
 
             NScan.Minimum = 2;
             NScan.Increment = 2;
@@ -100,6 +85,7 @@ namespace LUI.tabs
         public override void HandleParametersChanged(object sender, EventArgs e)
         {
             base.HandleParametersChanged(sender, e); // Takes care of ObjectSelectPanel.
+            DdgConfigBox.HandleParametersChanged(sender, e);
 
             var PolarizersAvailable = Config.GetParameters(typeof(PolarizerParameters));
             if (PolarizersAvailable.Count() > 0)
@@ -117,10 +103,17 @@ namespace LUI.tabs
                     PolarizerBox.Objects.SelectedIndex = 0;
                 }
 
+                Beta.Minimum = Commander.Polarizer.MinBeta;
+                Beta.Maximum = Commander.Polarizer.MaxBeta;
+                Beta.Value = (decimal)Commander.Polarizer.PolarizerBeta;
+
                 PolarizerBox.Enabled = true;
             }
             else
             {
+                Beta.Minimum = 0;
+                Beta.Maximum = 0;
+                Beta.Value = 0;
                 PolarizerBox.Enabled = false;
             }
         }
@@ -148,6 +141,7 @@ namespace LUI.tabs
         public override void HandleContainingTabSelected(object sender, EventArgs e)
         {
             base.HandleContainingTabSelected(sender, e);
+            DdgConfigBox.UpdatePrimaryDelayValue();
             UpdateReadMode();
             UpdateCameraTemperature();
         }
@@ -162,12 +156,24 @@ namespace LUI.tabs
         {
             base.LoadSettings();
             var Settings = Config.TabSettings[GetType().Name];
+            if (Settings.TryGetValue("PrimaryDelayDdg", out var value) && value != null && value != "")
+            {
+                DdgConfigBox.PrimaryDelayDdg = (DelayGeneratorParameters)Config.GetFirstParameters(
+                    typeof(DelayGeneratorParameters), value);
+            }
+
+            if (Settings.TryGetValue("PrimaryDelayDelay", out value) && value != null && value != "")
+            {
+                DdgConfigBox.PrimaryDelayDelay = value;
+            }
         }
 
         protected override void SaveSettings()
         {
             base.SaveSettings();
             var Settings = Config.TabSettings[GetType().Name];
+            Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg?.Name;
+            Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay ?? null;
         }
 
         /// <summary>
@@ -200,15 +206,15 @@ namespace LUI.tabs
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
-            if (PolarizerBox.Objects.SelectedItem == null)
+            if (DdgConfigBox.PrimaryDelayDelay == null)
             {
-                MessageBox.Show("Polarizer controller must be configured.", "Error", MessageBoxButtons.OK);
+                MessageBox.Show("Primary delay must be configured.", "Error", MessageBoxButtons.OK);
                 return;
             }
 
-            if (Angles.Count < 1)
+            if (PolarizerBox.Objects.SelectedItem == null)
             {
-                MessageBox.Show("Angles to be scanned must be configured.", "Error", MessageBoxButtons.OK);
+                MessageBox.Show("Polarizer controller must be configured.", "Error", MessageBoxButtons.OK);
                 return;
             }
 
@@ -219,30 +225,30 @@ namespace LUI.tabs
 
             var N = (int)NScan.Value;
 
+            DdgConfigBox.ApplyPrimaryDelayValue();
             Commander.BeamFlag.CloseLaserAndFlash();
 
             ImageMode_CheckedChanged(sender, e);
             FvbMode_CheckedChanged(sender, e);
 
             SetupWorker();
-            worker.RunWorkerAsync(new WorkArgs(N, Angles));
+            worker.RunWorkerAsync(new WorkArgs(N));
             OnTaskStarted(EventArgs.Empty);
         }
 
         public override void OnTaskStarted(EventArgs e)
         {
             base.OnTaskStarted(e);
+            DdgConfigBox.Enabled = false;
             PolarizerBox.Enabled = false;
-            LoadAngles.Enabled = SaveData.Enabled = false;
             ScanProgress.Text = "0";
-            AngleProgress.Text = "0";
         }
 
         public override void OnTaskFinished(EventArgs e)
         {
             base.OnTaskFinished(e);
+            DdgConfigBox.Enabled = true;
             PolarizerBox.Enabled = true;
-            LoadAngles.Enabled = SaveData.Enabled = true;
         }
 
         void DoTempCheck(Func<bool> Breakout)
@@ -284,9 +290,9 @@ namespace LUI.tabs
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
-            DoTempCheck(() => PauseCancelProgress(e, 0, new ProgressObject(null, 0, Dialog.TEMPERATURE)));
+            DoTempCheck(() => PauseCancelProgress(e, 0, new ProgressObject(null, Dialog.TEMPERATURE)));
 
-            if (PauseCancelProgress(e, 0, new ProgressObject(null, 0, Dialog.INITIALIZE)))
+            if (PauseCancelProgress(e, 0, new ProgressObject(null,Dialog.INITIALIZE)))
             {
                 return; // Show zero progress.
             }
@@ -294,28 +300,23 @@ namespace LUI.tabs
             #region Collect Variables
             var args = (WorkArgs)e.Argument;
             var N = args.N; // Save typing for later.
-            var Angles = args.Angles;
             var AcqSize = Commander.Camera.AcqSize;
             var AcqWidth = Commander.Camera.AcqWidth;
 
-            var TotalScans =  N + Angles.Count * N;
+            // minus + plus + dark
+            var TotalScans = N*3;
             #endregion
 
             #region Initialize datafile
-
             // Create the data store.
-            InitDataFile(AcqWidth, TotalScans, Angles.Count);
+            InitDataFile(AcqWidth, TotalScans, 0);
 
             // Write dummy value (number of scans).
-            LuiData.Write(args.N, new long[] { 0, 0 });
+            //LuiData.Write(args.N, new long[] { 0, 0 });
 
             // Write wavelengths.
-            long[] RowSize = { 1, AcqWidth };
-            LuiData.Write(Commander.Camera.Calibration, new long[] { 0, 1 }, RowSize);
-
-            // Write Angles.
-            long[] ColSize = { Angles.Count, 1 };
-            LuiData.Write(Angles.ToArray(), new long[] { 1, 0 }, ColSize);
+            //long[] RowSize = { 1, AcqWidth };
+            //LuiData.Write(Commander.Camera.Calibration, new long[] { 0, 1 }, RowSize);
             #endregion
 
             #region Initialize buffers for data
@@ -323,43 +324,77 @@ namespace LUI.tabs
             var AcqRow = new int[AcqWidth];
             var DarkBuffer = new int[AcqWidth];
             var Dark = new double[AcqWidth];
-            var AngleDataBuffer = new int[AcqWidth];
-            var AngleData = new double[AcqWidth];
+            var PlusBetaBuffer = new int[AcqWidth];
+            var MinusBetaBuffer = new int[AcqWidth];
+            var PlusBeta = new double[AcqWidth];
+            var MinusBeta = new double[AcqWidth];
             #endregion
 
-            // Collect dark spectrum
-            // already in crossed position
+            /* 
+            * Collect LD procedure
+            * A. Collect dark spectrum at 32 ns
+            *      1. Set up dark enviornment
+            *      2. Acquire data
+            * B. Plus beta intensity
+            *      1. Move polarizer to plus beta
+            *      2. Open pump and probe beam shutters
+            *      3. Acquire data
+            *      4. Close beam shutters
+            * C.
+            *      1. Move polarizer to minus beta
+            *      2. Open pump and probe beam shutters
+            *      3. Acquire data
+            *      4. Close beam shutters
+            *      5. Calculate and plot
+            */
+
+            // A1. Set up to collect dark spectrum
+            Commander.Polarizer.PolarizerToCrossed();
+            Commander.BeamFlag.CloseLaserAndFlash();
+            // A2. Acquire data  
             DoAcq(AcqBuffer,
-                  AcqRow,
-                  DarkBuffer,
-                  N,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_DARK)));
-            if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
+                AcqRow,
+                DarkBuffer,
+                N,
+                p => PauseCancelProgress(e, p, new ProgressObject(null,Dialog.PROGRESS_DARK)));
+            if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
             Data.Accumulate(Dark, DarkBuffer);
 
-            for (int i = 0; i < Angles.Count; i++)
+            // B1. Move polarizer to plus beta 
+            Commander.Polarizer.PolarizerToPlusBeta();
+            // B2. Open pump and probe beam shutters
+            Commander.BeamFlag.OpenLaserAndFlash();
+            // B3. Acquire data
+            DoAcq(AcqBuffer,
+                AcqRow,
+                PlusBetaBuffer,
+                N,
+                p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_PLUS)));
+            if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
+            Data.Accumulate(PlusBeta, PlusBetaBuffer);
+            // B4. Close pump and probe beam shutters
+            Commander.BeamFlag.CloseLaserAndFlash();
+
+            // C1. Move polarizer to minus beta 
+            Commander.Polarizer.PolarizerToMinusBeta();
+            // C2. Open pump and probe beam shutters
+            Commander.BeamFlag.OpenLaserAndFlash();
+            // C3. Acquire data
+            DoAcq(AcqBuffer,
+                AcqRow,
+                MinusBetaBuffer,
+                N,
+                p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_MINUS)));
+            if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
+            Data.Accumulate(MinusBeta, MinusBetaBuffer);
+            // C4. Close pump and probe beam shutters
+            Commander.BeamFlag.CloseLaserAndFlash();
+
+            double[] S = Data.S(PlusBeta, MinusBeta, Dark);
+            //LuiData.WriteNext(S, 0);
+            if (PauseCancelProgress(e, -1, new ProgressObject(S, Dialog.PROGRESS_WORK_COMPLETE)))
             {
-                var Angle = Angles[i];
-                Commander.Polarizer.SetAngle((float)Angle);
-                Commander.BeamFlag.OpenFlash();
-
-                if (PauseCancelProgress(e, -1, new ProgressObject(null, Angle, Dialog.PROGRESS))) return;
-                DoAcq(AcqBuffer,
-                      AcqRow,
-                      AngleDataBuffer,
-                      N,
-                      p => PauseCancelProgress(e, p, new ProgressObject(null, Angle, Dialog.PROGRESS_WORK)));       
-                if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
-                Commander.BeamFlag.CloseFlash();
-                Data.Accumulate(AngleData, AngleDataBuffer);
-
-                var Y = Data.Y(AngleData, Dark);
-                LuiData.Write(Y, new long[] { i + 1, 1 }, RowSize);
-                if (PauseCancelProgress(e, i, new ProgressObject(Y, Angle, Dialog.PROGRESS_WORK_COMPLETE)))
-                {
-                    return;
-                }
-                Array.Clear(AngleData, 0, AngleData.Length);
+                return;
             }
             Commander.Polarizer.SetAngle(90.00F); // short wait.
         }
@@ -380,13 +415,19 @@ namespace LUI.tabs
                 case Dialog.PROGRESS_DARK:
                     break;
 
-                case Dialog.PROGRESS_WORK:
-                    ProgressLabel.Text = "Collecting...";
+                case Dialog.PROGRESS_PLUS:
+                    ProgressLabel.Text = "Collecting plus...";
                     ScanProgress.Text = progressValue + "/" + NScan.Value;
+                    //Display(progress.Data);
+                    break;
+
+                case Dialog.PROGRESS_MINUS:
+                    ProgressLabel.Text = "Collecting minus...";
+                    ScanProgress.Text = progressValue + "/" + NScan.Value;
+                    //Display(progress.Data);
                     break;
 
                 case Dialog.PROGRESS_WORK_COMPLETE:
-                    AngleProgress.Text = progressValue + "/" + Angles.Count;
                     Display(progress.Data);
                     break;
 
@@ -430,71 +471,6 @@ namespace LUI.tabs
             Graph.DrawPoints(Commander.Camera.Calibration, Y);
             Graph.Invalidate();
             Graph.MarkerColor = Graph.NextColor;
-        }
-
-        /// <summary>
-        /// Clears row error if user presses ESC while editing.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void AnglesView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
-        {
-            AnglesView.Rows[e.RowIndex].ErrorText = string.Empty;
-        }
-
-        /// <summary>
-        /// Validate that Angles entered by the user are legal.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void AnglesView_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
-        {
-            if (AnglesView.Columns[e.ColumnIndex].Name == "Value")
-            {
-                if (!double.TryParse(e.FormattedValue.ToString(), out var value))
-                {
-                    AnglesView.Rows[e.RowIndex].ErrorText = "Angle must be a number";
-                    e.Cancel = true;
-                }
-
-                if (value <= 0)
-                {
-                    AnglesView.Rows[e.RowIndex].ErrorText = "Angle must be positive";
-                    e.Cancel = true;
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Load file containing angles (one per line).
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void LoadAngles_Click(object sender, EventArgs e)
-        {
-            var openFile = new OpenFileDialog
-            {
-                Filter = "Text File|*.txt|All Files|*.*",
-                Title = "Load Time Series File"
-            };
-            openFile.ShowDialog();
-
-            if (openFile.FileName == "") return;
-
-            try
-            {
-                Angles = FileIO.ReadTimesFile(openFile.FileName);
-            }
-            catch (IOException ex)
-            {
-                Log.Error(ex);
-                MessageBox.Show("Couldn't load Angles file at " + openFile.FileName);
-            }
-            catch (FormatException ex)
-            {
-                Log.Error(ex);
-                MessageBox.Show("Couldn't parse file: " + ex.Message);
-            }
         }
 
         async void CameraTemperature_ValueChanged(object sender, EventArgs e)
@@ -656,26 +632,22 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, IList<double> Angles)
+            public WorkArgs(int N)
             {
                 this.N = N;
-                this.Angles = new List<double>(Angles);
             }
 
             public readonly int N;
-            public readonly IList<double> Angles;
         }
 
         struct ProgressObject
         {
-            public ProgressObject(double[] Data, double Angle, Dialog Status)
+            public ProgressObject(double[] Data, Dialog Status)
             {
                 this.Data = Data;
-                this.Angle = Angle;
                 this.Status = Status;
             }
             public readonly double[] Data;
-            public readonly double Angle;
             public readonly Dialog Status;
         }
     }

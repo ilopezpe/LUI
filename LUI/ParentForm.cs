@@ -23,6 +23,7 @@ namespace LUI
             TROA,
             TRLD,
             CROSS,
+            LDALIGN,
             CALIBRATE,
             ALIGN,
             POWER,
@@ -56,6 +57,9 @@ namespace LUI
         readonly CrossControl CROSSControl;
         readonly TabPage CROSSPage;
 
+        readonly LdalignControl LDALIGNControl;
+        readonly TabPage LDALIGNPage;
+
         public ParentForm(LuiConfig config)
         {
             Config = config;
@@ -88,6 +92,7 @@ namespace LUI
             TROAPage = new TabPage();
             TRLDPage = new TabPage();
             CROSSPage = new TabPage();
+            LDALIGNPage = new TabPage();
             ResidualsPage = new TabPage();
             CalibrationPage = new TabPage();
             PowerPage = new TabPage();
@@ -124,7 +129,14 @@ namespace LUI
             CROSSPage.Name = "CROSSPage";
             CROSSPage.Padding = new Padding(2, 2, 2, 2);
             CROSSPage.TabIndex = 0;
-            CROSSPage.Text = "CROSS";
+            CROSSPage.Text = "Cross Position";
+
+            LDALIGNPage.BackColor = SystemColors.Control;
+            LDALIGNPage.Margin = new Padding(2, 2, 2, 2);
+            LDALIGNPage.Name = "LDALIGNPage";
+            LDALIGNPage.Padding = new Padding(2, 2, 2, 2);
+            LDALIGNPage.TabIndex = 0;
+            LDALIGNPage.Text = "LDAlign";
 
             ResidualsPage.BackColor = SystemColors.Control;
             ResidualsPage.Margin = new Padding(2, 2, 2, 2);
@@ -137,7 +149,7 @@ namespace LUI
             CalibrationPage.Name = "CalibrationPage";
             CalibrationPage.Padding = new Padding(2, 2, 2, 2);
             CalibrationPage.TabIndex = 1;
-            CalibrationPage.Text = "Calibration";
+            CalibrationPage.Text = " WL Calibration";
 
             PowerPage.BackColor = SystemColors.Control;
             PowerPage.Margin = new Padding(2, 2, 2, 2);
@@ -156,6 +168,7 @@ namespace LUI
             Tabs.TabPages.Add(TROAPage);
             Tabs.TabPages.Add(TRLDPage);
             Tabs.TabPages.Add(CROSSPage);
+            Tabs.TabPages.Add(LDALIGNPage);
             Tabs.TabPages.Add(ResidualsPage);
             Tabs.TabPages.Add(CalibrationPage);
             Tabs.TabPages.Add(PowerPage);
@@ -188,6 +201,9 @@ namespace LUI
 
             CROSSControl = new CrossControl(Config);
             CROSSPage.Controls.Add(CROSSControl);
+
+            LDALIGNControl = new LdalignControl(Config);
+            LDALIGNPage.Controls.Add(LDALIGNControl);
 
             LaserPowerControl = new LaserPowerControl(Config);
             PowerPage.Controls.Add(LaserPowerControl);
@@ -229,6 +245,7 @@ namespace LUI
                 if (TROAControl.IsBusy) return TaskState.TROA;
                 if (TRLDControl.IsBusy) return TaskState.TRLD;
                 if (CROSSControl.IsBusy) return TaskState.CROSS;
+                if (LDALIGNControl.IsBusy) return TaskState.LDALIGN;
                 if (LaserPowerControl.IsBusy) return TaskState.POWER;
                 if (SpecControl.IsBusy) return TaskState.SPEC;
                 return TaskState.IDLE;
@@ -262,7 +279,7 @@ namespace LUI
         {
             try
             {
-                DisableTabs(TROAPage, TRLDPage, CROSSPage, CalibrationPage, ResidualsPage, PowerPage, SpecPage, OptionsPage);
+                DisableTabs(TROAPage, TRLDPage, CROSSPage, LDALIGNPage, CalibrationPage, ResidualsPage, PowerPage, SpecPage, OptionsPage);
                 var Instantiation = Config.InstantiateConfigurationAsync();
                 await Instantiation;
                 Config.OnParametersChanged(sender, e);
@@ -390,7 +407,11 @@ namespace LUI
                         break;
 
                     case TaskState.CROSS:
-                        Task = "CROSS program";
+                        Task = "Cross program";
+                        break;
+
+                    case TaskState.LDALIGN:
+                        Task = "LD Align program";
                         break;
                 }
 

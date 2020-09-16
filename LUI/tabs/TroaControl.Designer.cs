@@ -31,6 +31,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LoadTimes = new System.Windows.Forms.Button();
             this.TimesView = new System.Windows.Forms.DataGridView();
+            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SaveData = new System.Windows.Forms.Button();
             this.DdgConfigBox = new LUI.controls.DdgCommandPanel();
             this.SyringePumpBox = new LUI.controls.ObjectCommandPanel();
@@ -42,7 +43,6 @@
             this.TimeProgress = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
-            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -132,6 +132,16 @@
             this.TimesView.ShowEditingIcon = false;
             this.TimesView.Size = new System.Drawing.Size(136, 150);
             this.TimesView.TabIndex = 11;
+            // 
+            // Value
+            // 
+            this.Value.DataPropertyName = "Value";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Value.HeaderText = "Delay (s)";
+            this.Value.Name = "Value";
+            this.Value.ReadOnly = true;
+            this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // SaveData
             // 
@@ -263,16 +273,6 @@
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 15;
             this.label2.Text = "Times";
-            // 
-            // Value
-            // 
-            this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Value.HeaderText = "Delay (s)";
-            this.Value.Name = "Value";
-            this.Value.ReadOnly = true;
-            this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // TroaControl
             // 

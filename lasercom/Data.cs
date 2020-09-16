@@ -152,18 +152,17 @@ namespace lasercom
         }
 
         /// <summary>
-        /// dO NOTHING
+        /// Return transmitted light minus dark
         /// </summary>
-        /// <param name="Y"></param>
+        /// <param name="Signal"></param>
         /// <returns>clean Y</returns>
-        public static double[] returnY(IList<double> Y)
+        public static double[] Y(IList<double> Signal, IList<double> Dark)
         {
-            var newY = new double[Y.Count];
-            for (var i = 0; i < newY.Length; i++)
-                newY[i] = (Y[i]);
-            return newY;
+            var Y = new double[Signal.Count];
+            for (var i = 0; i < Y.Length; i++)
+                Y[i] = (Signal[i] - Dark[i]);
+            return Y;
         }
-
 
         /// <summary>
         ///     Computes OD from Sample and Blank counts, subtracting Dark counts from both.
