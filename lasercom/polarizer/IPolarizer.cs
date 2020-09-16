@@ -52,7 +52,7 @@
         /// <summary>
         /// Current beta setting of polarizers.
         /// </summary>
-        float PolarizerBeta { get; set; }
+        int PolarizerBeta { get; set; }
 
         /// <summary>
         /// Min beta setting of polarizers.

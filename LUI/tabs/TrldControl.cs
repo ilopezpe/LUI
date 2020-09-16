@@ -96,7 +96,7 @@ namespace LUI.tabs
 
         void Beta_ValueChanged(object sender, EventArgs e)
         {
-            Commander.Polarizer.PolarizerBeta = (float)Beta.Value;
+            Commander.Polarizer.PolarizerBeta = (int)Beta.Value;
         }
 
         public override void HandleParametersChanged(object sender, EventArgs e)
@@ -122,7 +122,7 @@ namespace LUI.tabs
 
                 Beta.Minimum = Commander.Polarizer.MinBeta;
                 Beta.Maximum = Commander.Polarizer.MaxBeta;
-                Beta.Value = (decimal)Commander.Polarizer.PolarizerBeta;
+                Beta.Value = Commander.Polarizer.PolarizerBeta;
 
                 PolarizerBox.Enabled = true;
             }
@@ -287,25 +287,23 @@ namespace LUI.tabs
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
-            // Check that the temperature has stabilized (not convinced this works...)
             DoTempCheck(() => PauseCancelProgress(e, 0, new ProgressObject(null, 0, Dialog.TEMPERATURE)));
+
             if (PauseCancelProgress(e, 0, new ProgressObject(null, 0, Dialog.INITIALIZE)))
             {
-                return; // Show zero progress
+                return; // Show zero progress.
             }
 
-            #region Collect variables
             var args = (WorkArgs)e.Argument;
-            var N = args.N; 
+            var N = args.N; // Save typing for later.
+            var half = N / 2; // N is always even.
             var Times = args.Times;
             var AcqSize = Commander.Camera.AcqSize;
             var AcqWidth = Commander.Camera.AcqWidth;
 
-            // Total scans = dark scans + plus time series scans.
-            var TotalScans = N + (Times.Count * N);
-            #endregion
+            // Total scans = dark scans + ground state scans + plus time series scans.
+            var TotalScans = N + half + Times.Count * (half + N);
 
-            #region Initialize datafile 
             // Create the data store.
             InitDataFile(AcqWidth, TotalScans, Times.Count);
 
@@ -319,17 +317,16 @@ namespace LUI.tabs
             // Write times.
             long[] ColSize = { Times.Count, 1 };
             LuiData.Write(Times.ToArray(), new long[] { 1, 0 }, ColSize);
-            #endregion
 
-            #region Initialize buffers for data
+            #region Initialize buffers for acuisition data
             var AcqBuffer = new int[AcqSize];
             var AcqRow = new int[AcqWidth];
             var DarkBuffer = new int[AcqWidth];
-            var Dark = new double[AcqWidth];
             var PlusBetaBuffer = new int[AcqWidth];
             var MinusBetaBuffer = new int[AcqWidth];
             var PlusBeta = new double[AcqWidth];
             var MinusBeta = new double[AcqWidth];
+            var Dark = new double[AcqWidth];
             #endregion
 
             /* 
@@ -348,11 +345,11 @@ namespace LUI.tabs
              *      2. Open pump and probe beam shutters
              *      3. Acquire data
              *      4. Close beam shutters
-             *      5. Calculate and plot
              */
 
             // A1. Set up to collect dark spectrum at 32 ns 
             Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8);
+            Commander.BeamFlag.CloseLaserAndFlash();
             Commander.Polarizer.PolarizerToCrossed();
 
             // A2. Acquire data 
@@ -363,6 +360,7 @@ namespace LUI.tabs
                   p => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_DARK)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
             Data.Accumulate(Dark, DarkBuffer);
+            Data.DivideArray(Dark, N);
 
             for (int i = 0; i < Times.Count; i++)
             {
@@ -398,9 +396,11 @@ namespace LUI.tabs
                 // C4. Close beam shutters
                 Commander.BeamFlag.CloseLaserAndFlash();
 
-                // C5. Calculate and plot
                 Data.Accumulate(PlusBeta, PlusBetaBuffer);
+                Data.DivideArray(PlusBeta, N);
+
                 Data.Accumulate(MinusBeta, MinusBetaBuffer);
+                Data.DivideArray(MinusBeta, N);
 
                 var S = Data.S(PlusBeta, MinusBeta, Dark);
                 LuiData.Write(S, new long[] { i + 1, 1 }, RowSize);
@@ -411,7 +411,8 @@ namespace LUI.tabs
                 Array.Clear(PlusBeta, 0, PlusBeta.Length);
                 Array.Clear(MinusBeta, 0, MinusBeta.Length);
             }
-            Commander.Polarizer.SetAngle(90.00F); // short wait.
+            Commander.BeamFlag.CloseLaserAndFlash();
+            Commander.Polarizer.PolarizerToCrossed();
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)

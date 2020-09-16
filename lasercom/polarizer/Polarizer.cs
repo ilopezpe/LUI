@@ -33,9 +33,7 @@ namespace lasercom.polarizer
         public Polarizer(PolarizerParameters p)
         {
             if (p == null || p.PortName == null)
-            {
                 throw new ArgumentException("PortName must be defined.");
-            }
             Init(p.PortName);
         }
 
@@ -44,9 +42,9 @@ namespace lasercom.polarizer
             Init(portName);
         }
 
-        public override float PolarizerBeta { get; set; } = 10.00F;
+        public override int PolarizerBeta { get; set; } = 10;
         public override int MinBeta { get; set; } = 0;
-        public override int MaxBeta { get; set; } = 20;
+        public override int MaxBeta { get; set; } = 90;
 
         public int Delay { get; set; } // Time in miliseconds to sleep between commands.
 
@@ -65,11 +63,11 @@ namespace lasercom.polarizer
                 DtrEnable = false //do not enable! will reset arduino
             };
             if (!_port.IsOpen)
-            {
                 _port.Open();
-            }
-            Thread.Sleep(10);
 
+            _port.DiscardInBuffer();
+            Thread.Sleep(10);
+            _port.DiscardOutBuffer();
         }
 
         private float ToStep(float angle)
@@ -193,7 +191,7 @@ namespace lasercom.polarizer
         /// <param name="wait"></param>
         void PolarizerToMinusBeta(bool wait)
         {
-            float NSteps = ToStep(PolarizerCross - PolarizerBeta);
+            float NSteps = ToStep(PolarizerCross + PolarizerBeta);
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
@@ -215,6 +213,7 @@ namespace lasercom.polarizer
         {
             if (disposing)
             {
+                PolarizerToCrossed();
                 EnsurePortDisposed();
             }
         }

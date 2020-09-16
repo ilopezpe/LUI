@@ -14,7 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using System.Threading;
 
 namespace LUI.tabs
 {
@@ -24,7 +23,6 @@ namespace LUI.tabs
         {
             INITIALIZE,
             PROGRESS,
-            PROGRESS_DARK,
             PROGRESS_ANGLE,
             PROGRESS_WORK,
             PROGRESS_WORK_COMPLETE,
@@ -35,7 +33,6 @@ namespace LUI.tabs
         MatFile DataFile;
         MatVar<double> LuiData;
         MatVar<int> RawData;
-        CancellationTokenSource TemperatureCts;
 
         readonly BindingList<AnglesRow> AnglesList = new BindingList<AnglesRow>();
 
@@ -55,7 +52,7 @@ namespace LUI.tabs
             InitializeComponent();
             Init();
 
-            PolarizerBox.Enabled = false;
+            panel1.Enabled = false;
             Beta.ValueChanged += Beta_ValueChanged;
                 
             AnglesList.AllowEdit = false;
@@ -64,7 +61,6 @@ namespace LUI.tabs
             AnglesView.CellValidating += AnglesView_CellValidating;
             AnglesView.CellEndEdit += AnglesView_CellEndEdit;
 
-            CameraTemperature.Enabled = false;
             SaveData.Click += (sender, e) => SaveOutput();
         }
 
@@ -117,39 +113,24 @@ namespace LUI.tabs
                     PolarizerBox.Objects.SelectedIndex = 0;
                 }
 
+                Beta.Minimum = Commander.Polarizer.MinBeta;
+                Beta.Maximum = Commander.Polarizer.MaxBeta;
+                Beta.Value = Commander.Polarizer.PolarizerBeta;
+
                 PolarizerBox.Enabled = true;
             }
             else
             {
+                Beta.Minimum = 0;
+                Beta.Maximum = 0;
+                Beta.Value = 0;
                 PolarizerBox.Enabled = false;
-            }
-        }
-
-        public override void HandleCameraChanged(object sender, EventArgs e)
-        {
-            base.HandleCameraChanged(sender, e);
-            UpdateReadMode();
-            if (Commander.Camera is CameraTempControlled)
-            {
-                CameraTemperature.Enabled = true;
-                var camct = (CameraTempControlled)Commander.Camera;
-                CameraTemperature.Minimum = camct.MinTemp;
-                CameraTemperature.Maximum = camct.MaxTemp;
-                CameraTemperature.Increment = (int)CameraTempControlled.TemperatureEps;
-                UpdateCameraTemperature(); // Subscribes ValueChanged.
-            }
-            else
-            {
-                CameraTemperature.Enabled = false;
-                CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
             }
         }
 
         public override void HandleContainingTabSelected(object sender, EventArgs e)
         {
             base.HandleContainingTabSelected(sender, e);
-            UpdateReadMode();
-            UpdateCameraTemperature();
         }
 
         public virtual void HandlePolarizerChanged(object sender, EventArgs e)
@@ -221,9 +202,6 @@ namespace LUI.tabs
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
-            ImageMode_CheckedChanged(sender, e);
-            FvbMode_CheckedChanged(sender, e);
-
             SetupWorker();
             worker.RunWorkerAsync(new WorkArgs(N, Angles));
             OnTaskStarted(EventArgs.Empty);
@@ -291,17 +269,13 @@ namespace LUI.tabs
                 return; // Show zero progress.
             }
 
-            #region Collect Variables
             var args = (WorkArgs)e.Argument;
             var N = args.N; // Save typing for later.
             var Angles = args.Angles;
             var AcqSize = Commander.Camera.AcqSize;
             var AcqWidth = Commander.Camera.AcqWidth;
 
-            var TotalScans =  N + Angles.Count * N;
-            #endregion
-
-            #region Initialize datafile
+            var TotalScans =  Angles.Count * N;
 
             // Create the data store.
             InitDataFile(AcqWidth, TotalScans, Angles.Count);
@@ -316,26 +290,14 @@ namespace LUI.tabs
             // Write Angles.
             long[] ColSize = { Angles.Count, 1 };
             LuiData.Write(Angles.ToArray(), new long[] { 1, 0 }, ColSize);
-            #endregion
 
-            #region Initialize buffers for data
             var AcqBuffer = new int[AcqSize];
             var AcqRow = new int[AcqWidth];
-            var DarkBuffer = new int[AcqWidth];
-            var Dark = new double[AcqWidth];
             var AngleDataBuffer = new int[AcqWidth];
             var AngleData = new double[AcqWidth];
-            #endregion
 
-            // Collect dark spectrum
-            // already in crossed position
-            DoAcq(AcqBuffer,
-                  AcqRow,
-                  DarkBuffer,
-                  N,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_DARK)));
-            if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
-            Data.Accumulate(Dark, DarkBuffer);
+            // Send to crossed position
+            Commander.Polarizer.PolarizerToCrossed();
 
             for (int i = 0; i < Angles.Count; i++)
             {
@@ -348,18 +310,19 @@ namespace LUI.tabs
                       AcqRow,
                       AngleDataBuffer,
                       N,
-                      p => PauseCancelProgress(e, p, new ProgressObject(null, Angle, Dialog.PROGRESS_WORK)));       
+                      p => PauseCancelProgress(e, p, new ProgressObject(null, Angle, Dialog.PROGRESS_WORK)));
+                
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
-                Commander.BeamFlag.CloseFlash();
+                           
                 Data.Accumulate(AngleData, AngleDataBuffer);
-
-                var Y = Data.Y(AngleData, Dark);
+                var Y = Data.returnY(AngleData);
                 LuiData.Write(Y, new long[] { i + 1, 1 }, RowSize);
                 if (PauseCancelProgress(e, i, new ProgressObject(Y, Angle, Dialog.PROGRESS_WORK_COMPLETE)))
                 {
                     return;
                 }
                 Array.Clear(AngleData, 0, AngleData.Length);
+                Commander.BeamFlag.CloseFlash();
             }
             Commander.Polarizer.SetAngle(90.00F); // short wait.
         }
@@ -377,12 +340,10 @@ namespace LUI.tabs
                 case Dialog.PROGRESS:
                     break;
 
-                case Dialog.PROGRESS_DARK:
-                    break;
-
                 case Dialog.PROGRESS_WORK:
                     ProgressLabel.Text = "Collecting...";
                     ScanProgress.Text = progressValue + "/" + NScan.Value;
+                    //Display(progress.Data);
                     break;
 
                 case Dialog.PROGRESS_WORK_COMPLETE:
@@ -495,64 +456,6 @@ namespace LUI.tabs
                 Log.Error(ex);
                 MessageBox.Show("Couldn't parse file: " + ex.Message);
             }
-        }
-
-        async void CameraTemperature_ValueChanged(object sender, EventArgs e)
-        {
-            var camct = Commander.Camera as CameraTempControlled;
-            if (camct != null)
-            {
-                if (TemperatureCts != null) TemperatureCts.Cancel();
-                TemperatureCts = new CancellationTokenSource();
-
-                CameraTemperature.ForeColor = Color.Red;
-                await camct.EquilibrateTemperatureAsync((int)CameraTemperature.Value,
-                    TemperatureCts.Token); // Wait for 3 deg. threshold.
-                CameraTemperature.ForeColor = Color.Goldenrod;
-                await camct.EquilibrateTemperatureAsync(TemperatureCts.Token); // Wait for driver signal.
-                UpdateCameraTemperature();
-                CameraTemperature.ForeColor = Color.Black;
-
-                TemperatureCts = null;
-            }
-        }
-
-        void UpdateCameraTemperature()
-        {
-            var camct = Commander.Camera as CameraTempControlled;
-            if (camct != null)
-            {
-                CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
-                CameraTemperature.Value = camct.Temperature;
-                CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
-            }
-        }
-
-        void UpdateReadMode()
-        {
-            if (Commander.Camera.ReadMode == AndorCamera.ReadModeImage)
-                ImageMode.Checked = true;
-            else
-                FvbMode.Checked = true;
-        }
-
-
-        void FvbMode_CheckedChanged(object sender, EventArgs e)
-        {
-            if (FvbMode.Checked)
-            {
-                Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
-            }
-
-            UpdateCollectText();
-        }
-        void ImageMode_CheckedChanged(object sender, EventArgs e)
-        {
-            if (ImageMode.Checked)
-            {
-                Commander.Camera.ReadMode = AndorCamera.ReadModeImage;
-            }
-            UpdateCollectText();
         }
 
         void SaveOutput()
