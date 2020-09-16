@@ -20,7 +20,7 @@ namespace lasercom.polarizer
         #endregion
 
         private int stepsPerUnit = 50; // 50 steps per deg 
-        private int scanSpeed = 300; // 300 ms per deg
+        private int scanSpeed = 400; // 400 ms per deg
 
         // Approximate time in ms for stepper to complete a move.
         public const int DefaultDelay = 10000; 
@@ -123,7 +123,7 @@ namespace lasercom.polarizer
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
-            if (wait) Thread.Sleep(Delay+(int)PolarizerCross*scanSpeed); // 37 seconds
+            if (wait) Thread.Sleep(Delay+(int)PolarizerCross*scanSpeed);
             CurrentPosition = PolarizerPosition.Aligned;
             _port.DiscardOutBuffer();
         }
@@ -207,7 +207,7 @@ namespace lasercom.polarizer
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
-            if (wait) Thread.Sleep(Delay + (int)Math.Ceiling(PolarizerBeta) * scanSpeed);
+            if (wait) Thread.Sleep(Delay);
             CurrentPosition = PolarizerPosition.Minus;
             _port.DiscardOutBuffer();
         }

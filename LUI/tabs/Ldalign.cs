@@ -6,7 +6,6 @@ using lasercom.polarizer;
 using LUI.config;
 using LUI.controls;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -278,7 +277,6 @@ namespace LUI.tabs
             InitDataFile(AcqWidth, TotalScans);
 
             // Write wavelengths.
-            //long[] RowSize = { 1, AcqWidth };
             LuiData.WriteNext(Commander.Camera.Calibration, 0);
             #endregion
 
@@ -365,13 +363,11 @@ namespace LUI.tabs
             }
             Array.Clear(PlusBeta, 0, PlusBeta.Length);
             Array.Clear(MinusBeta, 0, MinusBeta.Length);
-            Commander.Polarizer.PolarizerToZeroBeta();
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
             var progress = (ProgressObject)e.UserState;
-            //StatusProgress.Value = e.ProgressPercentage;
             var progressValue = (e.ProgressPercentage + 1).ToString();
             switch (progress.Status)
             {

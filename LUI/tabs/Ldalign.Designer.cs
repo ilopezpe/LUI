@@ -69,8 +69,8 @@
             // Graph
             // 
             this.Graph.InitialScaleHeight = 2F;
-            this.Graph.InitialYMax = 1F;
-            this.Graph.InitialYMin = -1F;
+            this.Graph.InitialYMax = 0.1F;
+            this.Graph.InitialYMin = -0.1F;
             this.Graph.ScaleHeight = 2F;
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
