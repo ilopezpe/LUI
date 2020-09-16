@@ -6,6 +6,7 @@
         Crossed,
         Plus,
         Minus,
+        Zero,
     }
 
     /// <summary>
@@ -13,11 +14,6 @@
     /// </summary>
     public interface IPolarizer
     {
-        /// <summary>
-        /// Absolute move to position, accepts degrees
-        /// </summary>
-        /// <param name="angle"></param>
-        void SetAngle(float angle);
 
         /// <summary>
         /// This holds the current position of the polarizer
@@ -52,7 +48,7 @@
         /// <summary>
         /// Current beta setting of polarizers.
         /// </summary>
-        int PolarizerBeta { get; set; }
+        float PolarizerBeta { get; set; }
 
         /// <summary>
         /// Min beta setting of polarizers.
@@ -73,5 +69,11 @@
         /// Move the polarizer to the -beta position
         /// </summary>
         void PolarizerToMinusBeta();
+
+        /// <summary>
+        /// Move the polarizer to the -beta position
+        /// </summary>
+        void PolarizerToZeroBeta();
+
     }
 }

@@ -22,7 +22,7 @@ namespace lasercom.polarizer
         private int stepsPerUnit = 50;
 
         // Approximate time in ms for stepper to complete a move.
-        public const int DefaultDelay = 15000; // 15 second
+        public const int DefaultDelay = 2000; // 15 second
 
         SerialPort _port;
 
@@ -42,7 +42,7 @@ namespace lasercom.polarizer
             Init(portName);
         }
 
-        public override int PolarizerBeta { get; set; } = 10;
+        public override float PolarizerBeta { get; set; } = 10;
         public override int MinBeta { get; set; } = 0;
         public override int MaxBeta { get; set; } = 90;
 
@@ -75,15 +75,6 @@ namespace lasercom.polarizer
             float NSteps = angle * stepsPerUnit;
             Math.Round(NSteps, 2);
             return NSteps;
-        }
-
-        public override void SetAngle(float angle)
-        {
-            float NSteps = ToStep(angle);
-            _port.DiscardInBuffer();
-            _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
-            Thread.Sleep(Delay);
-            _port.DiscardInBuffer();
         }
 
         public override PolarizerPosition Toggle()
@@ -132,7 +123,7 @@ namespace lasercom.polarizer
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
-            if (wait) Thread.Sleep(Delay*3); // much longer
+            if (wait) Thread.Sleep(35000); // much longer
             CurrentPosition = PolarizerPosition.Aligned;
             _port.DiscardOutBuffer();
         }
@@ -153,7 +144,7 @@ namespace lasercom.polarizer
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
-            if (wait) Thread.Sleep(Delay*3);
+            if (wait) Thread.Sleep(35000);
             CurrentPosition = PolarizerPosition.Crossed;
             _port.DiscardOutBuffer();
         }
@@ -191,11 +182,32 @@ namespace lasercom.polarizer
         /// <param name="wait"></param>
         void PolarizerToMinusBeta(bool wait)
         {
-            float NSteps = ToStep(PolarizerCross + PolarizerBeta);
+            float NSteps = ToStep(PolarizerCross - PolarizerBeta);
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
-            if (wait) Thread.Sleep(Delay);
+            if (wait) Thread.Sleep(Delay*(int)Math.Ceiling(PolarizerBeta));
+            CurrentPosition = PolarizerPosition.Minus;
+            _port.DiscardOutBuffer();
+        }
+
+        public override void PolarizerToZeroBeta()
+        {
+            PolarizerToMinusBeta(true);
+        }
+
+        /// <summary>
+        /// Move the polarizer to the plus beta position,  sleeping to ensure the move has completed.
+        /// The PolarizerState is updated only after sleeping in case of monitoring by another thread.
+        /// </summary>
+        /// <param name="wait"></param>
+        void PolarizerToZeroBeta(bool wait)
+        {
+            float NSteps = ToStep(PolarizerCross);
+
+            _port.DiscardInBuffer();
+            _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
+            if (wait) Thread.Sleep(Delay * (int)Math.Ceiling(PolarizerBeta));
             CurrentPosition = PolarizerPosition.Minus;
             _port.DiscardOutBuffer();
         }

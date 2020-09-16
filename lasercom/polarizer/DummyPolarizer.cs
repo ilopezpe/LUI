@@ -15,13 +15,6 @@ namespace lasercom.polarizer
         {
         }
 
-        public string NewAngle { get; set; }
-
-        public override void SetAngle(float angle)
-        {
-            NewAngle = angle.ToString();
-        }
-
         protected override void Dispose(bool disposing)
         {
             // Do nothing.
