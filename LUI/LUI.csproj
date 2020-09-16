@@ -245,6 +245,12 @@
       <DependentUpon>CalibrateControl.cs</DependentUpon>
     </Compile>
     <Compile Include="config\LuiConfig.cs" />
+    <Compile Include="tabs\Ldextinction.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="tabs\Ldextinction.Designer.cs">
+      <DependentUpon>Ldextinction.cs</DependentUpon>
+    </Compile>
     <Compile Include="tabs\TransientAbsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -328,6 +334,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\CalibrateControl.resx">
       <DependentUpon>CalibrateControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="tabs\Ldextinction.resx">
+      <DependentUpon>Ldextinction.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\TransientAbsControl.resx">
       <DependentUpon>TransientAbsControl.cs</DependentUpon>

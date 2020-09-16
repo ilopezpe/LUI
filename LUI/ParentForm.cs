@@ -23,6 +23,7 @@ namespace LUI
             TROA,
             TRLD,
             LDALIGN,
+            LDEXT,
             CALIBRATE,
             ALIGN,
             TA,
@@ -44,6 +45,8 @@ namespace LUI
         readonly TabPage TROAPage;
         readonly LdalignControl LDAlignControl;
         readonly TabPage LDAlignPage;
+        readonly LdextinctionControl LDExtinctionControl;
+        readonly TabPage LDExtinctionPage;
         readonly TrldControl TRLDControl;
         readonly TabPage TRLDPage;
         readonly ResidualsControl ResidualsControl;
@@ -86,6 +89,7 @@ namespace LUI
             TransientAbsPage = new TabPage();
             TROAPage = new TabPage();
             LDAlignPage = new TabPage();
+            LDExtinctionPage = new TabPage();
             TRLDPage = new TabPage();
             ResidualsPage = new TabPage();
             CalibrationPage = new TabPage();
@@ -124,6 +128,13 @@ namespace LUI
             LDAlignPage.TabIndex = 0;
             LDAlignPage.Text = "LD Align";
 
+            LDExtinctionPage.BackColor = SystemColors.Control;
+            LDExtinctionPage.Margin = new Padding(2, 2, 2, 2);
+            LDExtinctionPage.Name = "LDExtinctionPage";
+            LDExtinctionPage.Padding = new Padding(2, 2, 2, 2);
+            LDExtinctionPage.TabIndex = 0;
+            LDExtinctionPage.Text = "Extinction";
+
             TRLDPage.BackColor = SystemColors.Control;
             TRLDPage.Margin = new Padding(2, 2, 2, 2);
             TRLDPage.Name = "TRLDPage";
@@ -155,6 +166,7 @@ namespace LUI
             Tabs.TabPages.Add(TransientAbsPage);
             Tabs.TabPages.Add(TROAPage);
             Tabs.TabPages.Add(LDAlignPage);
+            Tabs.TabPages.Add(LDExtinctionPage);
             Tabs.TabPages.Add(TRLDPage);
             Tabs.TabPages.Add(ResidualsPage);
             Tabs.TabPages.Add(CalibrationPage);
@@ -189,6 +201,9 @@ namespace LUI
 
             LDAlignControl = new LdalignControl(Config);
             LDAlignPage.Controls.Add(LDAlignControl);
+
+            LDExtinctionControl = new LdextinctionControl(Config);
+            LDExtinctionPage.Controls.Add(LDExtinctionControl);
 
             TRLDControl = new TrldControl(Config);
             TRLDPage.Controls.Add(TRLDControl);
@@ -231,6 +246,7 @@ namespace LUI
                 if (TransientAbsControl.IsBusy) return TaskState.TA;
                 if (TROAControl.IsBusy) return TaskState.TROA;
                 if (LDAlignControl.IsBusy) return TaskState.LDALIGN;
+                if (LDExtinctionControl.IsBusy) return TaskState.LDEXT;
                 if (TRLDControl.IsBusy) return TaskState.TRLD;
                 if (ResidualsControl.IsBusy) return TaskState.RESIDUALS;
                 if (CalibrateControl.IsBusy) return TaskState.CALIBRATE;
@@ -265,7 +281,15 @@ namespace LUI
         {
             try
             {
-                DisableTabs(AbsPage, TransientAbsPage, TROAPage, LDAlignPage, TRLDPage, CalibrationPage, ResidualsPage, OptionsPage);
+                DisableTabs(AbsPage,
+                            TransientAbsPage,
+                            TROAPage,
+                            LDAlignPage,
+                            LDExtinctionPage,
+                            TRLDPage,
+                            CalibrationPage,
+                            ResidualsPage,
+                            OptionsPage);
                 var Instantiation = Config.InstantiateConfigurationAsync();
                 await Instantiation;
                 Config.OnParametersChanged(sender, e);
@@ -382,6 +406,10 @@ namespace LUI
 
                     case TaskState.LDALIGN:
                         Task = "LD Align program";
+                        break;
+
+                    case TaskState.LDEXT:
+                        Task = "LD Extinction program";
                         break;
 
                     case TaskState.TRLD:
