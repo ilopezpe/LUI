@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
-namespace lasercom.objects
+namespace LuiHardware.objects
 {
     /// <summary>
     ///     Base class for instrument-specific abstract classes.

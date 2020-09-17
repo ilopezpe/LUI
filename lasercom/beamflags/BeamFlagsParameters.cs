@@ -1,8 +1,8 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using System;
 using System.Runtime.Serialization;
 
-namespace lasercom.beamflags
+namespace LuiHardware.beamflags
 {
     [DataContract]
     public class BeamFlagsParameters : LuiObjectParameters<BeamFlagsParameters>

@@ -1,4 +1,4 @@
-﻿namespace lasercom.polarizer
+﻿namespace LuiHardware.polarizer
 {
     public enum PolarizerPosition
     {

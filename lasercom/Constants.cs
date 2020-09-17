@@ -1,7 +1,7 @@
-﻿namespace lasercom
+﻿namespace LuiHardware
 {
     /// <summary>
-    ///     Constant values used in lasercom.
+    ///     Constant values used in LuiHardware.
     /// </summary>
     public static class Constants
     {

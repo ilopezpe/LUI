@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace lasercom.camera
+namespace LuiHardware.camera
 {
     class CameraFactory
     {

@@ -1,7 +1,7 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using System;
 
-namespace lasercom.beamflags
+namespace LuiHardware.beamflags
 {
     /// <summary>
     /// Base class for all beam flag classes.

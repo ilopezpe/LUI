@@ -1,8 +1,8 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using System;
 using System.Linq;
 
-namespace lasercom.ddg
+namespace LuiHardware.ddg
 {
     /// <summary>
     ///     Base class for all DDGs.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace lasercom.ddg
+namespace LuiHardware.ddg
 {
     /// <summary>
     ///     Instantiate concrete DDG objects from parameters.

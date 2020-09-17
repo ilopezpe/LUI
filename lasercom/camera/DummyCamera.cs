@@ -1,8 +1,8 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using System;
 using System.Linq;
 
-namespace lasercom.camera
+namespace LuiHardware.camera
 {
     public class DummyCamera : AbstractCamera
     {

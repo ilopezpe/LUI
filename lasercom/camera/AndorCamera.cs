@@ -1,8 +1,8 @@
 ﻿using ATMCD32CS;
-using lasercom.objects;
+using LuiHardware.objects;
 using System;
 
-namespace lasercom.camera
+namespace LuiHardware.camera
 {
     /// <summary>
     ///     Class representing a generic Andor camera.

@@ -1,8 +1,8 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using System;
 using System.IO.Ports;
 
-namespace lasercom.syringepump
+namespace LuiHardware.syringepump
 {
     /// <summary>
     ///     Represents a Harvard Apparatus syringe pump using the custom

@@ -3,7 +3,7 @@
 //      implement this interface.
 //  </summary>
 
-namespace lasercom.camera
+namespace LuiHardware.camera
 {
     /// <summary>
     ///     Interface for all camera classes.

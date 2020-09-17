@@ -1,5 +1,5 @@
 ﻿using ATMCD32CS;
-using lasercom.objects;
+using LuiHardware.objects;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 //      Temperature controlled camera.
 //  </summary>
 
-namespace lasercom.camera
+namespace LuiHardware.camera
 {
     public class CameraTempControlled : AndorCamera
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace lasercom.objects
+namespace LuiHardware.objects
 {
     /// <summary>
     ///     Aggregates interfaces and defines public operations of LuiObject subtypes.

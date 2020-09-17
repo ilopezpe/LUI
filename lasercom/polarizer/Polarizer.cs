@@ -1,9 +1,9 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using System;
 using System.IO.Ports;
 using System.Threading;
 
-namespace lasercom.polarizer
+namespace LuiHardware.polarizer
 {
     /// <summary>
     /// Class representing custom Polarizer operated by serial commands
@@ -43,7 +43,7 @@ namespace lasercom.polarizer
             Init(portName);
         }
 
-        public override float PolarizerBeta { get; set; } = 2.00F;
+        public override float PolarizerBeta { get; set; } = 1.00F;
         public override int MinBeta { get; set; } = 0;
         public override int MaxBeta { get; set; } = 90;
 

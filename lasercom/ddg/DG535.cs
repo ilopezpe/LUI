@@ -1,10 +1,10 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using log4net;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace lasercom.ddg
+namespace LuiHardware.ddg
 {
     /// <summary>
     ///     Represents a Stanford Instruments DDG 535.

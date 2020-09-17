@@ -1,5 +1,5 @@
-﻿using lasercom;
-using lasercom.ddg;
+﻿using LuiHardware;
+using LuiHardware.ddg;
 using LUI.config;
 using System;
 using System.ComponentModel;

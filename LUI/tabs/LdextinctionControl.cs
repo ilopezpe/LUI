@@ -1,8 +1,8 @@
-﻿using lasercom;
-using lasercom.camera;
-using lasercom.ddg;
-using lasercom.io;
-using lasercom.polarizer;
+﻿using LuiHardware;
+using LuiHardware.camera;
+using LuiHardware.ddg;
+using LuiHardware.io;
+using LuiHardware.polarizer;
 using LUI.config;
 using LUI.controls;
 using System;
@@ -30,14 +30,25 @@ namespace LUI.tabs
         MatVar<double> LuiData;
         MatVar<int> RawData;
 
+        double[] LastGraphTrace;
+        int _SelectedChannel = -1;
+
         public LdextinctionControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
             Init();
-
             Beta.ValueChanged += Beta_ValueChanged;
-
             SaveData.Click += (sender, e) => SaveOutput();
+        }
+
+        int SelectedChannel
+        {
+            get => _SelectedChannel;
+            set
+            {
+                _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
+                if (LastGraphTrace != null) CountsDisplay.Text = LastGraphTrace[_SelectedChannel].ToString("n");
+            }
         }
 
         void Init()
@@ -142,15 +153,20 @@ namespace LUI.tabs
 
         protected override void Graph_Click(object sender, MouseEventArgs e)
         {
-            var NormalizedCoords = Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y)));
-            var SelectedChannel = Commander.Camera.CalibrationAscending
-                ? (int)Math.Round(NormalizedCoords.X * (Commander.Camera.Width - 1))
-                : (int)Math.Round((1 - NormalizedCoords.X) * (Commander.Camera.Width - 1));
-            var X = Commander.Camera.Calibration[SelectedChannel];
-            var Y = NormalizedCoords.Y;
+            // Selects a *physical channel* on the camera.
+            SelectedChannel = Commander.Camera.CalibrationAscending
+                ? (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X *
+                                   (Commander.Camera.Width - 1))
+                : (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X) *
+                                   (Commander.Camera.Width - 1));
+            RedrawLines();
+        }
+
+        void RedrawLines()
+        {
             Graph.ClearAnnotation();
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.MarkerColor, X);
-            Graph.Annotate(GraphControl.Annotation.HORZLINE, Graph.MarkerColor, Y);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0],
+                Commander.Camera.Calibration[SelectedChannel]);
             Graph.Invalidate();
         }
 
@@ -163,9 +179,7 @@ namespace LUI.tabs
             }
 
             CameraStatus.Text = "";
-
             Graph.Invalidate();
-
             var N = (int)NScan.Value;
 
             Commander.BeamFlag.CloseLaserAndFlash();
@@ -259,37 +273,62 @@ namespace LUI.tabs
             var AcqBuffer = new int[AcqSize];
             var AcqRow = new int[AcqWidth];
             var DarkBuffer = new int[AcqWidth];
+            var ZeroBetaBuffer = new int[AcqWidth];
+            var ZeroBeta = new double[AcqWidth];
             var PlusBetaBuffer = new int[AcqWidth];
             var PlusBeta = new double[AcqWidth];
             var Dark = new double[AcqWidth];
             #endregion
 
-            // A1. Set up to collect dark spectrum 
+            /* 
+            * Calculate extinction
+            * A. Set up crossed position intensity
+            *      1. Move polarizer to crossed position
+            *      2. Open probe beam shutter
+            *      3. Acquire data
+            *      4. Close beam shutters
+            * B. Set up plus beta using a small angle
+            *      1. Move polarizer to plus beta
+            *      2. Open probe beam shutter
+            *      3. Acquire data
+            *      4. Close beam shutters
+            *      5. Calculate and plot
+            */
+
+            // A1. Move polarizer to crossed position
             Commander.Polarizer.PolarizerToZeroBeta();
-            // A2. Acquire data 
+            // A2. Open probe beam shutter
+            Commander.BeamFlag.OpenFlash();
+            // A3. Acquire data
             DoAcq(AcqBuffer,
                   AcqRow,
-                  DarkBuffer,
+                  ZeroBetaBuffer,
                   N,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_DARK)));
+                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_WORK)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
-            Data.Accumulate(Dark, DarkBuffer);
+            // A4. Close beam shutters
+            Commander.BeamFlag.CloseFlash();
+            Data.Accumulate(ZeroBeta, ZeroBetaBuffer);
 
-            // B3. Open pump and probe beam shutters
+            // B1. Move polarizer to plus beta.             
+            Commander.Polarizer.PolarizerToPlusBeta();
+            // B2. Open probe beam shutter
             Commander.BeamFlag.OpenFlash();
-            // B4. Acquire data
+            // B3 Acquire data
             DoAcq(AcqBuffer,
                   AcqRow,
                   PlusBetaBuffer,
                   N,
                   p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_WORK)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
+            // B4. Close beam shutters
             Commander.BeamFlag.CloseFlash();
-
             Data.Accumulate(PlusBeta, PlusBetaBuffer);
-            Data.DivideArray(PlusBeta, N);
 
-            var Y = Data.Y(PlusBeta, Dark);
+            // B5. Calculate and plot
+
+            var Y = Data.Extinction(PlusBeta, ZeroBeta, (double)Beta.Value);
+            //var Y = Data.Y(PlusBeta);
             LuiData.Write(Y, new long[] { 1, 0 }, RowSize);
             if (PauseCancelProgress(e, -1, new ProgressObject(Y, Dialog.PROGRESS_COMPLETE)))
             {
@@ -312,12 +351,13 @@ namespace LUI.tabs
                     break;
 
                 case Dialog.PROGRESS_DARK:
-                    ProgressLabel.Text = "Collecting dark";
+                    ProgressLabel.Text = "Collecting crossed";
                     ScanProgress.Text = progressValue + "/" + NScan.Value;
                     break;
 
                 case Dialog.PROGRESS_COMPLETE:
                     Display(progress.Data);
+                    LastGraphTrace = progress.Data;
                     break;
 
                 case Dialog.PROGRESS_WORK:
@@ -347,6 +387,7 @@ namespace LUI.tabs
             else
             {
                 ProgressLabel.Text = "Complete";
+                SelectedChannel = SelectedChannel;
             }
 
             // Ensure the temp file is always closed.

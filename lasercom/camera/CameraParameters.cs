@@ -1,8 +1,8 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using System;
 using System.Runtime.Serialization;
 
-namespace lasercom.camera
+namespace LuiHardware.camera
 {
     [DataContract]
     public class CameraParameters : LuiObjectParameters<CameraParameters>

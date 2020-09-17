@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace lasercom.objects
+namespace LuiHardware.objects
 {
     /// <summary>
     ///     Nongeneric base for all instrument parameters.

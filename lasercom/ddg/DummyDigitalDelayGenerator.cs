@@ -1,7 +1,7 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using System;
 
-namespace lasercom.ddg
+namespace LuiHardware.ddg
 {
     /// <summary>
     ///     Dummy DDG implementing required methods as no-ops.

@@ -1,4 +1,4 @@
-﻿namespace lasercom.gpib
+﻿namespace LuiHardware.gpib
 {
     /// <summary>
     ///     Defines the operations supported by a GPIB provider.

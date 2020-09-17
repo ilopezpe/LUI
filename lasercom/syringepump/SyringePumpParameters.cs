@@ -1,8 +1,8 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using System;
 using System.Runtime.Serialization;
 
-namespace lasercom.syringepump
+namespace LuiHardware.syringepump
 {
     public class SyringePumpParameters : LuiObjectParameters<SyringePumpParameters>
     {
