@@ -1,6 +1,6 @@
 ﻿namespace LUI.tabs
 {
-    partial class LdalignControl
+    partial class LdextinctionControl
     {
         /// <summary>
         /// Required designer variable.
@@ -30,11 +30,12 @@
         {
             this.PolarizerBetaLabel = new System.Windows.Forms.Label();
             this.SaveData = new System.Windows.Forms.Button();
-            this.DdgConfigBox = new LUI.controls.DdgCommandPanel();
             this.PolarizerBox = new LUI.controls.ObjectCommandPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.Beta = new System.Windows.Forms.NumericUpDown();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.CountsLabel = new System.Windows.Forms.Label();
+            this.CountsDisplay = new System.Windows.Forms.TextBox();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -64,7 +65,7 @@
             // 
             // Collect
             // 
-            this.Collect.Text = "Collect TRLD";
+            this.Collect.Text = "Acquire";
             // 
             // Graph
             // 
@@ -79,8 +80,9 @@
             // 
             // LeftChildArea
             // 
+            this.LeftChildArea.Controls.Add(this.CountsLabel);
+            this.LeftChildArea.Controls.Add(this.CountsDisplay);
             this.LeftChildArea.Controls.Add(this.panel2);
-            this.LeftChildArea.Controls.Add(this.DdgConfigBox);
             // 
             // RightChildArea
             // 
@@ -105,16 +107,6 @@
             this.SaveData.TabIndex = 12;
             this.SaveData.Text = "Save Data";
             this.SaveData.UseVisualStyleBackColor = true;
-            // 
-            // DdgConfigBox
-            // 
-            this.DdgConfigBox.AutoSize = true;
-            this.DdgConfigBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.DdgConfigBox.Location = new System.Drawing.Point(3, 3);
-            this.DdgConfigBox.Margin = new System.Windows.Forms.Padding(2);
-            this.DdgConfigBox.Name = "DdgConfigBox";
-            this.DdgConfigBox.Size = new System.Drawing.Size(362, 59);
-            this.DdgConfigBox.TabIndex = 15;
             // 
             // PolarizerBox
             // 
@@ -180,10 +172,31 @@
             this.panel2.Size = new System.Drawing.Size(142, 38);
             this.panel2.TabIndex = 16;
             // 
-            // LdalignControl
+            // CountsLabel
+            // 
+            this.CountsLabel.AutoSize = true;
+            this.CountsLabel.Location = new System.Drawing.Point(443, 16);
+            this.CountsLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.CountsLabel.Name = "CountsLabel";
+            this.CountsLabel.Size = new System.Drawing.Size(76, 13);
+            this.CountsLabel.TabIndex = 18;
+            this.CountsLabel.Text = "Optical density";
+            // 
+            // CountsDisplay
+            // 
+            this.CountsDisplay.Location = new System.Drawing.Point(303, 13);
+            this.CountsDisplay.Margin = new System.Windows.Forms.Padding(4);
+            this.CountsDisplay.Name = "CountsDisplay";
+            this.CountsDisplay.ReadOnly = true;
+            this.CountsDisplay.Size = new System.Drawing.Size(132, 20);
+            this.CountsDisplay.TabIndex = 17;
+            this.CountsDisplay.Text = "0";
+            this.CountsDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // LdextinctionControl
             // 
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.Name = "LdalignControl";
+            this.Name = "LdextinctionControl";
             this.ParentPanel.ResumeLayout(false);
             this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
@@ -212,12 +225,12 @@
 
         #endregion
         private System.Windows.Forms.Button SaveData;
-        private controls.DdgCommandPanel DdgConfigBox;
         private controls.ObjectCommandPanel PolarizerBox;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label PolarizerBetaLabel;
         private System.Windows.Forms.NumericUpDown Beta;
         private System.Windows.Forms.Panel panel2;
-
+        private System.Windows.Forms.Label CountsLabel;
+        private System.Windows.Forms.TextBox CountsDisplay;
     }
 }

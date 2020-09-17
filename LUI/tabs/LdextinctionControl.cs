@@ -14,17 +14,15 @@ using System.Windows.Forms;
 
 namespace LUI.tabs
 {
-    public partial class LdalignControl : LuiTab
+    public partial class LdextinctionControl : LuiTab
     {
         public enum Dialog
         {
             INITIALIZE,
             PROGRESS,
             PROGRESS_DARK,
+            PROGRESS_WORK,
             PROGRESS_COMPLETE,
-            PROGRESS_PLUS,
-            PROGRESS_MINUS,
-            CALCULATE,
             TEMPERATURE
         }
 
@@ -32,7 +30,7 @@ namespace LUI.tabs
         MatVar<double> LuiData;
         MatVar<int> RawData;
 
-        public LdalignControl(LuiConfig Config) : base(Config)
+        public LdextinctionControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
             Init();
@@ -40,11 +38,6 @@ namespace LUI.tabs
             Beta.ValueChanged += Beta_ValueChanged;
 
             SaveData.Click += (sender, e) => SaveOutput();
-
-            DdgConfigBox.Config = Config;
-            DdgConfigBox.Commander = Commander;
-            DdgConfigBox.AllowZero = false;
-            DdgConfigBox.HandleParametersChanged(this, EventArgs.Empty);
         }
 
         void Init()
@@ -78,7 +71,6 @@ namespace LUI.tabs
         public override void HandleParametersChanged(object sender, EventArgs e)
         {
             base.HandleParametersChanged(sender, e); // Takes care of ObjectSelectPanel.
-            DdgConfigBox.HandleParametersChanged(sender, e);
 
             var PolarizersAvailable = Config.GetParameters(typeof(PolarizerParameters));
             if (PolarizersAvailable.Count() > 0)
@@ -114,12 +106,11 @@ namespace LUI.tabs
         public override void HandleContainingTabSelected(object sender, EventArgs e)
         {
             base.HandleContainingTabSelected(sender, e);
-            DdgConfigBox.UpdatePrimaryDelayValue();
         }
 
         public virtual void HandlePolarizerChanged(object sender, EventArgs e)
         {
-            Commander.Polarizer?.PolarizerToZeroBeta();
+            //Commander.Polarizer?.PolarizerToZeroBeta();
             Commander.Polarizer = (IPolarizer)Config.GetObject(PolarizerBox.SelectedObject);
         }
 
@@ -127,20 +118,12 @@ namespace LUI.tabs
         {
             base.LoadSettings();
             var Settings = Config.TabSettings[GetType().Name];
-            if (Settings.TryGetValue("PrimaryDelayDdg", out var value) && !string.IsNullOrEmpty(value))
-                DdgConfigBox.PrimaryDelayDdg = (DelayGeneratorParameters)Config.GetFirstParameters(
-                    typeof(DelayGeneratorParameters), value);
-
-            if (Settings.TryGetValue("PrimaryDelayDelay", out value) && !string.IsNullOrEmpty(value))
-                DdgConfigBox.PrimaryDelayDelay = value;
         }
 
         protected override void SaveSettings()
         {
             base.SaveSettings();
             var Settings = Config.TabSettings[GetType().Name];
-            Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg?.Name;
-            Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay ?? null;
         }
 
         /// <summary>
@@ -173,19 +156,11 @@ namespace LUI.tabs
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
-            if (DdgConfigBox.PrimaryDelayDdg == null || DdgConfigBox.PrimaryDelayDelay == null)
-            {
-                MessageBox.Show("Primary delay must be configured.", "Error", MessageBoxButtons.OK);
-                return;
-            }
-
             if (PolarizerBox.Objects.SelectedItem == null)
             {
                 MessageBox.Show("Polarizer controller must be configured.", "Error", MessageBoxButtons.OK);
                 return;
             }
-
-            DdgConfigBox.ApplyPrimaryDelayValue();
 
             CameraStatus.Text = "";
 
@@ -202,7 +177,6 @@ namespace LUI.tabs
         public override void OnTaskStarted(EventArgs e)
         {
             base.OnTaskStarted(e);
-            DdgConfigBox.Enabled = false;
             PolarizerBox.Enabled = false;
             SaveData.Enabled = false;
             ScanProgress.Text = "0";
@@ -211,7 +185,6 @@ namespace LUI.tabs
         public override void OnTaskFinished(EventArgs e)
         {
             base.OnTaskFinished(e);
-            DdgConfigBox.Enabled = true;
             PolarizerBox.Enabled = true;
             SaveData.Enabled = true;
         }
@@ -268,8 +241,8 @@ namespace LUI.tabs
             var AcqSize = Commander.Camera.AcqSize;
             var AcqWidth = Commander.Camera.AcqWidth;
 
-            // minus + plus + dark
-            var TotalScans = N * 3;
+            // Number of accumulations + dark
+            var TotalScans = N * 2;
             #endregion
 
             #region initialize data files
@@ -278,6 +251,8 @@ namespace LUI.tabs
 
             // Write wavelengths.
             LuiData.WriteNext(Commander.Camera.Calibration, 0);
+
+            long[] RowSize = { 1, AcqWidth };
             #endregion
 
             #region Initialize buffers for acuisition data
@@ -285,30 +260,9 @@ namespace LUI.tabs
             var AcqRow = new int[AcqWidth];
             var DarkBuffer = new int[AcqWidth];
             var PlusBetaBuffer = new int[AcqWidth];
-            var MinusBetaBuffer = new int[AcqWidth];
             var PlusBeta = new double[AcqWidth];
-            var MinusBeta = new double[AcqWidth];
             var Dark = new double[AcqWidth];
             #endregion
-
-            /* 
-            * Collect LD procedure
-            * A. Set up to collect dark spectrum
-            *      1. Set up dark enviornment
-            *      2. Acquire data
-            * B. Plus beta intensity
-            *      1. Adjust time delay
-            *      2. Move polarizer to plus beta
-            *      3. Open pump and probe beam shutters
-            *      4. Acquire data
-            *      5. Close beam shutters
-            * C.
-            *      1. Move polarizer to minus beta
-            *      2. Open pump and probe beam shutters
-            *      3. Acquire data
-            *      4. Close beam shutters
-            *      5. Calculate and plot
-            */
 
             // A1. Set up to collect dark spectrum 
             Commander.Polarizer.PolarizerToZeroBeta();
@@ -321,48 +275,27 @@ namespace LUI.tabs
             if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
             Data.Accumulate(Dark, DarkBuffer);
 
-            // B2. Move polarizer to plus beta 
-            Commander.Polarizer.PolarizerToPlusBeta();
             // B3. Open pump and probe beam shutters
-            Commander.BeamFlag.OpenLaserAndFlash();
+            Commander.BeamFlag.OpenFlash();
             // B4. Acquire data
             DoAcq(AcqBuffer,
                   AcqRow,
                   PlusBetaBuffer,
                   N,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_PLUS)));
+                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_WORK)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
-            // B5. Close beam shutters
-            Commander.BeamFlag.CloseLaserAndFlash();
-
-            // C1. Move polarizer to minus beta 
-            Commander.Polarizer.PolarizerToMinusBeta();
-            // C2. Open pump and probe beam shutters
-            Commander.BeamFlag.OpenLaserAndFlash();
-            // C3. Acquire data
-            DoAcq(AcqBuffer,
-                  AcqRow,
-                  MinusBetaBuffer,
-                  N,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_MINUS)));
-            if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
-            // C4. Close beam shutters
-            Commander.BeamFlag.CloseLaserAndFlash();
+            Commander.BeamFlag.CloseFlash();
 
             Data.Accumulate(PlusBeta, PlusBetaBuffer);
             Data.DivideArray(PlusBeta, N);
 
-            Data.Accumulate(MinusBeta, MinusBetaBuffer);
-            Data.DivideArray(MinusBeta, N);
-
-            var S = Data.S(PlusBeta, MinusBeta, Dark);
-            //LuiData.Write(S, new long[] { i + 1, 1 }, RowSize);
-            if (PauseCancelProgress(e, -1, new ProgressObject(S, Dialog.PROGRESS_COMPLETE)))
+            var Y = Data.Y(PlusBeta, Dark);
+            LuiData.Write(Y, new long[] { 1, 0 }, RowSize);
+            if (PauseCancelProgress(e, -1, new ProgressObject(Y, Dialog.PROGRESS_COMPLETE)))
             {
                 return;
             }
             Array.Clear(PlusBeta, 0, PlusBeta.Length);
-            Array.Clear(MinusBeta, 0, MinusBeta.Length);
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
@@ -387,18 +320,9 @@ namespace LUI.tabs
                     Display(progress.Data);
                     break;
 
-                case Dialog.PROGRESS_PLUS:
+                case Dialog.PROGRESS_WORK:
                     ProgressLabel.Text = "Collecting plus Beta";
                     ScanProgress.Text = progressValue + "/" + NScan.Value;
-                    break;
-
-                case Dialog.PROGRESS_MINUS:
-                    ProgressLabel.Text = "Collecting minus Beta";
-                    ScanProgress.Text = progressValue + "/" + NScan.Value;
-                    break;
-
-                case Dialog.CALCULATE:
-                    ProgressLabel.Text = "Calculating...";
                     break;
 
                 case Dialog.TEMPERATURE:
@@ -473,7 +397,6 @@ namespace LUI.tabs
                             LuiData.Read(Matrix, new long[] { 0, 0 }, LuiData.Dims);
                             FileIO.WriteMatrix(saveFile.FileName, Matrix);
                         }
-
                         DataFile.Close();
                     }
                     break;
