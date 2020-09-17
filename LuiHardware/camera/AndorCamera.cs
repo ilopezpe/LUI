@@ -1,6 +1,6 @@
-﻿using ATMCD32CS;
+﻿using System;
+using ATMCD32CS;
 using LuiHardware.objects;
-using System;
 
 namespace LuiHardware.camera
 {
@@ -10,25 +10,6 @@ namespace LuiHardware.camera
     /// </summary>
     public class AndorCamera : AbstractCamera
     {
-        // Andor constants and commands
-        public const int ReadModeFVB = 0;
-
-        public const int ReadModeMultiTrack = 1;
-        public const int ReadModeRandomTrack = 2;
-        public const int ReadModeSingleTrack = 3;
-        public const int ReadModeImage = 4;
-
-        public const int AcquisitionModeSingle = 1;
-        public const int AcquisitionModeAccumulate = 2;
-
-        public const int GatingModeSMBOnly = 2;
-
-        public const int DDGTriggerModeInternal = 0;
-        public const int DDGTriggerModeExternal = 1;
-
-        public const int TriggerModeExternal = 1;
-        public const int TriggerModeExternalExposure = 7;
-
         public const int TriggerInvertRising = 0;
         public const int TriggerInvertFalling = 1;
         public const float DefaultTriggerLevel = 3.9F;
@@ -39,9 +20,15 @@ namespace LuiHardware.camera
 
         public const int DefaultADChannel = 0;
 
-        int _AcquisitionMode;
-
         readonly int _BitDepth;
+
+        readonly int _MaxHorizontalBinSize;
+
+        readonly int _MaxVerticalBinSize;
+
+        readonly int _NumberADChannels;
+
+        int _AcquisitionMode;
 
         int _CurrentADChannel;
 
@@ -53,11 +40,7 @@ namespace LuiHardware.camera
 
         ImageArea _Image;
 
-        readonly int _MaxHorizontalBinSize;
-
         int _MaxMCPGain;
-
-        readonly int _MaxVerticalBinSize;
 
         int _MCPGain;
 
@@ -66,8 +49,6 @@ namespace LuiHardware.camera
         int _MinMCPGain;
 
         int _NumberAccumulations;
-
-        readonly int _NumberADChannels;
 
         int _ReadMode;
 
@@ -411,7 +392,7 @@ namespace LuiHardware.camera
             var readMode = ReadMode;
             ReadMode = ReadModeImage;
             Image = new ImageArea(1, 1, 0, Width, 0, Height);
-            var npx = (uint)(Width * Height);
+            var npx = (uint) (Width * Height);
             var data = new int[npx];
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();
@@ -423,7 +404,7 @@ namespace LuiHardware.camera
 
         public override int[] CountsFvb()
         {
-            var npx = (uint)Width;
+            var npx = (uint) Width;
             var readMode = ReadMode;
             ReadMode = ReadModeFVB;
             var data = new int[npx];
@@ -436,7 +417,7 @@ namespace LuiHardware.camera
 
         public override int[] Acquire()
         {
-            var npx = (uint)AcqSize;
+            var npx = (uint) AcqSize;
             var data = new int[npx];
             Acquire(data);
             return data;
@@ -460,7 +441,7 @@ namespace LuiHardware.camera
         /// <returns></returns>
         public override uint Acquire(int[] DataBuffer)
         {
-            var npx = (uint)DataBuffer.Length;
+            var npx = (uint) DataBuffer.Length;
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();
             var ret = AndorSdk.GetAcquiredData(DataBuffer, npx);
@@ -471,7 +452,7 @@ namespace LuiHardware.camera
 
         public virtual uint AcquireImage(int[] DataBuffer)
         {
-            var npx = (uint)DataBuffer.Length;
+            var npx = (uint) DataBuffer.Length;
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();
             var ret = AndorSdk.GetMostRecentImage(DataBuffer, npx);
@@ -526,5 +507,27 @@ namespace LuiHardware.camera
                     throw ex;
                 }
         }
+
+        #region Andor Constants
+
+        public const int ReadModeFVB = 0;
+
+        public const int ReadModeMultiTrack = 1;
+        public const int ReadModeRandomTrack = 2;
+        public const int ReadModeSingleTrack = 3;
+        public const int ReadModeImage = 4;
+
+        public const int AcquisitionModeSingle = 1;
+        public const int AcquisitionModeAccumulate = 2;
+
+        public const int GatingModeSMBOnly = 2;
+
+        public const int DDGTriggerModeInternal = 0;
+        public const int DDGTriggerModeExternal = 1;
+
+        public const int TriggerModeExternal = 1;
+        public const int TriggerModeExternalExposure = 7;
+
+        #endregion
     }
 }
