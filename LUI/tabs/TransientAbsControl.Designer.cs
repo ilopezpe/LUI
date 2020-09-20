@@ -36,6 +36,7 @@
             this.SyringePumpTs = new System.Windows.Forms.RadioButton();
             this.SyringePumpNever = new System.Windows.Forms.RadioButton();
             this.Discard = new System.Windows.Forms.CheckBox();
+            this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
@@ -43,9 +44,13 @@
             this.LeftChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             this.RightChildArea.SuspendLayout();
+            this.LeftPanel.SuspendLayout();
             this.SyringePumpBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
+            this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
+            this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
+            this.StatusBox.Controls.SetChildIndex(this.ScanProgress, 0);
             // 
             // Graph
             // 
@@ -63,7 +68,7 @@
             // 
             // CountsDisplay
             // 
-            this.CountsDisplay.Location = new System.Drawing.Point(47, 33);
+            this.CountsDisplay.Location = new System.Drawing.Point(541, 6);
             this.CountsDisplay.Margin = new System.Windows.Forms.Padding(4);
             this.CountsDisplay.Name = "CountsDisplay";
             this.CountsDisplay.ReadOnly = true;
@@ -75,7 +80,7 @@
             // CountsLabel
             // 
             this.CountsLabel.AutoSize = true;
-            this.CountsLabel.Location = new System.Drawing.Point(187, 36);
+            this.CountsLabel.Location = new System.Drawing.Point(681, 9);
             this.CountsLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.CountsLabel.Name = "CountsLabel";
             this.CountsLabel.Size = new System.Drawing.Size(76, 13);
@@ -166,6 +171,8 @@
             // 
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Name = "TransientAbsControl";
+            this.ParentPanel.ResumeLayout(false);
+            this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
@@ -178,6 +185,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
             this.RightChildArea.ResumeLayout(false);
             this.RightChildArea.PerformLayout();
+            this.LeftPanel.ResumeLayout(false);
+            this.LeftPanel.PerformLayout();
             this.SyringePumpBox.Flow.ResumeLayout(false);
             this.SyringePumpBox.Flow.PerformLayout();
             this.panel1.ResumeLayout(false);

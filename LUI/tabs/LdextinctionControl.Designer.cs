@@ -169,7 +169,7 @@
             // CountsLabel
             // 
             this.CountsLabel.AutoSize = true;
-            this.CountsLabel.Location = new System.Drawing.Point(443, 16);
+            this.CountsLabel.Location = new System.Drawing.Point(685, 5);
             this.CountsLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.CountsLabel.Name = "CountsLabel";
             this.CountsLabel.Size = new System.Drawing.Size(53, 13);
@@ -178,7 +178,7 @@
             // 
             // CountsDisplay
             // 
-            this.CountsDisplay.Location = new System.Drawing.Point(303, 13);
+            this.CountsDisplay.Location = new System.Drawing.Point(545, 2);
             this.CountsDisplay.Margin = new System.Windows.Forms.Padding(4);
             this.CountsDisplay.Name = "CountsDisplay";
             this.CountsDisplay.ReadOnly = true;

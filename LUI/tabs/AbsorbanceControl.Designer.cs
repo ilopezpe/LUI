@@ -165,7 +165,7 @@
             // CountsLabel
             // 
             this.CountsLabel.AutoSize = true;
-            this.CountsLabel.Location = new System.Drawing.Point(438, 9);
+            this.CountsLabel.Location = new System.Drawing.Point(706, 9);
             this.CountsLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.CountsLabel.Name = "CountsLabel";
             this.CountsLabel.Size = new System.Drawing.Size(76, 13);
@@ -174,7 +174,7 @@
             // 
             // CountsDisplay
             // 
-            this.CountsDisplay.Location = new System.Drawing.Point(298, 6);
+            this.CountsDisplay.Location = new System.Drawing.Point(566, 6);
             this.CountsDisplay.Margin = new System.Windows.Forms.Padding(4);
             this.CountsDisplay.Name = "CountsDisplay";
             this.CountsDisplay.ReadOnly = true;
@@ -194,16 +194,17 @@
             // 
             // CurvesView
             // 
+            this.CurvesView.Graph = null;
             this.CurvesView.Location = new System.Drawing.Point(3, 5);
             this.CurvesView.Name = "CurvesView";
             this.CurvesView.Size = new System.Drawing.Size(288, 150);
             this.CurvesView.TabIndex = 16;
             // 
-            // AbsControl
+            // AbsorbanceControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Name = "AbsControl";
+            this.Name = "AbsorbanceControl";
             this.ParentPanel.ResumeLayout(false);
             this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
