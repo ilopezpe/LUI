@@ -286,6 +286,7 @@ namespace LUI.tabs
             DdgConfigBox.Enabled = false;
             SyringePumpBox.Enabled = false;
             LoadTimes.Enabled = SaveData.Enabled = false;
+            ExperimentConfigBox.Enabled = false;
             ScanProgress.Text = "0";
             TimeProgress.Text = "0";
         }
@@ -296,6 +297,7 @@ namespace LUI.tabs
             DdgConfigBox.Enabled = true;
             SyringePumpBox.Enabled = true;
             LoadTimes.Enabled = SaveData.Enabled = true;
+            ExperimentConfigBox.Enabled = true;
         }
 
         void DoTempCheck(Func<bool> Breakout)

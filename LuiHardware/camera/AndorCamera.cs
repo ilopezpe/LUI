@@ -284,8 +284,7 @@ namespace LuiHardware.camera
                 else
                 {
                     hbin = Math.Max(1, value.hbin); // At least 1.
-                    hbin = Math.Min(Math.Min(hbin, hcount),
-                        MaxHorizontalBinSize); // At most lesser of image width and max hbin.
+                    hbin = Math.Min(Math.Min(hbin, hcount), MaxHorizontalBinSize); // At most lesser of image width and max hbin.
                 }
 
                 if (value.vbin == -1)
@@ -295,8 +294,7 @@ namespace LuiHardware.camera
                 else
                 {
                     vbin = Math.Max(1, value.vbin); // At least 1.
-                    vbin = Math.Min(Math.Min(vbin, vcount),
-                        MaxVerticalBinSize); // At most lesser of image height and max vbin.
+                    vbin = Math.Min(Math.Min(vbin, vcount),MaxVerticalBinSize); // At most lesser of image height and max vbin.
                 }
 
                 _Image = new ImageArea(hbin, vbin,

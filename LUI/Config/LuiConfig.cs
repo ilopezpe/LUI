@@ -293,8 +293,7 @@ namespace LUI.config
 
         public void AddParameters(LuiObjectParameters p)
         {
-            Dictionary<LuiObjectParameters, ILuiObject> subtable;
-            var found = LuiObjectTableIndex.TryGetValue(p.GetType(), out subtable);
+            var found = LuiObjectTableIndex.TryGetValue(p.GetType(), out _);
             if (!found) LuiObjectTableIndex.Add(p.GetType(), new Dictionary<LuiObjectParameters, ILuiObject>());
             LuiObjectTableIndex[p.GetType()].Add(p, null);
         }
