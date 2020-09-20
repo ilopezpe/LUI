@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LuiHardware.camera
 {
-    public class DummyAndorCamera : AndorTempControlled
+    public class DummyAndorCamera : CameraTempControlled
     {
         ImageArea _Image;
 

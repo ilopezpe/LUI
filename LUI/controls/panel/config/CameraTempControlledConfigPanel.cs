@@ -19,7 +19,7 @@ namespace LUI.controls
             Controls.Add(Temperature);
         }
 
-        public override Type Target => typeof(AndorTempControlled);
+        public override Type Target => typeof(CameraTempControlled);
 
         public override void CopyFrom(CameraParameters other)
         {

@@ -99,7 +99,7 @@ namespace LuiHardware.camera
                 iseq &= other.SaturationLevel == SaturationLevel;
             }
 
-            if (Type == typeof(AndorTempControlled)) iseq &= Temperature == other.Temperature;
+            if (Type == typeof(CameraTempControlled)) iseq &= Temperature == other.Temperature;
             return !iseq; // True if any of these field differ.
         }
     }
