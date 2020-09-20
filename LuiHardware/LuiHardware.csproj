@@ -8,8 +8,8 @@
     <ProjectGuid>{F77054EF-38F5-4303-9E65-AA033A17E215}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>lasercom</RootNamespace>
-    <AssemblyName>lasercom</AssemblyName>
+    <RootNamespace>LuiHardware</RootNamespace>
+    <AssemblyName>LuiHardware</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
