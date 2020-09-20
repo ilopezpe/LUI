@@ -8,7 +8,10 @@ namespace LUI.controls.designer
         public override void Initialize(IComponent Component)
         {
             base.Initialize(Component);
-            if (Control is ObjectCommandPanel) EnableDesignMode(((ObjectCommandPanel)Control).Flow, "Flow");
+            if (Control is ObjectCommandPanel)
+            {
+                EnableDesignMode(((ObjectCommandPanel)Control).Flow, "Flow");
+            }
         }
     }
 }

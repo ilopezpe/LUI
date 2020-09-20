@@ -16,7 +16,7 @@ using System.Windows.Forms;
 namespace LUI.tabs
 {
     /// <summary>
-    /// This control tab measures the absorbance spectrum
+    /// This control measures the absorbance spectrum 
     /// </summary>
     public partial class AbsorbanceControl : LuiTab
     {

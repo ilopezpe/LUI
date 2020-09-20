@@ -124,8 +124,6 @@ namespace LUI.tabs
             var args = (WorkArgs)e.Argument;
             var N = args.N;
 
-            var TotalScans = 3 * N;
-
             var AcqSize = Commander.Camera.AcqSize;
             var finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage
                 ? AcqSize / Commander.Camera.Image.Height

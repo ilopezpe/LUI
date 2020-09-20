@@ -300,9 +300,8 @@ namespace LUI.tabs
 
         void DoTempCheck(Func<bool> Breakout)
         {
-            if (Commander.Camera is AndorTempControlled)
+            if (Commander.Camera is AndorTempControlled camct)
             {
-                var camct = (AndorTempControlled)Commander.Camera;
                 if (camct.TemperatureStatus != AndorTempControlled.TemperatureStabilized)
                 {
                     var equil = (bool)Invoke(new Func<bool>(TemperatureStabilizedDialog));
@@ -742,8 +741,7 @@ namespace LUI.tabs
 
         void GsDelay_LostFocus(object sender, EventArgs e)
         {
-            double value;
-            if (!double.TryParse(GsDelay.Text, out value))
+            if (!double.TryParse(GsDelay.Text, out _))
             {
                 GsDelay.Text = GsDelay.Tag != null ? (string)GsDelay.Tag : DefaultGsDelay.ToString("E3");
             }
@@ -751,8 +749,7 @@ namespace LUI.tabs
 
         void GsDelay_TextChanged(object sender, EventArgs e)
         {
-            double value;
-            if (!double.TryParse(GsDelay.Text, out value))
+            if (!double.TryParse(GsDelay.Text, out double value))
             {
                 GsDelay.ForeColor = Color.Red;
             }

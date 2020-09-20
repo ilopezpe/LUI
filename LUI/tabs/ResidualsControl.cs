@@ -137,10 +137,10 @@ namespace LUI.tabs
             UpperBound = Commander.Camera.Image.Width * 5 / 6;
             UpdateReadMode();
             UpdateCameraImage();
-            if (Commander.Camera is AndorTempControlled)
+            if (Commander.Camera is AndorTempControlled camct)
             {
                 CameraTemperature.Enabled = true;
-                var camct = (AndorTempControlled)Commander.Camera;
+                //var  = (AndorTempControlled)Commander.Camera;
                 CameraTemperature.Minimum = camct.MinTemp;
                 CameraTemperature.Maximum = camct.MaxTemp;
                 CameraTemperature.Increment = (int)AndorTempControlled.TemperatureEps;
@@ -699,8 +699,7 @@ namespace LUI.tabs
 
         async void CameraTemperature_ValueChanged(object sender, EventArgs e)
         {
-            var camct = Commander.Camera as AndorTempControlled;
-            if (camct != null)
+            if (Commander.Camera is AndorTempControlled camct)
             {
                 if (TemperatureCts != null) TemperatureCts.Cancel();
                 TemperatureCts = new CancellationTokenSource();
@@ -719,8 +718,7 @@ namespace LUI.tabs
 
         void UpdateCameraTemperature()
         {
-            var camct = Commander.Camera as AndorTempControlled;
-            if (camct != null)
+            if (Commander.Camera is AndorTempControlled camct)
             {
                 CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
                 CameraTemperature.Value = camct.Temperature;
