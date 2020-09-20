@@ -1,5 +1,5 @@
 ﻿using Extensions;
-using LuiHardware.objects;
+using lasercom.objects;
 using LUI.controls.designer;
 using System;
 using System.ComponentModel;

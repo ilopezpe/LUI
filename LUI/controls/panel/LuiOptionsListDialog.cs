@@ -1,5 +1,5 @@
 ﻿using Extensions;
-using LuiHardware.objects;
+using lasercom.objects;
 using LUI.config;
 using System;
 using System.Collections.Generic;

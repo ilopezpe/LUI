@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace LuiHardware.io
+namespace lasercom.io
 {
     public class MatFile : IDisposable
     {

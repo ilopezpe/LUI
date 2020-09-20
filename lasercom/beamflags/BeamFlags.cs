@@ -1,9 +1,9 @@
-﻿using LuiHardware.objects;
+﻿using lasercom.objects;
 using System;
 using System.IO.Ports;
 using System.Threading;
 
-namespace LuiHardware.beamflags
+namespace lasercom.beamflags
 {
     /// <summary>
     /// Class representing BeamFlags operated by numato usbgpio16 controller.
@@ -21,8 +21,8 @@ namespace LuiHardware.beamflags
         public const string CloseFlashCommand = "gpio set E\r";
 
         //laser shutter
-        public const string OpenLuiHardwaremand = "gpio clear F\r";
-        public const string CloseLuiHardwaremand = "gpio set F\r";
+        public const string OpenLaserCommand = "gpio clear F\r";
+        public const string CloseLaserCommand = "gpio set F\r";
 
         // the following allows switching both io14 and io15 simultaneously.
         public const string OpenLaserAndFlashCommand = "gpio writeall 0000\r";
@@ -87,7 +87,7 @@ namespace LuiHardware.beamflags
         void OpenLaser(bool wait)
         {
             _port.DiscardInBuffer();
-            _port.Write(OpenLuiHardwaremand);
+            _port.Write(OpenLaserCommand);
             if (wait) Thread.Sleep(Delay);
             LaserState = BeamFlagState.Open;
             _port.DiscardOutBuffer();
@@ -130,7 +130,7 @@ namespace LuiHardware.beamflags
         void CloseLaser(bool wait)
         {
             _port.DiscardInBuffer();
-            _port.Write(CloseLuiHardwaremand);
+            _port.Write(CloseLaserCommand);
             if (wait) Thread.Sleep(Delay);
             LaserState = BeamFlagState.Closed;
             _port.DiscardOutBuffer();

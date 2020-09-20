@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LuiHardware.gpib
+namespace lasercom.gpib
 {
     /// <summary>
     ///     Instantiate concrete GPIB providers from parameters.

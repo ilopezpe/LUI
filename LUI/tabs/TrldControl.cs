@@ -1,8 +1,8 @@
-﻿using LuiHardware;
-using LuiHardware.camera;
-using LuiHardware.ddg;
-using LuiHardware.io;
-using LuiHardware.polarizer;
+﻿using lasercom;
+using lasercom.camera;
+using lasercom.ddg;
+using lasercom.io;
+using lasercom.polarizer;
 using LUI.config;
 using LUI.controls;
 using System;

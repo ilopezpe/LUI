@@ -1,6 +1,6 @@
 ﻿using ATMCD32CS;
 
-namespace LuiHardware.objects
+namespace lasercom.objects
 {
     public sealed class AndorFactory
     {

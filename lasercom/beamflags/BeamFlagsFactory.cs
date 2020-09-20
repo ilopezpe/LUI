@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LuiHardware.beamflags
+namespace lasercom.beamflags
 {
     /// <summary>
     ///     Instantiate concrete beam flag objects from parameters.

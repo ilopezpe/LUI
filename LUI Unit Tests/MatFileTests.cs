@@ -1,5 +1,5 @@
-﻿using LuiHardware;
-using LuiHardware.io;
+﻿using lasercom;
+using lasercom.io;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 

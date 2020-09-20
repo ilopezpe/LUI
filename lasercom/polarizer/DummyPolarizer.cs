@@ -1,6 +1,6 @@
-﻿using LuiHardware.objects;
+﻿using lasercom.objects;
 
-namespace LuiHardware.polarizer
+namespace lasercom.polarizer
 {
     /// <summary>
     /// Dummy polarizer object implemented using no-ops.

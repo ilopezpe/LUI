@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LuiHardware.ddg
+namespace lasercom.ddg
 {
     /// <summary>
     ///     Defines the operations supported by a DDG.

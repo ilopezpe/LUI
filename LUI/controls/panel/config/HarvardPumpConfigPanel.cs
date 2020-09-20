@@ -1,5 +1,5 @@
-﻿using LuiHardware;
-using LuiHardware.syringepump;
+﻿using lasercom;
+using lasercom.syringepump;
 using System;
 using System.Windows.Forms;
 

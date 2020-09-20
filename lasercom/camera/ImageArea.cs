@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace LuiHardware.camera
+namespace lasercom.camera
 {
     /// <summary>
     ///     Defines an image area including binning.

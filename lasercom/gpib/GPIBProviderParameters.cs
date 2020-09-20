@@ -1,8 +1,8 @@
-﻿using LuiHardware.objects;
+﻿using lasercom.objects;
 using System;
 using System.Runtime.Serialization;
 
-namespace LuiHardware.gpib
+namespace lasercom.gpib
 {
     /// <summary>
     ///     Stores parameters for instantiation of a GPIB provider and provides

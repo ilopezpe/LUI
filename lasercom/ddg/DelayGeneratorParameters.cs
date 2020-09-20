@@ -1,9 +1,9 @@
-﻿using LuiHardware.gpib;
-using LuiHardware.objects;
+﻿using lasercom.gpib;
+using lasercom.objects;
 using System;
 using System.Runtime.Serialization;
 
-namespace LuiHardware.ddg
+namespace lasercom.ddg
 {
     /// <summary>
     ///     Stores parameters for instantiation of a DDG and provides

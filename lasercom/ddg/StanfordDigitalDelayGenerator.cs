@@ -1,5 +1,5 @@
-﻿using LuiHardware.gpib;
-using LuiHardware.objects;
+﻿using lasercom.gpib;
+using lasercom.objects;
 using log4net;
 using System.Linq;
 using System.Reflection;
@@ -8,7 +8,7 @@ using System.Reflection;
 //      Represents a Stanford DDG.
 //  </summary>
 
-namespace LuiHardware.ddg
+namespace lasercom.ddg
 {
     /// <summary>
     ///     Base class for Stanford Instruments DDGs.

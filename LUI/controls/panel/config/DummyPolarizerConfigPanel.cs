@@ -1,4 +1,4 @@
-﻿using LuiHardware.polarizer;
+﻿using lasercom.polarizer;
 using System;
 
 namespace LUI.controls

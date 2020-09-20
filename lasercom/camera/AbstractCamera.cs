@@ -1,9 +1,9 @@
-﻿using LuiHardware.io;
-using LuiHardware.objects;
+﻿using lasercom.io;
+using lasercom.objects;
 using System.IO;
 using System.Linq;
 
-namespace LuiHardware.camera
+namespace lasercom.camera
 {
     public abstract class AbstractCamera : LuiObject<CameraParameters>, ICamera
     {

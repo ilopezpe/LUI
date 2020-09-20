@@ -1,8 +1,8 @@
-﻿using LuiHardware;
-using LuiHardware.camera;
-using LuiHardware.ddg;
-using LuiHardware.io;
-using LuiHardware.polarizer;
+﻿using lasercom;
+using lasercom.camera;
+using lasercom.ddg;
+using lasercom.io;
+using lasercom.polarizer;
 using LUI.config;
 using LUI.controls;
 using System;
@@ -32,9 +32,6 @@ namespace LUI.tabs
         MatVar<double> LuiData;
         MatVar<int> RawData;
 
-        double[] LastGraphTrace;
-        int _SelectedChannel = -1;
-
         public LdalignControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
@@ -48,16 +45,6 @@ namespace LUI.tabs
             DdgConfigBox.Commander = Commander;
             DdgConfigBox.AllowZero = false;
             DdgConfigBox.HandleParametersChanged(this, EventArgs.Empty);
-        }
-
-        int SelectedChannel
-        {
-            get => _SelectedChannel;
-            set
-            {
-                _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
-                if (LastGraphTrace != null) CountsDisplay.Text = LastGraphTrace[_SelectedChannel].ToString("n");
-            }
         }
 
         void Init()
@@ -132,7 +119,7 @@ namespace LUI.tabs
 
         public virtual void HandlePolarizerChanged(object sender, EventArgs e)
         {
-            //Commander.Polarizer?.PolarizerToZeroBeta();
+            Commander.Polarizer?.PolarizerToZeroBeta();
             Commander.Polarizer = (IPolarizer)Config.GetObject(PolarizerBox.SelectedObject);
         }
 
@@ -172,20 +159,15 @@ namespace LUI.tabs
 
         protected override void Graph_Click(object sender, MouseEventArgs e)
         {
-            // Selects a *physical channel* on the camera.
-            SelectedChannel = Commander.Camera.CalibrationAscending
-                ? (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X *
-                                   (Commander.Camera.Width - 1))
-                : (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X) *
-                                   (Commander.Camera.Width - 1));
-            RedrawLines();
-        }
-
-        void RedrawLines()
-        {
+            var NormalizedCoords = Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y)));
+            var SelectedChannel = Commander.Camera.CalibrationAscending
+                ? (int)Math.Round(NormalizedCoords.X * (Commander.Camera.Width - 1))
+                : (int)Math.Round((1 - NormalizedCoords.X) * (Commander.Camera.Width - 1));
+            var X = Commander.Camera.Calibration[SelectedChannel];
+            var Y = NormalizedCoords.Y;
             Graph.ClearAnnotation();
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0],
-                Commander.Camera.Calibration[SelectedChannel]);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.MarkerColor, X);
+            Graph.Annotate(GraphControl.Annotation.HORZLINE, Graph.MarkerColor, Y);
             Graph.Invalidate();
         }
 
@@ -370,10 +352,13 @@ namespace LUI.tabs
             Commander.BeamFlag.CloseLaserAndFlash();
 
             Data.Accumulate(PlusBeta, PlusBetaBuffer);
+            Data.DivideArray(PlusBeta, N);
+
             Data.Accumulate(MinusBeta, MinusBetaBuffer);
+            Data.DivideArray(MinusBeta, N);
 
             var S = Data.S(PlusBeta, MinusBeta, Dark);
-            LuiData.Write(S, new long[] { 1, 0 }, RowSize);
+            LuiData.Write(Y, new long[] { 1, 0 }, RowSize);
             if (PauseCancelProgress(e, -1, new ProgressObject(S, Dialog.PROGRESS_COMPLETE)))
             {
                 return;
@@ -402,7 +387,6 @@ namespace LUI.tabs
 
                 case Dialog.PROGRESS_COMPLETE:
                     Display(progress.Data);
-                    LastGraphTrace = progress.Data;
                     break;
 
                 case Dialog.PROGRESS_PLUS:
@@ -441,7 +425,6 @@ namespace LUI.tabs
             else
             {
                 ProgressLabel.Text = "Complete";
-                SelectedChannel = SelectedChannel;
             }
 
             // Ensure the temp file is always closed.

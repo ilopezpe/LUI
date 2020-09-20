@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Text;
 
-namespace LuiHardware.io
+namespace lasercom.io
 {
     public abstract class MatVar : IDisposable
     {

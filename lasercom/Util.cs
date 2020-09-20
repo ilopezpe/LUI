@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace LuiHardware
+namespace lasercom
 {
     /// <summary>
     ///     Provides a variety of utility methods.

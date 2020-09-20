@@ -1,6 +1,6 @@
-﻿using LuiHardware.objects;
+﻿using lasercom.objects;
 
-namespace LuiHardware.beamflags
+namespace lasercom.beamflags
 {
     /// <summary>
     ///     Dummy beam flags object implemented using no-ops.

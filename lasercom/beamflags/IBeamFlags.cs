@@ -1,4 +1,4 @@
-﻿namespace LuiHardware.beamflags
+﻿namespace lasercom.beamflags
 {
     public enum BeamFlagState { Open, Closed }
 

@@ -1,10 +1,10 @@
 ﻿using Extensions;
-using LuiHardware.beamflags;
-using LuiHardware.camera;
-using LuiHardware.ddg;
-using LuiHardware.gpib;
-using LuiHardware.polarizer;
-using LuiHardware.syringepump;
+using lasercom.beamflags;
+using lasercom.camera;
+using lasercom.ddg;
+using lasercom.gpib;
+using lasercom.polarizer;
+using lasercom.syringepump;
 using log4net;
 using LUI.config;
 using LUI.controls;

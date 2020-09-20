@@ -1,6 +1,6 @@
 ﻿using Extensions;
-using LuiHardware.beamflags;
-using LuiHardware.camera;
+using lasercom.beamflags;
+using lasercom.camera;
 using System;
 using System.Windows.Forms;
 

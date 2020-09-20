@@ -1,5 +1,5 @@
 ﻿using Extensions;
-using LuiHardware.objects;
+using lasercom.objects;
 using System;
 using System.Windows.Forms;
 

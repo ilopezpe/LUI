@@ -1,8 +1,8 @@
 ﻿using Extensions;
-using LuiHardware;
-using LuiHardware.camera;
-using LuiHardware.io;
-using LuiHardware.objects;
+using lasercom;
+using lasercom.camera;
+using lasercom.io;
+using lasercom.objects;
 using LUI.config;
 using LUI.controls;
 using System;

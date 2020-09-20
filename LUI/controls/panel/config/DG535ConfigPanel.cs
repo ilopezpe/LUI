@@ -1,5 +1,5 @@
-﻿using LuiHardware.ddg;
-using LuiHardware.gpib;
+﻿using lasercom.ddg;
+using lasercom.gpib;
 using System;
 using System.Windows.Forms;
 

@@ -1,4 +1,4 @@
-﻿using LuiHardware.beamflags;
+﻿using lasercom.beamflags;
 using System;
 
 namespace LUI.controls

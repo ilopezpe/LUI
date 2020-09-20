@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LuiHardware.camera
+namespace lasercom.camera
 {
     public class DummyAndorCamera : CameraTempControlled
     {

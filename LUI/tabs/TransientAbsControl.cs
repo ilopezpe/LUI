@@ -1,6 +1,6 @@
-﻿using LuiHardware;
-using LuiHardware.camera;
-using LuiHardware.syringepump;
+﻿using lasercom;
+using lasercom.camera;
+using lasercom.syringepump;
 using LUI.config;
 using LUI.controls;
 using System;

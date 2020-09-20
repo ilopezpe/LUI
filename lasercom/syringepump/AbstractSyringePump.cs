@@ -1,7 +1,7 @@
-﻿using LuiHardware.objects;
+﻿using lasercom.objects;
 using System;
 
-namespace LuiHardware.syringepump
+namespace lasercom.syringepump
 {
     /// <summary>
     /// Base class for all syringe pumps.

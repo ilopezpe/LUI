@@ -1,9 +1,9 @@
-﻿using LuiHardware.objects;
+﻿using lasercom.objects;
 using log4net;
 using System;
 using System.Reflection;
 
-namespace LuiHardware.gpib
+namespace lasercom.gpib
 {
     /// <summary>
     ///     Base class for all GPIB providers.

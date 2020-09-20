@@ -1,5 +1,5 @@
-﻿using LuiHardware;
-using LuiHardware.polarizer;
+﻿using lasercom;
+using lasercom.polarizer;
 using System;
 using System.Windows.Forms;
 

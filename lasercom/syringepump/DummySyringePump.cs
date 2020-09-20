@@ -1,6 +1,6 @@
-﻿using LuiHardware.objects;
+﻿using lasercom.objects;
 
-namespace LuiHardware.syringepump
+namespace lasercom.syringepump
 {
     public class DummySyringePump : AbstractSyringePump
     {
