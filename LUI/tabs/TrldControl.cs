@@ -332,16 +332,16 @@ namespace LUI.tabs
 
             /* 
             * Collect LD procedure
-            * A. Collect dark spectrum
-            *      1. Set up dark envirornment
+            * A. Set up to collect dark spectrum
+            *      1. Set up dark enviornment
             *      2. Acquire data
-            * B. Collect plus beta intensity
+            * B. Plus beta intensity
             *      1. Adjust time delay
             *      2. Move polarizer to plus beta
             *      3. Open pump and probe beam shutters
             *      4. Acquire data
             *      5. Close beam shutters
-            * C. Collect minus beta intensity
+            * C.
             *      1. Move polarizer to minus beta
             *      2. Open pump and probe beam shutters
             *      3. Acquire data
