@@ -14,6 +14,9 @@ using System.Windows.Forms;
 
 namespace LUI.tabs
 {
+    /// <summary>
+    /// This control collects the raw intensity.
+    /// </summary>
     public partial class ResidualsControl : LuiTab
     {
         public enum Dialog

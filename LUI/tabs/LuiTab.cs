@@ -16,6 +16,9 @@ using System.Windows.Threading;
 
 namespace LUI.tabs
 {
+    /// <summary>
+    /// All tabs inherit from this base class.
+    /// </summary>
     public partial class LuiTab : UserControl
     {
         protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

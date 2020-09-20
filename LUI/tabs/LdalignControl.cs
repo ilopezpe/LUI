@@ -14,6 +14,10 @@ using System.Windows.Forms;
 
 namespace LUI.tabs
 {
+    /// <summary>
+    /// This control measures a single linear dichroism spectrum.
+    /// Can be used for alignment.
+    /// </summary>
     public partial class LdalignControl : LuiTab
     {
         public enum Dialog

@@ -11,6 +11,11 @@ using System.Windows.Forms;
 
 namespace LUI.tabs
 {
+    /// <summary>
+    /// This control is for collecting the transient absorption.
+    /// This was previously called laser power. 
+    /// Can be used for alignment.
+    /// </summary>
     public partial class TransientAbsControl : LuiTab
     {
         public enum Dialog

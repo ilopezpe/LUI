@@ -16,6 +16,9 @@ using System.Windows.Forms;
 
 namespace LUI.tabs
 {
+    /// <summary>
+    /// This control is used to calibrate the x-axis of the ccd
+    /// </summary>
     public partial class CalibrateControl : LuiTab
     {
         public enum Dialog

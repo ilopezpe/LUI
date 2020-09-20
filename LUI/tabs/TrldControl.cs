@@ -17,6 +17,9 @@ using System.Windows.Forms;
 
 namespace LUI.tabs
 {
+    /// <summary>
+    /// This control is for time-resolved linear dichroism
+    /// </summary>
     public partial class TrldControl : LuiTab
     {
         public enum Dialog

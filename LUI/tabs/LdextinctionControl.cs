@@ -14,6 +14,9 @@ using System.Windows.Forms;
 
 namespace LUI.tabs
 {
+    /// <summary>
+    /// This control measures the extinction of two glan laser polarizers
+    /// </summary>
     public partial class LdextinctionControl : LuiTab
     {
         public enum Dialog

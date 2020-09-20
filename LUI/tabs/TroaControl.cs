@@ -17,6 +17,9 @@ using System.Windows.Forms;
 
 namespace LUI.tabs
 {
+    /// <summary>
+    /// This control is for time-resolved optical absorption
+    /// </summary>
     public partial class TroaControl : LuiTab
     {
         public enum Dialog
