@@ -379,17 +379,17 @@ namespace LUI.tabs
 
             /* 
              * Collect TROA procedure
-             * A. Collect dark spectrum at 32 ns
-             *      1. Set up dark enviornment
+             * A. Collect dark spectrum 
+             *      1. Set up dark environment
              *      2. Acquire data
              * B. Collect ground state  
              *      1. Open probe beam shutter.
              *      2. Acquire partial data for t<0
-             * C. Collect excited state 
+             * C. Collect transient
              *      1. Set time delay
              *      2. Open pump beam shutter
-             *      3. Acquire excited state data
-             *      4. Close probe beam shutter
+             *      3. Acquire transient
+             *      4. Close pump beam shutter
              *      5. Collect partial ground state at t>0 
              */
 
