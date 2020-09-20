@@ -35,7 +35,9 @@
             this.SyringePumpAlways = new System.Windows.Forms.RadioButton();
             this.SyringePumpTs = new System.Windows.Forms.RadioButton();
             this.SyringePumpNever = new System.Windows.Forms.RadioButton();
-            this.Discard = new System.Windows.Forms.CheckBox();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.Discard = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -47,6 +49,8 @@
             this.LeftPanel.SuspendLayout();
             this.SyringePumpBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Discard)).BeginInit();
             this.SuspendLayout();
             this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
             this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
@@ -98,17 +102,17 @@
             this.SyringePumpBox.Flow.AutoSize = true;
             this.SyringePumpBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.SyringePumpBox.Flow.Controls.Add(this.panel1);
-            this.SyringePumpBox.Flow.Controls.Add(this.Discard);
+            this.SyringePumpBox.Flow.Controls.Add(this.panel3);
             this.SyringePumpBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SyringePumpBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.SyringePumpBox.Flow.Location = new System.Drawing.Point(3, 16);
             this.SyringePumpBox.Flow.Name = "Flow";
-            this.SyringePumpBox.Flow.Size = new System.Drawing.Size(294, 92);
+            this.SyringePumpBox.Flow.Size = new System.Drawing.Size(294, 101);
             this.SyringePumpBox.Flow.TabIndex = 0;
             this.SyringePumpBox.Location = new System.Drawing.Point(0, 0);
             this.SyringePumpBox.Name = "SyringePumpBox";
             this.SyringePumpBox.SelectedObject = null;
-            this.SyringePumpBox.Size = new System.Drawing.Size(300, 111);
+            this.SyringePumpBox.Size = new System.Drawing.Size(300, 120);
             this.SyringePumpBox.TabIndex = 1;
             this.SyringePumpBox.Text = "Syringe Pump";
             // 
@@ -157,15 +161,37 @@
             this.SyringePumpNever.Text = "Never";
             this.SyringePumpNever.UseVisualStyleBackColor = true;
             // 
+            // panel3
+            // 
+            this.panel3.AutoSize = true;
+            this.panel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel3.Controls.Add(this.Discard);
+            this.panel3.Controls.Add(this.label4);
+            this.panel3.Location = new System.Drawing.Point(3, 72);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(109, 26);
+            this.panel3.TabIndex = 5;
+            // 
             // Discard
             // 
-            this.Discard.AutoSize = true;
-            this.Discard.Location = new System.Drawing.Point(3, 72);
+            this.Discard.Location = new System.Drawing.Point(71, 3);
+            this.Discard.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
             this.Discard.Name = "Discard";
-            this.Discard.Size = new System.Drawing.Size(84, 17);
-            this.Discard.TabIndex = 3;
-            this.Discard.Text = "Discard First";
-            this.Discard.UseVisualStyleBackColor = true;
+            this.Discard.Size = new System.Drawing.Size(35, 20);
+            this.Discard.TabIndex = 1;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 5);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(62, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Discard first";
             // 
             // TransientAbsControl
             // 
@@ -191,6 +217,9 @@
             this.SyringePumpBox.Flow.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Discard)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -204,6 +233,8 @@
         private System.Windows.Forms.RadioButton SyringePumpAlways;
         private System.Windows.Forms.RadioButton SyringePumpTs;
         private System.Windows.Forms.RadioButton SyringePumpNever;
-        private System.Windows.Forms.CheckBox Discard;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.NumericUpDown Discard;
+        private System.Windows.Forms.Label label4;
     }
 }

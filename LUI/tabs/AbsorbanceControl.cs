@@ -122,7 +122,7 @@ namespace LUI.tabs
             Commander.BeamFlag.CloseLaserAndFlash();
 
             SetupWorker();
-            worker.RunWorkerAsync(new WorkArgs(N, Mode, Discard.Checked));
+            worker.RunWorkerAsync(new WorkArgs(N, Mode, (int)Discard.Value));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -180,7 +180,7 @@ namespace LUI.tabs
 
             Commander.BeamFlag.OpenFlash();
 
-            if (args.SyringePump == SyringePumpMode.ALWAYS) OpenSyringePump(args.DiscardFirst);
+            if (args.SyringePump == SyringePumpMode.ALWAYS) OpenSyringePump(args.Discard);
 
             var SampleBuffer = new int[finalSize];
             for (var i = 0; i < N; i++)
@@ -360,16 +360,16 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, SyringePumpMode SyringePump, bool DiscardFirst)
+            public WorkArgs(int N, SyringePumpMode SyringePump, int Discard)
             {
                 this.N = N;
                 this.SyringePump = SyringePump;
-                this.DiscardFirst = DiscardFirst;
+                this.Discard = Discard;
             }
 
             public readonly int N;
             public readonly SyringePumpMode SyringePump;
-            public readonly bool DiscardFirst;
+            public readonly int Discard;
         }
     }
 }

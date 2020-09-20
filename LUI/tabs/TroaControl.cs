@@ -49,7 +49,7 @@ namespace LUI.tabs
         struct WorkArgs
         {
             public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger,
-                SyringePumpMode SyringePump, bool DiscardFirst, double GsDelay)
+                SyringePumpMode SyringePump, int Discard, double GsDelay)
             {
                 this.N = N;
                 this.Times = new List<double>(Times);
@@ -60,7 +60,7 @@ namespace LUI.tabs
                 Gate = double.NaN;
                 GateDelay = double.NaN;
                 this.SyringePump = SyringePump;
-                this.DiscardFirst = DiscardFirst;
+                this.Discard = Discard;
                 this.GsDelay = GsDelay;
             }
 
@@ -73,7 +73,7 @@ namespace LUI.tabs
             public readonly double GateDelay;
             public readonly double Gate;
             public readonly SyringePumpMode SyringePump;
-            public readonly bool DiscardFirst;
+            public readonly int Discard;
             public readonly double GsDelay;
         }
 
@@ -273,7 +273,7 @@ namespace LUI.tabs
 
             SetupWorker();
             worker.RunWorkerAsync(new WorkArgs(N, Times, DdgConfigBox.PrimaryDelayDelay,
-                DdgConfigBox.PrimaryDelayTrigger, Mode, Discard.Checked,double.Parse(GsDelay.Text)));
+                DdgConfigBox.PrimaryDelayTrigger, Mode, (int)Discard.Value, double.Parse(GsDelay.Text)));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -410,7 +410,7 @@ namespace LUI.tabs
             // Check syringe pump
             if (args.SyringePump == SyringePumpMode.ALWAYS)
             {
-                OpenSyringePump(args.DiscardFirst);
+                OpenSyringePump(args.Discard);
             }
 
             // B1. Open probe beam shutter
@@ -429,7 +429,7 @@ namespace LUI.tabs
                 // Check syringe pump
                 if (args.SyringePump == SyringePumpMode.TRANS)
                 {
-                    OpenSyringePump(args.DiscardFirst);
+                    OpenSyringePump(args.Discard);
                 }
 
                 // C1. Set time delay.

@@ -96,7 +96,7 @@ namespace LUI.tabs
             worker.RunWorkerCompleted += WorkComplete;
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(new WorkArgs(N, SyringePump, Discard.Checked));
+            worker.RunWorkerAsync(new WorkArgs(N, SyringePump, (int)Discard.Value));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -148,7 +148,7 @@ namespace LUI.tabs
             // Flow-flash.
             if (args.SyringePump == SyringePumpMode.ALWAYS)
             {
-                OpenSyringePump(args.DiscardFirst);
+                OpenSyringePump(args.Discard);
                 if (PauseCancelProgress(e, -1, Dialog.PROGRESS)) return;
             }
 
@@ -172,7 +172,7 @@ namespace LUI.tabs
             // Flow-flash.
             if (args.SyringePump == SyringePumpMode.TRANS)
             {
-                OpenSyringePump(args.DiscardFirst);
+                OpenSyringePump(args.Discard);
                 if (PauseCancelProgress(e, -1, Dialog.PROGRESS)) return;
             }
 
@@ -326,16 +326,16 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, SyringePumpMode SyringePump, bool DiscardFirst)
+            public WorkArgs(int N, SyringePumpMode SyringePump, int Discard)
             {
                 this.N = N;
                 this.SyringePump = SyringePump;
-                this.DiscardFirst = DiscardFirst;
+                this.Discard = Discard;
             }
 
             public readonly int N;
             public readonly SyringePumpMode SyringePump;
-            public readonly bool DiscardFirst;
+            public readonly int Discard;
         }
     }
 }

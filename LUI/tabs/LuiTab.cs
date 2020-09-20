@@ -398,10 +398,13 @@ namespace LUI.tabs
             wait = false;
         }
 
-        protected void OpenSyringePump(bool discard)
+        protected void OpenSyringePump(int discard)
         {
             Commander.SyringePump.SetOpen();
-            if (discard) TryAcquire();
+            for (int i = 0; i < discard; i++)
+            {
+                TryAcquire();
+            }
         }
 
         protected void TryAcquire()
