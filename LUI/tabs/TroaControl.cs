@@ -43,7 +43,65 @@ namespace LUI.tabs
         MatVar<double> LuiData;
         MatVar<int> RawData;
 
+        public const double DefaultGsDelay = 3.2E-8;
+
         readonly BindingList<TimesRow> TimesList = new BindingList<TimesRow>();
+        struct WorkArgs
+        {
+            public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger,
+                SyringePumpMode SyringePump, bool DiscardFirst, double GsDelay)
+            {
+                this.N = N;
+                this.Times = new List<double>(Times);
+                this.PrimaryDelayName = PrimaryDelayName;
+                TriggerName = PrimaryDelayTrigger;
+                GateName = null;
+                GateTriggerName = '\0';
+                Gate = double.NaN;
+                GateDelay = double.NaN;
+                this.SyringePump = SyringePump;
+                this.DiscardFirst = DiscardFirst;
+                this.GsDelay = GsDelay;
+            }
+
+            public readonly int N;
+            public readonly IList<double> Times;
+            public readonly string PrimaryDelayName;
+            public readonly string TriggerName;
+            public readonly Tuple<char, char> GateName;
+            public readonly char GateTriggerName;
+            public readonly double GateDelay;
+            public readonly double Gate;
+            public readonly SyringePumpMode SyringePump;
+            public readonly bool DiscardFirst;
+            public readonly double GsDelay;
+        }
+
+        struct ProgressObject
+        {
+            public ProgressObject(double[] Data, double Delay, Dialog Status)
+            {
+                this.Data = Data;
+                this.Delay = Delay;
+                this.Status = Status;
+            }
+
+            public readonly double[] Data;
+            public readonly double Delay;
+            public readonly Dialog Status;
+        }
+
+
+        IList<double> Times
+        {
+            get { return TimesList.Select(x => x.Value).ToList(); }
+            set
+            {
+                TimesList.Clear();
+                foreach (var d in value)
+                    TimesList.Add(new TimesRow { Value = d });
+            }
+        }
 
         public TroaControl(LuiConfig Config) : base(Config)
         {
@@ -62,17 +120,10 @@ namespace LUI.tabs
             DdgConfigBox.Commander = Commander;
             DdgConfigBox.AllowZero = false;
             DdgConfigBox.HandleParametersChanged(this, EventArgs.Empty);
-        }
 
-        IList<double> Times
-        {
-            get { return TimesList.Select(x => x.Value).ToList(); }
-            set
-            {
-                TimesList.Clear();
-                foreach (var d in value)
-                    TimesList.Add(new TimesRow { Value = d });
-            }
+            GsDelay.TextChanged += GsDelay_TextChanged;
+            GsDelay.LostFocus += GsDelay_LostFocus;
+            GsDelay.KeyPress += GsDelay_KeyPress;
         }
 
         void Init()
@@ -90,7 +141,7 @@ namespace LUI.tabs
             };
 
             SaveData.Enabled = false;
-
+            GsDelay.Text = DefaultGsDelay.ToString("E3");
             ResumeLayout();
         }
 
@@ -140,11 +191,20 @@ namespace LUI.tabs
             base.LoadSettings();
             var Settings = Config.TabSettings[GetType().Name];
             if (Settings.TryGetValue("PrimaryDelayDdg", out var value) && !string.IsNullOrEmpty(value))
+            {
                 DdgConfigBox.PrimaryDelayDdg = (DelayGeneratorParameters)Config.GetFirstParameters(
                     typeof(DelayGeneratorParameters), value);
+            }
 
             if (Settings.TryGetValue("PrimaryDelayDelay", out value) && !string.IsNullOrEmpty(value))
+            {
                 DdgConfigBox.PrimaryDelayDelay = value;
+            }
+
+            if (Settings.TryGetValue("GsDelay", out value) && value != null && value != "")
+            {
+                GsDelay.Text = value;
+            }
         }
 
         protected override void SaveSettings()
@@ -153,6 +213,7 @@ namespace LUI.tabs
             var Settings = Config.TabSettings[GetType().Name];
             Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg?.Name;
             Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay ?? null;
+            Settings["GsDelay"] = GsDelay.Text;
         }
 
         /// <summary>
@@ -212,7 +273,7 @@ namespace LUI.tabs
 
             SetupWorker();
             worker.RunWorkerAsync(new WorkArgs(N, Times, DdgConfigBox.PrimaryDelayDelay,
-                DdgConfigBox.PrimaryDelayTrigger, Mode, Discard.Checked));
+                DdgConfigBox.PrimaryDelayTrigger, Mode, Discard.Checked,double.Parse(GsDelay.Text)));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -333,7 +394,7 @@ namespace LUI.tabs
              */
 
             // A1. Close the pump and probe beam shutters 
-            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8);
+            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay);
             Commander.BeamFlag.CloseLaserAndFlash();
 
             // A2. Acquire data
@@ -398,7 +459,7 @@ namespace LUI.tabs
 
                 // C5. Collect partial ground state 
                 // Update ground state every other time point.
-                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8);
+                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay);
                 if (i % 2 == 0)
                 {
                     DoAcq(AcqBuffer, AcqRow, Gnd2, half,
@@ -428,9 +489,9 @@ namespace LUI.tabs
                 Array.Clear(Ground, 0, Ground.Length);
                 Array.Clear(Excited, 0, Excited.Length);
             }
-
-            Commander.BeamFlag.CloseLaserAndFlash();
             if (args.SyringePump != SyringePumpMode.NEVER) Commander.SyringePump.SetClosed();
+            Commander.BeamFlag.CloseLaserAndFlash();
+            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay);
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
@@ -676,51 +737,43 @@ namespace LUI.tabs
             }
         }
 
-        struct WorkArgs
+        void GsDelay_LostFocus(object sender, EventArgs e)
         {
-            public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger,
-                SyringePumpMode SyringePump, bool DiscardFirst)
+            double value;
+            if (!double.TryParse(GsDelay.Text, out value))
             {
-                this.N = N;
-                this.Times = new List<double>(Times);
-                this.PrimaryDelayName = PrimaryDelayName;
-                TriggerName = PrimaryDelayTrigger;
-                //this.GateName = new Tuple<char, char>(Gate.Delay[0], Gate.Delay[1]);
-                //this.GateTriggerName = Gate.Trigger[0];
-                //this.Gate = Gate.DelayValue;
-                //this.GateDelay = Gate.DelayValue;
-                GateName = null;
-                GateTriggerName = '\0';
-                Gate = double.NaN;
-                GateDelay = double.NaN;
-                this.SyringePump = SyringePump;
-                this.DiscardFirst = DiscardFirst;
+                GsDelay.Text = GsDelay.Tag != null ? (string)GsDelay.Tag : DefaultGsDelay.ToString("E3");
             }
-
-            public readonly int N;
-            public readonly IList<double> Times;
-            public readonly string PrimaryDelayName;
-            public readonly string TriggerName;
-            public readonly Tuple<char, char> GateName;
-            public readonly char GateTriggerName;
-            public readonly double GateDelay;
-            public readonly double Gate;
-            public readonly SyringePumpMode SyringePump;
-            public readonly bool DiscardFirst;
         }
 
-        struct ProgressObject
+        void GsDelay_TextChanged(object sender, EventArgs e)
         {
-            public ProgressObject(double[] Data, double Delay, Dialog Status)
+            double value;
+            if (!double.TryParse(GsDelay.Text, out value))
             {
-                this.Data = Data;
-                this.Delay = Delay;
-                this.Status = Status;
+                GsDelay.ForeColor = Color.Red;
             }
-
-            public readonly double[] Data;
-            public readonly double Delay;
-            public readonly Dialog Status;
+            else
+            {
+                GsDelay.ForeColor = Color.Black;
+                GsDelay.Tag = value.ToString("E3");
+            }
         }
+
+        void GsDelay_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            Keys key = (Keys)e.KeyChar;
+            if (key == Keys.Enter)
+            {
+                GsDelay.Text = GsDelay.Tag != null ? (string)GsDelay.Tag : DefaultGsDelay.ToString("E3");
+                e.Handled = true;
+            }
+            if (key == Keys.Escape)
+            {
+                GsDelay.Text = GsDelay.Tag != null ? (string)GsDelay.Tag : DefaultGsDelay.ToString("E3");
+                e.Handled = true;
+            }
+        }
+
     }
 }
