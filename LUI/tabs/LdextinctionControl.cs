@@ -20,8 +20,8 @@ namespace LUI.tabs
         {
             INITIALIZE,
             PROGRESS,
-            PROGRESS_DARK,
-            PROGRESS_WORK,
+            PROGRESS_CROSSED,
+            PROGRESS_BETA,
             PROGRESS_COMPLETE,
             TEMPERATURE
         }
@@ -148,7 +148,7 @@ namespace LUI.tabs
             var TempFileName = Path.GetTempFileName();
             DataFile = new MatFile(TempFileName);
             RawData = DataFile.CreateVariable<int>("rawdata", NumScans, NumChannels);
-            LuiData = DataFile.CreateVariable<double>("luidata", 2, NumChannels);
+            LuiData = DataFile.CreateVariable<double>("luidata", 2+2, NumChannels);
         }
 
         protected override void Graph_Click(object sender, MouseEventArgs e)
@@ -304,7 +304,7 @@ namespace LUI.tabs
                   AcqRow,
                   ZeroBetaBuffer,
                   N,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_WORK)));
+                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_CROSSED)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
             // A4. Close beam shutters
             Commander.BeamFlag.CloseFlash();
@@ -319,17 +319,18 @@ namespace LUI.tabs
                   AcqRow,
                   PlusBetaBuffer,
                   N,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_WORK)));
+                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_BETA)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
             // B4. Close beam shutters
             Commander.BeamFlag.CloseFlash();
             Data.Accumulate(PlusBeta, PlusBetaBuffer);
 
             // B5. Calculate and plot
-
             var Y = Data.Extinction(PlusBeta, ZeroBeta, (double)Beta.Value);
             //var Y = Data.Y(PlusBeta);
             LuiData.Write(Y, new long[] { 1, 0 }, RowSize);
+            LuiData.Write(PlusBeta, new long[] { 2, 0 }, RowSize);
+            LuiData.Write(ZeroBeta, new long[] { 3, 0 }, RowSize);
             if (PauseCancelProgress(e, -1, new ProgressObject(Y, Dialog.PROGRESS_COMPLETE)))
             {
                 return;
@@ -350,7 +351,7 @@ namespace LUI.tabs
                 case Dialog.PROGRESS:
                     break;
 
-                case Dialog.PROGRESS_DARK:
+                case Dialog.PROGRESS_CROSSED:
                     ProgressLabel.Text = "Collecting crossed";
                     ScanProgress.Text = progressValue + "/" + NScan.Value;
                     break;
@@ -360,7 +361,7 @@ namespace LUI.tabs
                     LastGraphTrace = progress.Data;
                     break;
 
-                case Dialog.PROGRESS_WORK:
+                case Dialog.PROGRESS_BETA:
                     ProgressLabel.Text = "Collecting plus Beta";
                     ScanProgress.Text = progressValue + "/" + NScan.Value;
                     break;
