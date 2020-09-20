@@ -1,4 +1,4 @@
-﻿namespace lasercom.syringepump
+﻿namespace LuiHardware.syringepump
 {
     public enum SyringePumpState
     {

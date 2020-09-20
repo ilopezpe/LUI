@@ -1,7 +1,7 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using System;
 
-namespace lasercom.polarizer
+namespace LuiHardware.polarizer
 {
     /// <summary>
     /// Base class for all beam flag classes.

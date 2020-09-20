@@ -1,5 +1,5 @@
-﻿using lasercom;
-using lasercom.beamflags;
+﻿using LuiHardware;
+using LuiHardware.beamflags;
 using System;
 using System.Windows.Forms;
 

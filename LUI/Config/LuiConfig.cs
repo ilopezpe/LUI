@@ -1,9 +1,9 @@
 ﻿using Extensions;
-using lasercom;
-using lasercom.beamflags;
-using lasercom.camera;
-using lasercom.ddg;
-using lasercom.objects;
+using LuiHardware;
+using LuiHardware.beamflags;
+using LuiHardware.camera;
+using LuiHardware.ddg;
+using LuiHardware.objects;
 using log4net;
 using log4net.Appender;
 using log4net.Layout;

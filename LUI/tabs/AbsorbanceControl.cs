@@ -1,8 +1,8 @@
 ﻿using CsvHelper;
-using lasercom;
-using lasercom.camera;
-using lasercom.io;
-using lasercom.syringepump;
+using LuiHardware;
+using LuiHardware.camera;
+using LuiHardware.io;
+using LuiHardware.syringepump;
 using LUI.config;
 using LUI.controls;
 using System;

@@ -1,11 +1,11 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using System;
 using System.IO;
 using System.IO.Ports;
 using System.Text;
 using System.Threading;
 
-namespace lasercom.gpib
+namespace LuiHardware.gpib
 {
     /// <summary>
     ///     Provide GPIB using Prologix USB GPIB controller.

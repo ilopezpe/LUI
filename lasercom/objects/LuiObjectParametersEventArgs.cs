@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace lasercom.objects
+namespace LuiHardware.objects
 {
     public class LuiObjectParametersEventArgs : EventArgs
     {

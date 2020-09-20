@@ -1,6 +1,6 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 
-namespace lasercom.gpib
+namespace LuiHardware.gpib
 {
     public class DummyGpibProvider : AbstractGpibProvider
     {

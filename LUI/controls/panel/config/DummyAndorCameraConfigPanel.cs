@@ -1,4 +1,4 @@
-﻿using lasercom.camera;
+﻿using LuiHardware.camera;
 using System;
 
 namespace LUI.controls

@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LUI", "LUI\LUI.csproj", "{1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HardwarePoll", "HardwarePoll\HardwarePoll.csproj", "{1731A795-7E69-4D4C-9523-BB8FAF5CB595}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lasercom", "lasercom\lasercom.csproj", "{F77054EF-38F5-4303-9E65-AA033A17E215}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuiHardware", "lasercom\LuiHardware.csproj", "{F77054EF-38F5-4303-9E65-AA033A17E215}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomGraph", "CustomGraph\CustomGraph.csproj", "{C539C69E-8B11-43F7-B807-1C998BF6D779}"
 EndProject

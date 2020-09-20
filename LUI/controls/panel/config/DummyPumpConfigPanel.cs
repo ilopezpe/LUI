@@ -1,4 +1,4 @@
-﻿using lasercom.syringepump;
+﻿using LuiHardware.syringepump;
 using System;
 
 namespace LUI.controls

@@ -1,9 +1,9 @@
 ﻿using Extensions;
-using lasercom;
-using lasercom.beamflags;
-using lasercom.camera;
-using lasercom.objects;
-using lasercom.syringepump;
+using LuiHardware;
+using LuiHardware.beamflags;
+using LuiHardware.camera;
+using LuiHardware.objects;
+using LuiHardware.syringepump;
 using log4net;
 using LUI.config;
 using System;

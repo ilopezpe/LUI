@@ -1,7 +1,7 @@
-﻿using lasercom;
-using lasercom.camera;
-using lasercom.ddg;
-using lasercom.io;
+﻿using LuiHardware;
+using LuiHardware.camera;
+using LuiHardware.ddg;
+using LuiHardware.io;
 using LUI.config;
 using LUI.controls;
 using System;

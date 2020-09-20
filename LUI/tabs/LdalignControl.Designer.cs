@@ -35,6 +35,8 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.Beta = new System.Windows.Forms.NumericUpDown();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.CountsLabel = new System.Windows.Forms.Label();
+            this.CountsDisplay = new System.Windows.Forms.TextBox();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -68,16 +70,13 @@
             // 
             // Graph
             // 
-            this.Graph.InitialScaleHeight = 2F;
-            this.Graph.InitialYMax = float.PositiveInfinity;
-            this.Graph.InitialYMin = float.NegativeInfinity;
-            this.Graph.ScaleHeight = 2F;
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
-            this.Graph.YMin = float.NegativeInfinity;
             // 
             // LeftChildArea
             // 
+            this.LeftChildArea.Controls.Add(this.CountsLabel);
+            this.LeftChildArea.Controls.Add(this.CountsDisplay);
             this.LeftChildArea.Controls.Add(this.panel2);
             this.LeftChildArea.Controls.Add(this.DdgConfigBox);
             // 
@@ -179,6 +178,27 @@
             this.panel2.Size = new System.Drawing.Size(142, 38);
             this.panel2.TabIndex = 16;
             // 
+            // CountsLabel
+            // 
+            this.CountsLabel.AutoSize = true;
+            this.CountsLabel.Location = new System.Drawing.Point(592, 16);
+            this.CountsLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.CountsLabel.Name = "CountsLabel";
+            this.CountsLabel.Size = new System.Drawing.Size(21, 13);
+            this.CountsLabel.TabIndex = 20;
+            this.CountsLabel.Text = "LD";
+            // 
+            // CountsDisplay
+            // 
+            this.CountsDisplay.Location = new System.Drawing.Point(452, 13);
+            this.CountsDisplay.Margin = new System.Windows.Forms.Padding(4);
+            this.CountsDisplay.Name = "CountsDisplay";
+            this.CountsDisplay.ReadOnly = true;
+            this.CountsDisplay.Size = new System.Drawing.Size(132, 20);
+            this.CountsDisplay.TabIndex = 19;
+            this.CountsDisplay.Text = "0";
+            this.CountsDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // LdalignControl
             // 
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
@@ -217,6 +237,7 @@
         private System.Windows.Forms.Label PolarizerBetaLabel;
         private System.Windows.Forms.NumericUpDown Beta;
         private System.Windows.Forms.Panel panel2;
-
+        private System.Windows.Forms.Label CountsLabel;
+        private System.Windows.Forms.TextBox CountsDisplay;
     }
 }

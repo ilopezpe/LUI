@@ -1,4 +1,4 @@
-﻿using lasercom.gpib;
+﻿using LuiHardware.gpib;
 using System;
 using System.Windows.Forms;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace lasercom
+namespace LuiHardware
 {
     /// <summary>
     ///     Provides methods for the manipulation of numerical data,
@@ -137,6 +137,21 @@ namespace lasercom
         }
 
         /// <summary>
+        /// Do nothing
+        /// </summary>
+        /// <param name="Spectrum"></param>
+        /// <returns>LD</returns>
+        public static double[] Y(IList<double> Spectrum)
+        {
+            var Y = new double[Spectrum.Count];
+            for (var i = 0; i < Y.Length; i++)
+                Y[i] = Spectrum[i];
+            return Y;
+        }
+
+
+
+        /// <summary>
         /// Computes S from +/- beta transmitted intensity, and dark counts.
         /// </summary>
         /// <param name="PlusB"></param>
@@ -152,18 +167,32 @@ namespace lasercom
         }
 
         /// <summary>
-        /// dO NOTHING
+        /// Compute the extinction for crossed polarizers
         /// </summary>
-        /// <param name="Y"></param>
-        /// <returns>clean Y</returns>
-        public static double[] Y(IList<double> Spectrum, IList<double> Dark)
+        /// <param name="SmallAngleSpectrum"></param>
+        /// <param name="CrossedSpectrum"></param>
+        /// <param name="beta"></param>
+        /// <returns>Extinction</returns>
+        public static double[] Extinction(IList<double> SmallAngleSpectrum, IList<double> CrossedSpectrum, double beta)
         {
-            var Y = new double[Spectrum.Count];
-            for (var i = 0; i < Y.Length; i++)
-                Y[i] = (Y[i] - Dark[i]);
-            return Y;
-        }
 
+            double angle = Math.PI * (90.0 + beta) / 180.0;
+            double sinAngle = Math.Sin(angle);
+
+            var AlignedSpectrum = new double[SmallAngleSpectrum.Count];
+            for (var i = 0; i < AlignedSpectrum.Length; i++)
+            {
+                AlignedSpectrum[i] = (SmallAngleSpectrum[i] - CrossedSpectrum[i])/(sinAngle*sinAngle);
+            }
+
+            var Extinction = new double[SmallAngleSpectrum.Count];
+            for (var i =0; i < Extinction.Length; i++)
+            {
+                Extinction[i] = CrossedSpectrum[i] / AlignedSpectrum[i];
+            }
+
+            return Extinction;
+        }
 
         /// <summary>
         ///     Computes OD from Sample and Blank counts, subtracting Dark counts from both.

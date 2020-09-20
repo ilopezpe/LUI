@@ -1,4 +1,4 @@
-﻿using lasercom.gpib;
+﻿using LuiHardware.gpib;
 using System;
 
 namespace LUI.controls

@@ -69,14 +69,8 @@
             // 
             // Graph
             // 
-            this.Graph.InitialScaleHeight = 2F;
-            this.Graph.InitialYMax = 0.1F;
-            this.Graph.InitialYMin = -0.1F;
-            this.Graph.ScaleHeight = 2F;
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
-            this.Graph.YMax = 1F;
-            this.Graph.YMin = -1F;
             // 
             // LeftChildArea
             // 
@@ -178,9 +172,9 @@
             this.CountsLabel.Location = new System.Drawing.Point(443, 16);
             this.CountsLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.CountsLabel.Name = "CountsLabel";
-            this.CountsLabel.Size = new System.Drawing.Size(76, 13);
+            this.CountsLabel.Size = new System.Drawing.Size(53, 13);
             this.CountsLabel.TabIndex = 18;
-            this.CountsLabel.Text = "Optical density";
+            this.CountsLabel.Text = "Extinction";
             // 
             // CountsDisplay
             // 

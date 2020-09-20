@@ -1,13 +1,13 @@
-﻿using lasercom.beamflags;
-using lasercom.camera;
-using lasercom.ddg;
-using lasercom.polarizer;
-using lasercom.syringepump;
+﻿using LuiHardware.beamflags;
+using LuiHardware.camera;
+using LuiHardware.ddg;
+using LuiHardware.polarizer;
+using LuiHardware.syringepump;
 using log4net;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace lasercom
+namespace LuiHardware
 {
     public class Commander
     {

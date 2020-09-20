@@ -1,8 +1,8 @@
 ﻿using Extensions;
-using lasercom.camera;
-using lasercom.ddg;
-using lasercom.gpib;
-using lasercom.objects;
+using LuiHardware.camera;
+using LuiHardware.ddg;
+using LuiHardware.gpib;
+using LuiHardware.objects;
 using LUI.config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -34,14 +34,14 @@ namespace LUI_Unit_Tests
 
             gpibParameters1 = new GpibProviderParameters
             {
-                TypeName = "lasercom.gpib.NIGpibProvider",
+                TypeName = "LuiHardware.gpib.NIGpibProvider",
                 Name = "NI PCI Card",
                 BoardNumber = 0
             };
 
             gpibParameters2 = new GpibProviderParameters
             {
-                TypeName = "lasercom.gpib.PrologixGpibProvider",
+                TypeName = "LuiHardware.gpib.PrologixGpibProvider",
                 Name = "USB GPIB Controller",
                 PortName = "COM1",
                 Timeout = 300
@@ -49,7 +49,7 @@ namespace LUI_Unit_Tests
 
             cameraParameters = new CameraParameters
             {
-                TypeName = "lasercom.camera.CameraTempControlled",
+                TypeName = "LuiHardware.camera.CameraTempControlled",
                 Name = "Andor USB CCD",
                 Dir = "./",
                 Temperature = 20
@@ -57,7 +57,7 @@ namespace LUI_Unit_Tests
 
             ddgParameters = new DelayGeneratorParameters
             {
-                TypeName = "lasercom.ddg.DDG535",
+                TypeName = "LuiHardware.ddg.DDG535",
                 Name = "Primary DDG",
                 GpibAddress = 15,
                 GpibProvider = gpibParameters1

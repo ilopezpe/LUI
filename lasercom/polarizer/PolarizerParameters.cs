@@ -1,8 +1,8 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using System;
 using System.Runtime.Serialization;
 
-namespace lasercom.polarizer
+namespace LuiHardware.polarizer
 {
     [DataContract]
     public class PolarizerParameters : LuiObjectParameters<PolarizerParameters>

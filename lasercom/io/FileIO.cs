@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace lasercom.io
+namespace LuiHardware.io
 {
     public static class FileIO
     {

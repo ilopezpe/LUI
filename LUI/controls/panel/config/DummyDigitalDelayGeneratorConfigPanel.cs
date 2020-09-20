@@ -1,4 +1,4 @@
-﻿using lasercom.ddg;
+﻿using LuiHardware.ddg;
 using System;
 
 namespace LUI.controls

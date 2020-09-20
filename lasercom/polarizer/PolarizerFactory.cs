@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace lasercom.polarizer
+namespace LuiHardware.polarizer
 {
     /// <summary>
     /// Instantiate concrete polarizer objects from parameters.

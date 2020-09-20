@@ -1,8 +1,8 @@
-﻿using lasercom.objects;
+﻿using LuiHardware.objects;
 using NationalInstruments.NI4882;
 using System;
 
-namespace lasercom.gpib
+namespace LuiHardware.gpib
 {
     /// <summary>
     ///     Provide GPIB using NI 488.2 PCI card.
