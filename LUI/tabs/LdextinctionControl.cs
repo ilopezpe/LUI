@@ -282,12 +282,12 @@ namespace LUI.tabs
 
             /* 
             * Calculate extinction
-            * A. Set up crossed position intensity
+            * A. Collect crossed position intensity
             *      1. Move polarizer to crossed position
             *      2. Open probe beam shutter
             *      3. Acquire data
             *      4. Close beam shutters
-            * B. Set up plus beta using a small angle
+            * B. Collect small angle intensity 
             *      1. Move polarizer to plus beta
             *      2. Open probe beam shutter
             *      3. Acquire data

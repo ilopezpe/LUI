@@ -413,6 +413,7 @@ namespace LUI.tabs
                 Array.Clear(MinusBeta, 0, MinusBeta.Length);
             }
             Commander.Polarizer.PolarizerToZeroBeta();
+            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8);
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
