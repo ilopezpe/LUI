@@ -1,6 +1,6 @@
 ﻿namespace LUI.tabs
 {
-    partial class LdalignControl
+    partial class LdextinctionControl
     {
         /// <summary>
         /// Required designer variable.
@@ -30,7 +30,6 @@
         {
             this.PolarizerBetaLabel = new System.Windows.Forms.Label();
             this.SaveData = new System.Windows.Forms.Button();
-            this.DdgConfigBox = new LUI.controls.DdgCommandPanel();
             this.PolarizerBox = new LUI.controls.ObjectCommandPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.Beta = new System.Windows.Forms.NumericUpDown();
@@ -69,17 +68,17 @@
             // Graph
             // 
             this.Graph.InitialScaleHeight = 2F;
-            this.Graph.InitialYMax = float.PositiveInfinity;
-            this.Graph.InitialYMin = float.NegativeInfinity;
+            this.Graph.InitialYMax = 0.1F;
+            this.Graph.InitialYMin = -0.1F;
             this.Graph.ScaleHeight = 2F;
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
-            this.Graph.YMin = float.NegativeInfinity;
+            this.Graph.YMax = 1F;
+            this.Graph.YMin = -1F;
             // 
             // LeftChildArea
             // 
             this.LeftChildArea.Controls.Add(this.panel2);
-            this.LeftChildArea.Controls.Add(this.DdgConfigBox);
             // 
             // RightChildArea
             // 
@@ -104,16 +103,6 @@
             this.SaveData.TabIndex = 12;
             this.SaveData.Text = "Save Data";
             this.SaveData.UseVisualStyleBackColor = true;
-            // 
-            // DdgConfigBox
-            // 
-            this.DdgConfigBox.AutoSize = true;
-            this.DdgConfigBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.DdgConfigBox.Location = new System.Drawing.Point(3, 3);
-            this.DdgConfigBox.Margin = new System.Windows.Forms.Padding(2);
-            this.DdgConfigBox.Name = "DdgConfigBox";
-            this.DdgConfigBox.Size = new System.Drawing.Size(362, 59);
-            this.DdgConfigBox.TabIndex = 15;
             // 
             // PolarizerBox
             // 
@@ -179,10 +168,10 @@
             this.panel2.Size = new System.Drawing.Size(142, 38);
             this.panel2.TabIndex = 16;
             // 
-            // LdalignControl
+            // LdextinctionControl
             // 
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.Name = "LdalignControl";
+            this.Name = "LdextinctionControl";
             this.ParentPanel.ResumeLayout(false);
             this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
@@ -211,7 +200,6 @@
 
         #endregion
         private System.Windows.Forms.Button SaveData;
-        private controls.DdgCommandPanel DdgConfigBox;
         private controls.ObjectCommandPanel PolarizerBox;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label PolarizerBetaLabel;

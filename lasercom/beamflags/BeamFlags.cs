@@ -30,7 +30,7 @@ namespace lasercom.beamflags
         #endregion
 
         // Approximate time in ms for solenoid to switch.
-        public const int DefaultDelay = 800;
+        public const int DefaultDelay = 1000;
 
         SerialPort _port;
 

@@ -1,6 +1,5 @@
 ﻿using ATMCD32CS;
 using System;
-using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -198,21 +197,15 @@ namespace lasercom.camera
             var line = new StackFrame(frame, true).GetFileLineNumber();
             int[] data = null;
             if (caller.Contains("AbsControl"))
-                data = Abs(line);
-            else if (caller.Contains("TransientAbsControl"))
-                data = TransientAbs(line);
+                data = Spec(line);
             else if (caller.Contains("TroaControl"))
-                data = Troa(line);
-            else if (caller.Contains("LdalignControl"))
-                data = Troa(line);
-            else if (caller.Contains("LdextinctionControl"))
-                data = Residuals();
-            else if (caller.Contains("TrldControl"))
                 data = Troa(line);
             else if (caller.Contains("CalibrateControl"))
                 data = Calibrate(line);
             else if (caller.Contains("ResidualsControl"))
                 data = Residuals();
+            else if (caller.Contains("TransientAbsControl"))
+                data = LaserPower(line);
             else if (caller.Contains("DetectorTestForm")) data = Blank();
 
             if (data != null) data.CopyTo(DataBuffer, 0);
@@ -293,7 +286,7 @@ namespace lasercom.camera
             return data;
         }
 
-        int[] Abs(int line)
+        int[] Spec(int line)
         {
             int[] data = null;
             if (line == 155) // Dark.
@@ -362,7 +355,7 @@ namespace lasercom.camera
             return Blank();
         }
 
-        int[] TransientAbs(int line)
+        int[] LaserPower(int line)
         {
             int[] data;
             if (line == 132) // Dark.

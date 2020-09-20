@@ -156,12 +156,12 @@ namespace lasercom
         /// </summary>
         /// <param name="Y"></param>
         /// <returns>clean Y</returns>
-        public static double[] Y(IList<double> Spectrum, IList<double> Dark)
+        public static double[] returnY(IList<double> Y)
         {
-            var Y = new double[Spectrum.Count];
-            for (var i = 0; i < Y.Length; i++)
-                Y[i] = (Y[i] - Dark[i]);
-            return Y;
+            var newY = new double[Y.Count];
+            for (var i = 0; i < newY.Length; i++)
+                newY[i] = (Y[i]);
+            return newY;
         }
 
 
