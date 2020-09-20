@@ -278,6 +278,8 @@ namespace LUI.tabs
 
             // Write wavelengths.
             LuiData.WriteNext(Commander.Camera.Calibration, 0);
+
+            long[] RowSize = { 1, AcqWidth };
             #endregion
 
             #region Initialize buffers for acuisition data
@@ -356,7 +358,7 @@ namespace LUI.tabs
             Data.DivideArray(MinusBeta, N);
 
             var S = Data.S(PlusBeta, MinusBeta, Dark);
-            //LuiData.Write(S, new long[] { i + 1, 1 }, RowSize);
+            LuiData.Write(Y, new long[] { 1, 0 }, RowSize);
             if (PauseCancelProgress(e, -1, new ProgressObject(S, Dialog.PROGRESS_COMPLETE)))
             {
                 return;

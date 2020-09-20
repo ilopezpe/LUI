@@ -244,11 +244,11 @@
       <DependentUpon>CalibrateControl.cs</DependentUpon>
     </Compile>
     <Compile Include="config\LuiConfig.cs" />
-    <Compile Include="tabs\Ldextinction.cs">
+    <Compile Include="tabs\LdextinctionControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="tabs\Ldextinction.Designer.cs">
-      <DependentUpon>Ldextinction.cs</DependentUpon>
+    <Compile Include="tabs\LdextinctionControl.Designer.cs">
+      <DependentUpon>LdextinctionControl.cs</DependentUpon>
     </Compile>
     <Compile Include="tabs\TransientAbsControl.cs">
       <SubType>UserControl</SubType>
@@ -291,11 +291,11 @@
     <Compile Include="tabs\AbsorbanceControl.Designer.cs">
       <DependentUpon>AbsorbanceControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="tabs\Ldalign.cs">
+    <Compile Include="tabs\LdalignControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="tabs\Ldalign.Designer.cs">
-      <DependentUpon>Ldalign.cs</DependentUpon>
+    <Compile Include="tabs\LdalignControl.Designer.cs">
+      <DependentUpon>LdalignControl.cs</DependentUpon>
     </Compile>
     <Compile Include="tabs\TrldControl.cs">
       <SubType>UserControl</SubType>
@@ -334,8 +334,8 @@
     <EmbeddedResource Include="tabs\CalibrateControl.resx">
       <DependentUpon>CalibrateControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="tabs\Ldextinction.resx">
-      <DependentUpon>Ldextinction.cs</DependentUpon>
+    <EmbeddedResource Include="tabs\LdextinctionControl.resx">
+      <DependentUpon>LdextinctionControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\TransientAbsControl.resx">
       <DependentUpon>TransientAbsControl.cs</DependentUpon>
@@ -350,8 +350,8 @@
     <EmbeddedResource Include="tabs\AbsorbanceControl.resx">
       <DependentUpon>AbsorbanceControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="tabs\Ldalign.resx">
-      <DependentUpon>Ldalign.cs</DependentUpon>
+    <EmbeddedResource Include="tabs\LdalignControl.resx">
+      <DependentUpon>LdalignControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\TrldControl.resx">
       <DependentUpon>TrldControl.cs</DependentUpon>
