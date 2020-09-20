@@ -327,11 +327,10 @@ namespace LUI.tabs
 
             // B5. Calculate and plot
             var Y = Data.Extinction(PlusBeta, ZeroBeta, (double)Beta.Value);
-            Y = Data.MovingAverage(Y, 3);
+            //var Y = Data.Y(PlusBeta);
             LuiData.Write(Y, new long[] { 1, 0 }, RowSize);
-            // write raw data if needed
+            LuiData.Write(PlusBeta, new long[] { 2, 0 }, RowSize);
             LuiData.Write(ZeroBeta, new long[] { 3, 0 }, RowSize);
-            LuiData.Write(PlusBeta, new long[] { 2, 0 }, RowSize); 
             if (PauseCancelProgress(e, -1, new ProgressObject(Y, Dialog.PROGRESS_COMPLETE)))
             {
                 return;

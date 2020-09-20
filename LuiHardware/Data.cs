@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace LuiHardware
 {
@@ -150,6 +149,8 @@ namespace LuiHardware
             return Y;
         }
 
+
+
         /// <summary>
         /// Computes S from +/- beta transmitted intensity, and dark counts.
         /// </summary>
@@ -182,13 +183,10 @@ namespace LuiHardware
                 AlignedSpectrum[i] = (SmallAngleSpectrum[i] - CrossedSpectrum[i])/(sinAngle*sinAngle);
             }
 
-            // baseline offset w/o introducing more noise.
-            double Offset = Queryable.Average(CrossedSpectrum.AsQueryable());
-
             var Extinction = new double[SmallAngleSpectrum.Count];
             for (var i =0; i < Extinction.Length; i++)
             {
-                Extinction[i] = (CrossedSpectrum[i] - Offset)/ AlignedSpectrum[i];
+                Extinction[i] = CrossedSpectrum[i] / AlignedSpectrum[i];
             }
 
             return Extinction;
@@ -370,26 +368,16 @@ namespace LuiHardware
             return A;
         }
 
-        /// <summary>
-        /// Cumulative moving average
-        /// </summary>
-        /// <param name="Y">Spectrum</param>
-        /// <param name="n">n points</param>
-        /// <returns></returns>
-        public static double[] MovingAverage(IList<double> Y, int n)
+        public static void CumulativeMovingAverage(IList<double> CMA, IList<double> X, int n)
         {
-            var CMA = new double[Y.Count];
-            for (var i = 0; i < CMA.Length; i++)
-                CMA[i] = (Y[i] + n * CMA[i]) / (n + 1);
-            return CMA;
+            for (var i = 0; i < CMA.Count; i++)
+                CMA[i] = (X[i] + n * CMA[i]) / (n + 1);
         }
 
-        public static int[] MovingAverage(IList<int> Y, int n)
+        public static void CumulativeMovingAverage(IList<double> CMA, IList<int> X, int n)
         {
-            var CMA = new int[Y.Count];
-            for (var i = 0; i < CMA.Length; i++)
-                CMA[i] = (Y[i] + n * CMA[i]) / (n + 1);
-            return CMA;
+            for (var i = 0; i < CMA.Count; i++)
+                CMA[i] = (X[i] + n * CMA[i]) / (n + 1);
         }
     }
 }
