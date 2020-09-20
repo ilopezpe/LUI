@@ -40,11 +40,6 @@ namespace LUI.tabs
             Beta.ValueChanged += Beta_ValueChanged;
 
             SaveData.Click += (sender, e) => SaveOutput();
-
-            DdgConfigBox.Config = Config;
-            DdgConfigBox.Commander = Commander;
-            DdgConfigBox.AllowZero = false;
-            DdgConfigBox.HandleParametersChanged(this, EventArgs.Empty);
         }
 
         void Init()
@@ -78,7 +73,6 @@ namespace LUI.tabs
         public override void HandleParametersChanged(object sender, EventArgs e)
         {
             base.HandleParametersChanged(sender, e); // Takes care of ObjectSelectPanel.
-            DdgConfigBox.HandleParametersChanged(sender, e);
 
             var PolarizersAvailable = Config.GetParameters(typeof(PolarizerParameters));
             if (PolarizersAvailable.Count() > 0)
@@ -114,7 +108,6 @@ namespace LUI.tabs
         public override void HandleContainingTabSelected(object sender, EventArgs e)
         {
             base.HandleContainingTabSelected(sender, e);
-            DdgConfigBox.UpdatePrimaryDelayValue();
         }
 
         public virtual void HandlePolarizerChanged(object sender, EventArgs e)
@@ -127,20 +120,12 @@ namespace LUI.tabs
         {
             base.LoadSettings();
             var Settings = Config.TabSettings[GetType().Name];
-            if (Settings.TryGetValue("PrimaryDelayDdg", out var value) && !string.IsNullOrEmpty(value))
-                DdgConfigBox.PrimaryDelayDdg = (DelayGeneratorParameters)Config.GetFirstParameters(
-                    typeof(DelayGeneratorParameters), value);
-
-            if (Settings.TryGetValue("PrimaryDelayDelay", out value) && !string.IsNullOrEmpty(value))
-                DdgConfigBox.PrimaryDelayDelay = value;
         }
 
         protected override void SaveSettings()
         {
             base.SaveSettings();
             var Settings = Config.TabSettings[GetType().Name];
-            Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg?.Name;
-            Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay ?? null;
         }
 
         /// <summary>
@@ -173,19 +158,11 @@ namespace LUI.tabs
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
-            if (DdgConfigBox.PrimaryDelayDdg == null || DdgConfigBox.PrimaryDelayDelay == null)
-            {
-                MessageBox.Show("Primary delay must be configured.", "Error", MessageBoxButtons.OK);
-                return;
-            }
-
             if (PolarizerBox.Objects.SelectedItem == null)
             {
                 MessageBox.Show("Polarizer controller must be configured.", "Error", MessageBoxButtons.OK);
                 return;
             }
-
-            DdgConfigBox.ApplyPrimaryDelayValue();
 
             CameraStatus.Text = "";
 
@@ -202,7 +179,6 @@ namespace LUI.tabs
         public override void OnTaskStarted(EventArgs e)
         {
             base.OnTaskStarted(e);
-            DdgConfigBox.Enabled = false;
             PolarizerBox.Enabled = false;
             SaveData.Enabled = false;
             ScanProgress.Text = "0";
@@ -211,7 +187,6 @@ namespace LUI.tabs
         public override void OnTaskFinished(EventArgs e)
         {
             base.OnTaskFinished(e);
-            DdgConfigBox.Enabled = true;
             PolarizerBox.Enabled = true;
             SaveData.Enabled = true;
         }

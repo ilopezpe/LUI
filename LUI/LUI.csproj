@@ -129,9 +129,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HDF5DotNet, Version=1.8.9.0, Culture=neutral, PublicKeyToken=a4952c8df86d6e8c, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\HDF5DotNet.dll</HintPath>
+    <Reference Include="HDF5DotNet">
+      <HintPath>..\lib\HDF5DotNet.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
@@ -403,9 +402,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y /S "$(SolutionDir)common\*" "$(TargetDir)"
-xcopy /Y /S "$(SolutionDir)lib\*.dll" "$(TargetDir)"
-xcopy /Y /S "$(SolutionDir)lib64\*.dll" "$(TargetDir)"
-
+xcopy /Y /S "$(SolutionDir)lib\*" "$(TargetDir)"
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
