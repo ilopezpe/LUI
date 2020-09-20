@@ -1,4 +1,4 @@
-﻿using ATMCD32CS;
+﻿using ATMCD64CS;
 
 namespace LuiHardware.objects
 {

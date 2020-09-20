@@ -83,12 +83,8 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ATMCD32CS">
-      <HintPath>..\lib\ATMCD32CS.dll</HintPath>
-    </Reference>
-    <Reference Include="HDF5DotNet, Version=1.8.9.0, Culture=neutral, PublicKeyToken=a4952c8df86d6e8c, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib64\HDF5DotNet.dll</HintPath>
+    <Reference Include="ATMCD64CS">
+      <HintPath>..\lib64\ATMCD64CS.dll</HintPath>
     </Reference>
     <Reference Include="NationalInstruments.Common, Version=9.1.40.159, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -180,6 +176,9 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper">
       <Version>15.0.5</Version>
+    </PackageReference>
+    <PackageReference Include="HDF5DotNet.x64">
+      <Version>1.8.9</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>1.2.10</Version>

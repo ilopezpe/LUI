@@ -1,5 +1,5 @@
 ﻿using System;
-using ATMCD32CS;
+using ATMCD64CS;
 using LuiHardware.objects;
 
 namespace LuiHardware.camera

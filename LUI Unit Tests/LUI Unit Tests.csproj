@@ -105,6 +105,10 @@
       <Project>{69dccbd0-f4da-45c0-8ad5-6f8ec251299b}</Project>
       <Name>Extensions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LuiHardware\LuiHardware.csproj">
+      <Project>{f77054ef-38f5-4303-9e65-aa033a17e215}</Project>
+      <Name>LuiHardware</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LUI\LUI.csproj">
       <Project>{18d52f80-ed9c-4c1a-bd2f-1e138dd3d9b5}</Project>
       <Name>LUI</Name>
