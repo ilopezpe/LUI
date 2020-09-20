@@ -364,7 +364,7 @@ namespace LUI.tabs
                     if (LastLight != null)
                     {
                         DiffLight = (double[])Light.Clone(); // Deep copy for value types only.
-                        Data.SubArray(DiffLight, LastLight);
+                        Data.Dissipate(DiffLight, LastLight);
                     }
 
                     DisplayProgress();

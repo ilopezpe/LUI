@@ -37,19 +37,19 @@ namespace LuiHardware
                 a[i] += b[i];
         }
 
-        public static void SubArray(IList<int> a, IList<int> b)
+        public static void Dissipate(IList<int> a, IList<int> b)
         {
             for (var i = 0; i < a.Count; i++)
                 a[i] -= b[i];
         }
 
-        public static void SubArray(IList<double> a, IList<double> b)
+        public static void Dissipate(IList<double> a, IList<double> b)
         {
             for (var i = 0; i < a.Count; i++)
                 a[i] -= b[i];
         }
 
-        public static void SubArray(IList<double> a, IList<int> b)
+        public static void Dissipate(IList<double> a, IList<int> b)
         {
             for (var i = 0; i < a.Count; i++)
                 a[i] -= b[i];
@@ -175,7 +175,9 @@ namespace LuiHardware
         /// <returns>Extinction</returns>
         public static double[] Extinction(IList<double> SmallAngleSpectrum, IList<double> CrossedSpectrum, double beta)
         {
-            double sinAngle = Math.Sin(Math.PI * beta / 180.0);
+
+            double angle = Math.PI * (90.0 + beta) / 180.0;
+            double sinAngle = Math.Sin(angle);
 
             var AlignedSpectrum = new double[SmallAngleSpectrum.Count];
             for (var i = 0; i < AlignedSpectrum.Length; i++)

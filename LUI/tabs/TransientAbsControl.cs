@@ -165,7 +165,7 @@ namespace LUI.tabs
             }
 
             Data.DivideArray(Ground, N);
-            Data.SubArray(Ground, Dark);
+            Data.Dissipate(Ground, Dark);
 
             if (PauseCancelProgress(e, 0, Dialog.PROGRESS_TRANS)) return;
 
@@ -195,7 +195,7 @@ namespace LUI.tabs
                 Commander.SyringePump.SetClosed();
 
             Data.DivideArray(Excited, N);
-            Data.SubArray(Excited, Dark);
+            Data.Dissipate(Excited, Dark);
 
             if (PauseCancelProgress(e, -1, Dialog.CALCULATE)) return;
 

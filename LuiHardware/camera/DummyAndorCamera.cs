@@ -307,7 +307,7 @@ namespace LuiHardware.camera
             else if (line == 199) // Excited.
             {
                 data = Blank();
-                Data.SubArray(data, SampleData());
+                Data.Dissipate(data, SampleData());
                 for (var i = 0; i < data.Length; i++) data[i] += 1000;
             }
 
@@ -324,13 +324,13 @@ namespace LuiHardware.camera
             else if (line == 609 || line == 626 || line == 631) // Ground.
             {
                 data = Blank();
-                Data.SubArray(data, SampleData(0.3333));
+                Data.Dissipate(data, SampleData(0.3333));
                 for (var i = 0; i < data.Length; i++) data[i] += 1000;
             }
             else // Excited.
             {
                 data = Blank();
-                Data.SubArray(data, SampleData(0.6667));
+                Data.Dissipate(data, SampleData(0.6667));
                 for (var i = 0; i < data.Length; i++) data[i] += 1000;
             }
 
@@ -351,7 +351,7 @@ namespace LuiHardware.camera
             else // Sample.
             {
                 data = Blank();
-                Data.SubArray(data, SampleData());
+                Data.Dissipate(data, SampleData());
             }
 
             return data;
@@ -372,13 +372,13 @@ namespace LuiHardware.camera
             else if (line == 154) // Ground.
             {
                 data = Blank();
-                Data.SubArray(data, SampleData(0.3333));
+                Data.Dissipate(data, SampleData(0.3333));
                 for (var i = 0; i < data.Length; i++) data[i] += 1000;
             }
             else // Excited.
             {
                 data = Blank();
-                Data.SubArray(data, SampleData(0.6667));
+                Data.Dissipate(data, SampleData(0.6667));
                 for (var i = 0; i < data.Length; i++) data[i] += 1000;
             }
 
