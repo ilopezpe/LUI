@@ -113,6 +113,7 @@
     <Compile Include="camera\AbstractCamera.cs" />
     <Compile Include="camera\CameraFactory.cs" />
     <Compile Include="camera\CameraParameters.cs" />
+    <Compile Include="camera\AndorTempControlled.cs" />
     <Compile Include="camera\DummyAndorCamera.cs" />
     <Compile Include="camera\DummyCamera.cs" />
     <Compile Include="camera\ImageArea.cs" />
@@ -127,7 +128,6 @@
     <Compile Include="syringepump\AbstractSyringePump.cs" />
     <Compile Include="beamflags\BeamFlagsParameters.cs" />
     <Compile Include="beamflags\BeamFlags.cs" />
-    <Compile Include="camera\CameraTempControlled.cs" />
     <Compile Include="beamflags\BeamFlagsFactory.cs" />
     <Compile Include="syringepump\DummySyringePump.cs" />
     <Compile Include="beamflags\IBeamFlags.cs" />

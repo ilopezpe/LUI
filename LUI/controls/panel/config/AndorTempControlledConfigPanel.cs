@@ -4,11 +4,11 @@ using System.Windows.Forms;
 
 namespace LUI.controls
 {
-    class CameraTempControlledConfigPanel : AndorCameraConfigPanel
+    class AndorTempControlledConfigPanel : AndorCameraConfigPanel
     {
         readonly LabeledControl<NumericUpDown> Temperature;
 
-        public CameraTempControlledConfigPanel()
+        public AndorTempControlledConfigPanel()
         {
             Temperature = new LabeledControl<NumericUpDown>(new NumericUpDown(), "Temperature (C):");
             Temperature.Control.Increment = 1;

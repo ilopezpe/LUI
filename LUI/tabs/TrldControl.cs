@@ -248,10 +248,10 @@ namespace LUI.tabs
 
         void DoTempCheck(Func<bool> Breakout)
         {
-            if (Commander.Camera is CameraTempControlled)
+            if (Commander.Camera is AndorTempControlled)
             {
-                var camct = (CameraTempControlled)Commander.Camera;
-                if (camct.TemperatureStatus != CameraTempControlled.TemperatureStabilized)
+                var camct = (AndorTempControlled)Commander.Camera;
+                if (camct.TemperatureStatus != AndorTempControlled.TemperatureStabilized)
                 {
                     var equil = (bool)Invoke(new Func<bool>(TemperatureStabilizedDialog));
                     if (equil)

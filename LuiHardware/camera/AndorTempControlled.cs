@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LuiHardware.camera
 {
-    public class CameraTempControlled : AndorCamera
+    public class AndorTempControlled : AndorCamera
     {
         public const int DefaultTemperature = 20;
         public const float TemperatureEps = 3F;
@@ -23,15 +23,15 @@ namespace LuiHardware.camera
 
         protected int _MinTemp;
 
-        public CameraTempControlled()
+        public AndorTempControlled()
         {
         }
 
-        public CameraTempControlled(LuiObjectParameters p) : this(p as CameraParameters)
+        public AndorTempControlled(LuiObjectParameters p) : this(p as CameraParameters)
         {
         }
 
-        public CameraTempControlled(CameraParameters p) : base(p)
+        public AndorTempControlled(CameraParameters p) : base(p)
         {
             AndorSdk.GetTemperatureRange(ref _MinTemp, ref _MaxTemp);
             AndorSdk.CoolerON();
