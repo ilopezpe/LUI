@@ -264,7 +264,7 @@ namespace LUI.tabs
             return !Paused.WaitOne(0);
         }
 
-        protected void SetupWorker()
+        protected virtual void SetupWorker()
         {
             worker = new BackgroundWorker();
             worker.DoWork += DoWork;

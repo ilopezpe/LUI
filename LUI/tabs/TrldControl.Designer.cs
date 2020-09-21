@@ -170,7 +170,7 @@
             // 
             this.DdgConfigBox.AutoSize = true;
             this.DdgConfigBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.DdgConfigBox.Location = new System.Drawing.Point(3, 3);
+            this.DdgConfigBox.Location = new System.Drawing.Point(2, 4);
             this.DdgConfigBox.Margin = new System.Windows.Forms.Padding(2);
             this.DdgConfigBox.Name = "DdgConfigBox";
             this.DdgConfigBox.Size = new System.Drawing.Size(362, 59);

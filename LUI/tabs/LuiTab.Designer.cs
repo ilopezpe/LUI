@@ -81,9 +81,9 @@
             CameraStatusLabel.AutoSize = true;
             CameraStatusLabel.Location = new System.Drawing.Point(4, 66);
             CameraStatusLabel.Name = "CameraStatusLabel";
-            CameraStatusLabel.Size = new System.Drawing.Size(76, 13);
+            CameraStatusLabel.Size = new System.Drawing.Size(85, 13);
             CameraStatusLabel.TabIndex = 11;
-            CameraStatusLabel.Text = "Camera Status";
+            CameraStatusLabel.Text = "Camera Status : ";
             CameraStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label2
@@ -91,9 +91,9 @@
             label2.AutoSize = true;
             label2.Location = new System.Drawing.Point(3, 40);
             label2.Name = "label2";
-            label2.Size = new System.Drawing.Size(37, 13);
+            label2.Size = new System.Drawing.Size(46, 13);
             label2.TabIndex = 13;
-            label2.Text = "Scans";
+            label2.Text = "Scans : ";
             label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // GainLabel
@@ -454,7 +454,7 @@
             // 
             // ScanProgress
             // 
-            this.ScanProgress.Location = new System.Drawing.Point(46, 37);
+            this.ScanProgress.Location = new System.Drawing.Point(55, 37);
             this.ScanProgress.Name = "ScanProgress";
             this.ScanProgress.ReadOnly = true;
             this.ScanProgress.Size = new System.Drawing.Size(58, 20);
@@ -463,7 +463,7 @@
             // 
             // CameraStatus
             // 
-            this.CameraStatus.Location = new System.Drawing.Point(86, 63);
+            this.CameraStatus.Location = new System.Drawing.Point(90, 63);
             this.CameraStatus.Name = "CameraStatus";
             this.CameraStatus.ReadOnly = true;
             this.CameraStatus.Size = new System.Drawing.Size(132, 20);

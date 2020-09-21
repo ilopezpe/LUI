@@ -129,6 +129,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HDF5DotNet">
+      <HintPath>..\lib64\HDF5DotNet.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -391,9 +394,6 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper">
       <Version>15.0.5</Version>
-    </PackageReference>
-    <PackageReference Include="HDF5DotNet.x64">
-      <Version>1.8.9</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>1.2.10</Version>
