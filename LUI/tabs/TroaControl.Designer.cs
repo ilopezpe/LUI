@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LoadTimes = new System.Windows.Forms.Button();
             this.TimesView = new System.Windows.Forms.DataGridView();
             this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -113,7 +113,7 @@
             // 
             // CommonObjectPanel
             // 
-            this.CommonObjectPanel.Location = new System.Drawing.Point(0, 331);
+            this.CommonObjectPanel.Location = new System.Drawing.Point(0, 350);
             // 
             // Graph
             // 
@@ -138,8 +138,8 @@
             // RightChildArea
             // 
             this.RightChildArea.Controls.Add(this.SyringePumpBox);
-            this.RightChildArea.Location = new System.Drawing.Point(0, 561);
-            this.RightChildArea.Size = new System.Drawing.Size(300, 260);
+            this.RightChildArea.Location = new System.Drawing.Point(0, 580);
+            this.RightChildArea.Size = new System.Drawing.Size(300, 241);
             // 
             // Pause
             // 
@@ -185,8 +185,8 @@
             // Value
             // 
             this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
             this.Value.HeaderText = "Delay (s)";
             this.Value.Name = "Value";
             this.Value.ReadOnly = true;
@@ -317,7 +317,7 @@
             // 
             // TimeProgress
             // 
-            this.TimeProgress.Location = new System.Drawing.Point(169, 37);
+            this.TimeProgress.Location = new System.Drawing.Point(169, 56);
             this.TimeProgress.Name = "TimeProgress";
             this.TimeProgress.ReadOnly = true;
             this.TimeProgress.Size = new System.Drawing.Size(58, 20);
@@ -340,7 +340,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(119, 40);
+            this.label2.Location = new System.Drawing.Point(119, 59);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(44, 13);
             this.label2.TabIndex = 15;

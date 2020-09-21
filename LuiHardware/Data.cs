@@ -374,14 +374,25 @@ namespace LuiHardware
         /// Cumulative moving average
         /// </summary>
         /// <param name="Y">Spectrum</param>
-        /// <param name="n">n points</param>
+        /// <param name="n">Number points</param>
         /// <returns></returns>
         public static double[] MovingAverage(IList<double> Y, int n)
         {
-            var CMA = new double[Y.Count];
-            for (var i = 0; i < CMA.Length; i++)
-                CMA[i] = (Y[i] + n * CMA[i]) / (n + 1);
-            return CMA;
+            double[] buffer = new double[n];
+            double[] output = new double[Y.Count];
+            int current_index = 0;
+            for (int i = 0; i < Y.Count; i++)
+            {
+                buffer[current_index] = Y[i] / n;
+                double SMA = 0.0;
+                for (int j = 0; j < n; j++)
+                {
+                    SMA += buffer[j];
+                }
+                output[i] = SMA;
+                current_index = (current_index + 1) % n;
+            }
+            return output;
         }
 
         public static int[] MovingAverage(IList<int> Y, int n)

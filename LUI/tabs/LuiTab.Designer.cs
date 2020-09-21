@@ -79,7 +79,7 @@
             // CameraStatusLabel
             // 
             CameraStatusLabel.AutoSize = true;
-            CameraStatusLabel.Location = new System.Drawing.Point(4, 66);
+            CameraStatusLabel.Location = new System.Drawing.Point(4, 85);
             CameraStatusLabel.Name = "CameraStatusLabel";
             CameraStatusLabel.Size = new System.Drawing.Size(85, 13);
             CameraStatusLabel.TabIndex = 11;
@@ -89,7 +89,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new System.Drawing.Point(3, 40);
+            label2.Location = new System.Drawing.Point(3, 59);
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(46, 13);
             label2.TabIndex = 13;
@@ -197,10 +197,10 @@
             this.RightChildArea.AutoSize = true;
             this.RightChildArea.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.RightChildArea.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.RightChildArea.Location = new System.Drawing.Point(0, 535);
+            this.RightChildArea.Location = new System.Drawing.Point(0, 554);
             this.RightChildArea.MinimumSize = new System.Drawing.Size(0, 100);
             this.RightChildArea.Name = "RightChildArea";
-            this.RightChildArea.Size = new System.Drawing.Size(300, 286);
+            this.RightChildArea.Size = new System.Drawing.Size(300, 267);
             this.RightChildArea.TabIndex = 14;
             // 
             // CommonObjectPanel
@@ -210,7 +210,7 @@
             this.CommonObjectPanel.Controls.Add(this.CameraBox);
             this.CommonObjectPanel.Controls.Add(this.BeamFlagBox);
             this.CommonObjectPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.CommonObjectPanel.Location = new System.Drawing.Point(0, 305);
+            this.CommonObjectPanel.Location = new System.Drawing.Point(0, 324);
             this.CommonObjectPanel.Name = "CommonObjectPanel";
             this.CommonObjectPanel.Size = new System.Drawing.Size(300, 230);
             this.CommonObjectPanel.TabIndex = 14;
@@ -351,7 +351,7 @@
             this.CommandsBox.Controls.Add(this.Collect);
             this.CommandsBox.Controls.Add(this.Abort);
             this.CommandsBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.CommandsBox.Location = new System.Drawing.Point(0, 103);
+            this.CommandsBox.Location = new System.Drawing.Point(0, 122);
             this.CommandsBox.Margin = new System.Windows.Forms.Padding(4);
             this.CommandsBox.Name = "CommandsBox";
             this.CommandsBox.Padding = new System.Windows.Forms.Padding(4);
@@ -447,14 +447,14 @@
             this.StatusBox.Margin = new System.Windows.Forms.Padding(4);
             this.StatusBox.Name = "StatusBox";
             this.StatusBox.Padding = new System.Windows.Forms.Padding(4);
-            this.StatusBox.Size = new System.Drawing.Size(300, 103);
+            this.StatusBox.Size = new System.Drawing.Size(300, 122);
             this.StatusBox.TabIndex = 9;
             this.StatusBox.TabStop = false;
             this.StatusBox.Text = "Status";
             // 
             // ScanProgress
             // 
-            this.ScanProgress.Location = new System.Drawing.Point(55, 37);
+            this.ScanProgress.Location = new System.Drawing.Point(55, 56);
             this.ScanProgress.Name = "ScanProgress";
             this.ScanProgress.ReadOnly = true;
             this.ScanProgress.Size = new System.Drawing.Size(58, 20);
@@ -463,7 +463,7 @@
             // 
             // CameraStatus
             // 
-            this.CameraStatus.Location = new System.Drawing.Point(90, 63);
+            this.CameraStatus.Location = new System.Drawing.Point(90, 82);
             this.CameraStatus.Name = "CameraStatus";
             this.CameraStatus.ReadOnly = true;
             this.CameraStatus.Size = new System.Drawing.Size(132, 20);
@@ -473,10 +473,11 @@
             // ProgressLabel
             // 
             this.ProgressLabel.AutoSize = true;
-            this.ProgressLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ProgressLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ProgressLabel.ForeColor = System.Drawing.SystemColors.Highlight;
             this.ProgressLabel.Location = new System.Drawing.Point(10, 17);
             this.ProgressLabel.Name = "ProgressLabel";
-            this.ProgressLabel.Size = new System.Drawing.Size(34, 17);
+            this.ProgressLabel.Size = new System.Drawing.Size(57, 29);
             this.ProgressLabel.TabIndex = 7;
             this.ProgressLabel.Text = "Idle";
             // 

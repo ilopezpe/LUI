@@ -231,7 +231,7 @@
             // 
             // TimeProgress
             // 
-            this.TimeProgress.Location = new System.Drawing.Point(151, 37);
+            this.TimeProgress.Location = new System.Drawing.Point(164, 56);
             this.TimeProgress.Name = "TimeProgress";
             this.TimeProgress.ReadOnly = true;
             this.TimeProgress.Size = new System.Drawing.Size(58, 20);
@@ -254,11 +254,11 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(110, 40);
+            this.label2.Location = new System.Drawing.Point(119, 59);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 13);
+            this.label2.Size = new System.Drawing.Size(44, 13);
             this.label2.TabIndex = 15;
-            this.label2.Text = "Times";
+            this.label2.Text = "Times : ";
             // 
             // TrldControl
             // 

@@ -50,7 +50,7 @@ namespace LUI.tabs
             set
             {
                 _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
-                if (LastGraphTrace != null) CountsDisplay.Text = LastGraphTrace[_SelectedChannel].ToString("n");
+                if (LastGraphTrace != null) CountsDisplay.Text = LastGraphTrace[_SelectedChannel].ToString("G2");
             }
         }
 
@@ -302,11 +302,7 @@ namespace LUI.tabs
             // A2. Open probe beam shutter
             Commander.BeamFlag.OpenFlash();
             // A3. Acquire data
-            DoAcq(AcqBuffer,
-                  AcqRow,
-                  ZeroBetaBuffer,
-                  N,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_CROSSED)));
+            DoAcq(AcqBuffer,AcqRow, ZeroBetaBuffer, N, p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_CROSSED)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
             // A4. Close beam shutters
             Commander.BeamFlag.CloseFlash();
@@ -317,10 +313,7 @@ namespace LUI.tabs
             // B2. Open probe beam shutter
             Commander.BeamFlag.OpenFlash();
             // B3 Acquire data
-            DoAcq(AcqBuffer,
-                  AcqRow,
-                  PlusBetaBuffer,
-                  N,
+            DoAcq(AcqBuffer, AcqRow, PlusBetaBuffer, N,
                   p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_BETA)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
             // B4. Close beam shutters
@@ -329,7 +322,7 @@ namespace LUI.tabs
 
             // B5. Calculate and plot
             var Y = Data.Extinction(PlusBeta, ZeroBeta, (double)Beta.Value);
-            Y = Data.MovingAverage(Y, 3);
+            Y = Data.MovingAverage(Y, 4);
             LuiData.Write(Y, new long[] { 1, 0 }, RowSize);
             // write raw data if needed
             LuiData.Write(ZeroBeta, new long[] { 3, 0 }, RowSize);

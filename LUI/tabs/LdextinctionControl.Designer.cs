@@ -71,6 +71,7 @@
             // 
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
+            this.Graph.YLabelFormat = "G1";
             // 
             // LeftChildArea
             // 
@@ -184,6 +185,7 @@
             this.CountsDisplay.ReadOnly = true;
             this.CountsDisplay.Size = new System.Drawing.Size(132, 20);
             this.CountsDisplay.TabIndex = 17;
+            this.CountsDisplay.TabStop = false;
             this.CountsDisplay.Text = "0";
             this.CountsDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
