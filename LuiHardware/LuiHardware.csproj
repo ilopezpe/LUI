@@ -116,6 +116,7 @@
     <Compile Include="camera\AndorTempControlled.cs" />
     <Compile Include="camera\DummyAndorCamera.cs" />
     <Compile Include="camera\DummyCamera.cs" />
+    <Compile Include="camera\ErrorCodes.cs" />
     <Compile Include="camera\ImageArea.cs" />
     <Compile Include="beamflags\AbstractBeamFlags.cs" />
     <Compile Include="camera\AndorCamera.cs" />

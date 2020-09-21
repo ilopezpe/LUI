@@ -65,10 +65,15 @@ namespace LUI.tabs
             set
             {
                 if (InvokeRequired)
-                    BeginInvoke(new Action(() =>
-                        CameraStatus.Text = Commander.Camera.DecodeStatus(value)));
+                {
+                    BeginInvoke(new Action(() => CameraStatus.Text = LuiHardware.Camera.ErrorCodes.Decoder(value)));
+                    //CameraStatus.Text = Commander.Camera.DecodeStatus(value)));
+                }
                 else
-                    CameraStatus.Text = Commander.Camera.DecodeStatus(value);
+                {
+                    CameraStatus.Text = LuiHardware.Camera.ErrorCodes.Decoder(value);
+                    //CameraStatus.Text = Commander.Camera.DecodeStatus(value);
+                }
             }
         }
 

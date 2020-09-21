@@ -1,5 +1,6 @@
 ﻿using System;
 using ATMCD64CS;
+using LuiHardware.Camera;
 using LuiHardware.objects;
 
 namespace LuiHardware.camera
@@ -305,7 +306,7 @@ namespace LuiHardware.camera
                     _Image.hbin, _Image.vbin,
                     _Image.hstart + 1, _Image.hstart + _Image.hcount,
                     _Image.vstart + 1, _Image.vstart + _Image.vcount);
-                Log.Debug(DecodeStatus(ret));
+                Log.Debug(ErrorCodes.Decoder(ret));
             }
         }
 
@@ -426,14 +427,6 @@ namespace LuiHardware.camera
         ///     This overload supports memory efficient acquisition if the same
         ///     array is continually re-passed.
         ///     The array must be a legal size for acquisition.
-        ///     AndorSDK return codes (uint):
-        ///     DRV_SUCCESS             Data copied.
-        ///     DRV_NOT_INITIALIZED     System not initialized.
-        ///     DRV_ACQUIRING           Acquisition in progress.
-        ///     DRV_ERROR_ACK           Unable to communicate with card.
-        ///     DRV_P1INVALID           Invalid pointer (i.e. NULL).
-        ///     DRV_P2INVALID           Array size is incorrect.
-        ///     DRV_NO_NEW_DATA         No acquisition has taken place
         /// </summary>
         /// <param name="DataBuffer"></param>
         /// <returns></returns>
@@ -443,7 +436,7 @@ namespace LuiHardware.camera
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();
             var ret = AndorSdk.GetAcquiredData(DataBuffer, npx);
-            Log.Debug("Camera returned " + DecodeStatus(ret));
+            Log.Debug("Camera returned " + ErrorCodes.Decoder(ret));
             ThrowIfSaturated(DataBuffer);
             return ret;
         }
@@ -454,39 +447,9 @@ namespace LuiHardware.camera
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();
             var ret = AndorSdk.GetMostRecentImage(DataBuffer, npx);
-            Log.Debug("Camera returned " + DecodeStatus(ret));
+            Log.Debug("Camera returned " + ErrorCodes.Decoder(ret));
             ThrowIfSaturated(DataBuffer);
             return ret;
-        }
-
-        public override string DecodeStatus(uint status)
-        {
-            switch (status)
-            {
-                case AndorSDK.DRV_SUCCESS:
-                    return "DRV_SUCCESS";
-
-                case AndorSDK.DRV_NOT_INITIALIZED:
-                    return "DRV_NOT_INITIALIZED";
-
-                case AndorSDK.DRV_ACQUIRING:
-                    return "DRV_ACQUIRING";
-
-                case AndorSDK.DRV_ERROR_ACK:
-                    return "DRV_ERROR_ACK";
-
-                case AndorSDK.DRV_P11INVALID:
-                    return "DRV_P1INVALID";
-
-                case AndorSDK.DRV_P2INVALID:
-                    return "DRV_P2INVALID";
-
-                case AndorSDK.DRV_NO_NEW_DATA:
-                    return "DRV_NO_NEW_DATA";
-
-                default:
-                    return "BAD CODE";
-            }
         }
 
         protected override void Dispose(bool disposing)
@@ -504,6 +467,11 @@ namespace LuiHardware.camera
                     ex.Data["Value"] = data[i];
                     throw ex;
                 }
+        }
+
+        public override string DecodeStatus(uint status)
+        {
+            throw new NotImplementedException();
         }
 
         #region Andor Constants
