@@ -1,6 +1,6 @@
 ﻿namespace LUI.tabs
 {
-    partial class TroaControl
+    partial class TrodControl
     {
         /// <summary>
         /// Required designer variable.
@@ -417,10 +417,10 @@
             this.label5.TabIndex = 7;
             this.label5.Text = "Collection Scheme : ";
             // 
-            // TroaControl
+            // TrodControl
             // 
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.Name = "TroaControl";
+            this.Name = "TrodControl";
             this.ParentPanel.ResumeLayout(false);
             this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);

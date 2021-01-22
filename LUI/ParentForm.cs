@@ -20,13 +20,13 @@ namespace LUI
         public enum TaskState
         {
             IDLE,
-            TROA,
+            TROD,
             TRLD,
             LDALIGN,
             LDEXT,
             CALIBRATE,
             ALIGN,
-            TA,
+            TAALIGN,
             RESIDUALS,
             ABS
         }
@@ -39,16 +39,16 @@ namespace LUI
         readonly TabPage HomePage;
         readonly AbsorbanceControl AbsControl;
         readonly TabPage AbsPage;
-        readonly TransientAbsControl TransientAbsControl;
-        readonly TabPage TransientAbsPage;
-        readonly TroaControl TROAControl;
-        readonly TabPage TROAPage;
+        readonly TaalignControl TAAlignControl;
+        readonly TabPage TAAlignPage;
+        readonly TrodControl TRODControl;
+        readonly TabPage TRODPage;
         readonly LdalignControl LDAlignControl;
         readonly TabPage LDAlignPage;
-        readonly LdextinctionControl LDExtinctionControl;
-        readonly TabPage LDExtinctionPage;
         readonly TrldControl TRLDControl;
         readonly TabPage TRLDPage;
+        readonly LdextinctionControl LDExtinctionControl;
+        readonly TabPage LDExtinctionPage;
         readonly ResidualsControl ResidualsControl;
         readonly TabPage ResidualsPage;
         readonly OptionsControl OptionsControl;
@@ -86,8 +86,8 @@ namespace LUI
 
             HomePage = new TabPage();
             AbsPage = new TabPage();
-            TransientAbsPage = new TabPage();
-            TROAPage = new TabPage();
+            TAAlignPage = new TabPage();
+            TRODPage = new TabPage();
             LDAlignPage = new TabPage();
             LDExtinctionPage = new TabPage();
             TRLDPage = new TabPage();
@@ -108,18 +108,18 @@ namespace LUI
             AbsPage.TabIndex = 3;
             AbsPage.Text = "Absorbance";
 
-            TransientAbsPage.BackColor = SystemColors.Control;
-            TransientAbsPage.Margin = new Padding(2, 2, 2, 2);
-            TransientAbsPage.Name = "TransientAbsPage";
-            TransientAbsPage.TabIndex = 5;
-            TransientAbsPage.Text = "Transient Abs";
+            TAAlignPage.BackColor = SystemColors.Control;
+            TAAlignPage.Margin = new Padding(2, 2, 2, 2);
+            TAAlignPage.Name = "TAAlignPage";
+            TAAlignPage.TabIndex = 5;
+            TAAlignPage.Text = "TA Align";
 
-            TROAPage.BackColor = SystemColors.Control;
-            TROAPage.Margin = new Padding(2, 2, 2, 2);
-            TROAPage.Name = "TROAPage";
-            TROAPage.Padding = new Padding(2, 2, 2, 2);
-            TROAPage.TabIndex = 0;
-            TROAPage.Text = "TROA";
+            TRODPage.BackColor = SystemColors.Control;
+            TRODPage.Margin = new Padding(2, 2, 2, 2);
+            TRODPage.Name = "TRODPage";
+            TRODPage.Padding = new Padding(2, 2, 2, 2);
+            TRODPage.TabIndex = 0;
+            TRODPage.Text = "TROD";
 
             LDAlignPage.BackColor = SystemColors.Control;
             LDAlignPage.Margin = new Padding(2, 2, 2, 2);
@@ -128,19 +128,19 @@ namespace LUI
             LDAlignPage.TabIndex = 0;
             LDAlignPage.Text = "LD Align";
 
-            LDExtinctionPage.BackColor = SystemColors.Control;
-            LDExtinctionPage.Margin = new Padding(2, 2, 2, 2);
-            LDExtinctionPage.Name = "LDExtinctionPage";
-            LDExtinctionPage.Padding = new Padding(2, 2, 2, 2);
-            LDExtinctionPage.TabIndex = 0;
-            LDExtinctionPage.Text = "Extinction";
-
             TRLDPage.BackColor = SystemColors.Control;
             TRLDPage.Margin = new Padding(2, 2, 2, 2);
             TRLDPage.Name = "TRLDPage";
             TRLDPage.Padding = new Padding(2, 2, 2, 2);
             TRLDPage.TabIndex = 0;
             TRLDPage.Text = "TRLD";
+
+            LDExtinctionPage.BackColor = SystemColors.Control;
+            LDExtinctionPage.Margin = new Padding(2, 2, 2, 2);
+            LDExtinctionPage.Name = "LDExtinctionPage";
+            LDExtinctionPage.Padding = new Padding(2, 2, 2, 2);
+            LDExtinctionPage.TabIndex = 0;
+            LDExtinctionPage.Text = "Extinction";
 
             ResidualsPage.BackColor = SystemColors.Control;
             ResidualsPage.Margin = new Padding(2, 2, 2, 2);
@@ -163,11 +163,11 @@ namespace LUI
 
             Tabs.TabPages.Add(HomePage);
             Tabs.TabPages.Add(AbsPage);
-            Tabs.TabPages.Add(TransientAbsPage);
-            Tabs.TabPages.Add(TROAPage);
+            Tabs.TabPages.Add(TAAlignPage);
+            Tabs.TabPages.Add(TRODPage);
             Tabs.TabPages.Add(LDAlignPage);
-            Tabs.TabPages.Add(LDExtinctionPage);
             Tabs.TabPages.Add(TRLDPage);
+            Tabs.TabPages.Add(LDExtinctionPage);
             Tabs.TabPages.Add(ResidualsPage);
             Tabs.TabPages.Add(CalibrationPage);
             Tabs.TabPages.Add(OptionsPage);
@@ -193,20 +193,20 @@ namespace LUI
             AbsControl = new AbsorbanceControl(Config);
             AbsPage.Controls.Add(AbsControl);
 
-            TransientAbsControl = new TransientAbsControl(Config);
-            TransientAbsPage.Controls.Add(TransientAbsControl);
+            TAAlignControl = new TaalignControl(Config);
+            TAAlignPage.Controls.Add(TAAlignControl);
 
-            TROAControl = new TroaControl(Config);
-            TROAPage.Controls.Add(TROAControl);
+            TRODControl = new TrodControl(Config);
+            TRODPage.Controls.Add(TRODControl);
 
             LDAlignControl = new LdalignControl(Config);
             LDAlignPage.Controls.Add(LDAlignControl);
 
-            LDExtinctionControl = new LdextinctionControl(Config);
-            LDExtinctionPage.Controls.Add(LDExtinctionControl);
-
             TRLDControl = new TrldControl(Config);
             TRLDPage.Controls.Add(TRLDControl);
+
+            LDExtinctionControl = new LdextinctionControl(Config);
+            LDExtinctionPage.Controls.Add(LDExtinctionControl);
 
             CalibrateControl = new CalibrateControl(Config);
             CalibrationPage.Controls.Add(CalibrateControl);
@@ -243,11 +243,11 @@ namespace LUI
             get
             {
                 if (AbsControl.IsBusy) return TaskState.ABS;
-                if (TransientAbsControl.IsBusy) return TaskState.TA;
-                if (TROAControl.IsBusy) return TaskState.TROA;
+                if (TAAlignControl.IsBusy) return TaskState.TAALIGN;
+                if (TRODControl.IsBusy) return TaskState.TROD;
                 if (LDAlignControl.IsBusy) return TaskState.LDALIGN;
-                if (LDExtinctionControl.IsBusy) return TaskState.LDEXT;
                 if (TRLDControl.IsBusy) return TaskState.TRLD;
+                if (LDExtinctionControl.IsBusy) return TaskState.LDEXT;
                 if (ResidualsControl.IsBusy) return TaskState.RESIDUALS;
                 if (CalibrateControl.IsBusy) return TaskState.CALIBRATE;
                 return TaskState.IDLE;
@@ -282,8 +282,8 @@ namespace LUI
             try
             {
                 DisableTabs(AbsPage,
-                            TransientAbsPage,
-                            TROAPage,
+                            TAAlignPage,
+                            TRODPage,
                             LDAlignPage,
                             LDExtinctionPage,
                             TRLDPage,
@@ -396,24 +396,24 @@ namespace LUI
                         Task = "Alignment";
                         break;
 
-                    case TaskState.TA:
+                    case TaskState.TAALIGN:
                         Task = "Transient Abs";
                         break;
 
-                    case TaskState.TROA:
-                        Task = "TROA program";
+                    case TaskState.TROD:
+                        Task = "TROD program";
                         break;
 
                     case TaskState.LDALIGN:
                         Task = "LD Align program";
                         break;
 
-                    case TaskState.LDEXT:
-                        Task = "LD Extinction program";
-                        break;
-
                     case TaskState.TRLD:
                         Task = "TRLD program";
+                        break;
+
+                    case TaskState.LDEXT:
+                        Task = "LD Extinction program";
                         break;
 
                     case TaskState.RESIDUALS:

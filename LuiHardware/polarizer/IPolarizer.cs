@@ -9,6 +9,12 @@
         Zero,
     }
 
+    public enum PolarizerConfig
+    {
+        Trld,
+        Ord,
+    }
+
     /// <summary>
     /// Defines the public operations supported by the computer-controlled polarizer.
     /// </summary>
@@ -74,6 +80,22 @@
         /// Move the polarizer to the -beta position
         /// </summary>
         void PolarizerToZeroBeta();
+
+
+        /// <summary>
+        /// This holds the current config of the polarizer
+        /// </summary>
+        PolarizerConfig CurrentConfig { get; }
+
+        /// <summary>
+        /// Move the polarizer to TRLD configuration
+        /// </summary>
+        void PolarizerConfigTrld();
+
+        /// <summary>
+        /// Move the polarizer to ORD configuration
+        /// </summary>
+        void PolarizerConfigOrd();
 
     }
 }

@@ -59,10 +59,6 @@ namespace LuiHardware.camera
 
         public override int TriggerMode { get; set; }
 
-        public override int TriggerInvert { get; set; }
-
-        public override float TriggerLevel { get; set; }
-
         public override int DDGTriggerMode { get; set; }
 
         public override int GateMode { get; set; }
@@ -199,16 +195,16 @@ namespace LuiHardware.camera
             int[] data = null;
             if (caller.Contains("AbsControl"))
                 data = Abs(line);
-            else if (caller.Contains("TransientAbsControl"))
-                data = TransientAbs(line);
-            else if (caller.Contains("TroaControl"))
-                data = Troa(line);
+            else if (caller.Contains("TaalignControl"))
+                data = TAAlign(line);
+            else if (caller.Contains("TrodControl"))
+                data = Trod(line);
             else if (caller.Contains("LdalignControl"))
-                data = Troa(line);
+                data = Trod(line);
+            else if (caller.Contains("TrldControl"))
+                data = Trod(line);
             else if (caller.Contains("LdextinctionControl"))
                 data = Residuals();
-            else if (caller.Contains("TrldControl"))
-                data = Troa(line);
             else if (caller.Contains("CalibrateControl"))
                 data = Calibrate(line);
             else if (caller.Contains("ResidualsControl"))
@@ -314,7 +310,7 @@ namespace LuiHardware.camera
             return data;
         }
 
-        int[] Troa(int line)
+        int[] Trod(int line)
         {
             int[] data;
             if (line == 600) // Dark.
@@ -362,7 +358,7 @@ namespace LuiHardware.camera
             return Blank();
         }
 
-        int[] TransientAbs(int line)
+        int[] TAAlign(int line)
         {
             int[] data;
             if (line == 132) // Dark.

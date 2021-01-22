@@ -1,6 +1,6 @@
 ﻿namespace LUI.tabs
 {
-    partial class TransientAbsControl
+    partial class TaalignControl
     {
         /// <summary>
         /// Required designer variable.
@@ -193,10 +193,10 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Discard first";
             // 
-            // TransientAbsControl
+            // TaalignControl
             // 
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.Name = "TransientAbsControl";
+            this.Name = "TaalignControl";
             this.ParentPanel.ResumeLayout(false);
             this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);

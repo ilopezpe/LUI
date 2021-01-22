@@ -20,7 +20,7 @@ namespace LUI.tabs
     /// <summary>
     /// This control is for time-resolved optical absorption
     /// </summary>
-    public partial class TroaControl : LuiTab
+    public partial class TrodControl : LuiTab
     {
         public enum Dialog
         {
@@ -109,7 +109,7 @@ namespace LUI.tabs
             }
         }
 
-        public TroaControl(LuiConfig Config) : base(Config)
+        public TrodControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
             Init();
@@ -419,7 +419,7 @@ namespace LUI.tabs
             LuiData.Write(Times.ToArray(), new long[] { 1, 0 }, ColSize);
             #endregion
 
-            #region Initialize buffers for acuisition data
+            #region Initialize buffers for acquisition data
             var AcqBuffer = new int[AcqSize];
             var AcqRow = new int[AcqWidth];
             var Drk = new int[AcqWidth];
@@ -433,114 +433,60 @@ namespace LUI.tabs
             var Laser = new double[AcqWidth];
             #endregion
 
-            #region Collect dark spectrum 
-            // A0. Reset GS delay for dark
-            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay);
-
-            // A1. Close the pump and probe beam shutters 
+            // Collect dark spectrum 
             Commander.BeamFlag.CloseLaserAndFlash();
-
-            // A2. Acquire data
-            DoAcq(AcqBuffer, AcqRow, Drk, N,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_DARK)));
+            DoAcq(AcqBuffer, AcqRow, Drk, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_DARK)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
-            #endregion
             Data.Accumulate(Dark, Drk);
+            Data.DivideArray(Dark, N);
 
             // Check syringe pump
             if (args.SyringePump == SyringePumpMode.ALWAYS) OpenSyringePump(args.DiscardSyringe);
-
-            // B. Collect half ground state  
-            // B1. Open probe beam shutter
             Commander.BeamFlag.OpenFlash();
-            // B2. Acquire data
-            DoAcq(AcqBuffer, AcqRow, Gnd1, half,
-                  (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
+            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay);
+            DoAcq(AcqBuffer, AcqRow, Gnd1, half, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
-            Data.Accumulate(Ground, Gnd1);
 
             for (int i = 0; i < Times.Count; i++)
             {
-                var Delay = Times[i];
+                double Delay = Times[i];
 
                 // Check syringe pump
-                if (args.SyringePump == SyringePumpMode.ALWAYS) OpenSyringePump(args.DiscardSyringe);
-
-                // C1. Set time delay.
+                if (args.SyringePump == SyringePumpMode.TRANS) OpenSyringePump(args.DiscardSyringe);
+                Commander.BeamFlag.OpenLaserAndFlash();
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay);
-
-                #region Collect Excited state
-                // C2. Open pump beam shutter
-                Commander.BeamFlag.OpenLaser();
-
-                // C3. Acquire excited state data
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, Delay, Dialog.PROGRESS_TIME))) return;
-                DoAcq(AcqBuffer, AcqRow, Exc, N,
-                      p => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
+                DoAcq(AcqBuffer, AcqRow, Exc, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
-                Data.Accumulate(Excited, Exc);
-
-                // C4. Close pump beam shutter
-                Commander.BeamFlag.CloseLaser();
-                #endregion
-
                 // Check syringe pump
                 if (args.SyringePump == SyringePumpMode.TRANS) Commander.SyringePump.SetClosed();
 
-                // C5. Go back and collect half ground state 
-                // Update ground state every other time point.
+                Commander.BeamFlag.CloseLaser();
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay);
+
                 if (i % 2 == 0) // Alternate between Gnd1 and Gnd2.
                 {
-                    DoAcq(AcqBuffer, AcqRow, Gnd2, half, 
-                        (p) => PauseCancelProgress(e, (p % half) + half, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
+                    DoAcq(AcqBuffer, AcqRow, Gnd2, half, (p) => PauseCancelProgress(e, p % half + half, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
                     if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
                 }
                 else
                 {
-                    DoAcq(AcqBuffer, AcqRow, Gnd1, half, 
-                        (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
+                    DoAcq(AcqBuffer, AcqRow, Gnd1, half, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
                     if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
                 }
 
-                // Collect pump only X times
-                if (i < args.DiscardLaser || (i > Times.Count - args.DiscardLaser - 1))
-                {
-                    // C1. Set time delay.
-                    Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay);
 
-                    #region Collect pump only/laser only
-                    // C2. Open pump beam shutter
-                    Commander.BeamFlag.OpenLaser();
-
-                    // C3. Acquire pump only data
-                    Array.Clear(Laser, 0, Laser.Length);
-                    if (PauseCancelProgress(e, -1, new ProgressObject(null, Delay, Dialog.PROGRESS_TIME))) return;
-                    DoAcq(AcqBuffer, AcqRow, Lase, N,
-                          p => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_LASER)));
-                    if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
-                    Data.Accumulate(Laser, Lase);
-
-                    // C4. Close pump beam shutter
-                    Commander.BeamFlag.CloseLaser();
-                    #endregion
-                }
+                Data.Accumulate(Ground, Gnd1);
+                Data.Accumulate(Ground, Gnd2);
+                Data.DivideArray(Ground, N);
+                Data.Accumulate(Excited, Exc);
+                Data.DivideArray(Excited, N);
 
                 double[] deltaOD;
-                if (i < args.DiscardLaser || (i > Times.Count - args.DiscardLaser - 1))
-                {
-                    deltaOD = Data.DeltaOD(Ground, Excited, Laser);
-                }
-                else
-                {
-                    deltaOD = Data.DeltaOD(Ground, Excited, Dark);
-                }
+                deltaOD = Data.DeltaOD(Ground, Excited, Dark);
 
                 LuiData.Write(deltaOD, new long[] { i + 1, 1 }, RowSize);
-                if (PauseCancelProgress(e, i, new ProgressObject(deltaOD, Delay, Dialog.PROGRESS_TIME_COMPLETE)))
-                {
-                    return;
-                }
+                if (PauseCancelProgress(e, i, new ProgressObject(deltaOD, Delay, Dialog.PROGRESS_TIME_COMPLETE))) return;
                 Array.Clear(Ground, 0, Ground.Length);
                 Array.Clear(Excited, 0, Excited.Length);
             }

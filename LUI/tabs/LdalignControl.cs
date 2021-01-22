@@ -45,7 +45,6 @@ namespace LUI.tabs
             Init();
 
             Beta.ValueChanged += Beta_ValueChanged;
-
             SaveData.Click += (sender, e) => SaveOutput();
 
             DdgConfigBox.Config = Config;
@@ -89,7 +88,7 @@ namespace LUI.tabs
 
         void Beta_ValueChanged(object sender, EventArgs e)
         {
-            Commander.Polarizer.PolarizerBeta = (int)Beta.Value;
+            Commander.Polarizer.PolarizerBeta = (float)Beta.Value;
         }
 
         public override void HandleParametersChanged(object sender, EventArgs e)
@@ -336,51 +335,45 @@ namespace LUI.tabs
             // A1. Set up to collect dark spectrum 
             Commander.Polarizer.PolarizerToZeroBeta();
             // A2. Acquire data 
-            DoAcq(AcqBuffer,
-                  AcqRow,
-                  DarkBuffer,
-                  N,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_DARK)));
+            DoAcq(AcqBuffer, AcqRow, DarkBuffer, N, p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_DARK)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
             Data.Accumulate(Dark, DarkBuffer);
 
-            // B2. Move polarizer to plus beta 
-            Commander.Polarizer.PolarizerToPlusBeta();
-            // B3. Open pump and probe beam shutters
-            Commander.BeamFlag.OpenLaserAndFlash();
-            // B4. Acquire data
-            DoAcq(AcqBuffer,
-                  AcqRow,
-                  PlusBetaBuffer,
-                  N,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_PLUS)));
-            if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
-            // B5. Close beam shutters
-            Commander.BeamFlag.CloseLaserAndFlash();
-
-            // C1. Move polarizer to minus beta 
+            #region Collect minus beta
+            // B1. Move polarizer to minus beta 
             Commander.Polarizer.PolarizerToMinusBeta();
+            // B2. Open pump and probe beam shutters
+            Commander.BeamFlag.OpenLaserAndFlash();
+            // B3. Acquire data
+            DoAcq(AcqBuffer, AcqRow, MinusBetaBuffer, N,
+                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_MINUS)));
+            if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
+            // B4. Close beam shutters
+            Commander.BeamFlag.CloseLaserAndFlash();
+            #endregion 
+
+            #region Collect plus beta
+            // C1. Move polarizer to plus beta 
+            Commander.Polarizer.PolarizerToPlusBeta();
             // C2. Open pump and probe beam shutters
             Commander.BeamFlag.OpenLaserAndFlash();
             // C3. Acquire data
-            DoAcq(AcqBuffer,
-                  AcqRow,
-                  MinusBetaBuffer,
-                  N,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_MINUS)));
+            DoAcq(AcqBuffer, AcqRow, PlusBetaBuffer, N,
+                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_PLUS)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
             // C4. Close beam shutters
             Commander.BeamFlag.CloseLaserAndFlash();
+            #endregion
 
             Data.Accumulate(PlusBeta, PlusBetaBuffer);
             Data.Accumulate(MinusBeta, MinusBetaBuffer);
 
             var S = Data.S(PlusBeta, MinusBeta, Dark);
             LuiData.Write(S, new long[] { 1, 0 }, RowSize);
-            if (PauseCancelProgress(e, -1, new ProgressObject(S, Dialog.PROGRESS_COMPLETE)))
-            {
-                return;
-            }
+            S = Data.MovingAverage(S, 5);
+            //var LD = Data.LD(PlusBeta, MinusBeta, Dark, (double)Beta.Value);           
+            //LuiData.Write(LD, new long[] { 1, 0 }, RowSize);
+            if (PauseCancelProgress(e, -1, new ProgressObject(S, Dialog.PROGRESS_COMPLETE))) { return; }
             Array.Clear(PlusBeta, 0, PlusBeta.Length);
             Array.Clear(MinusBeta, 0, MinusBeta.Length);
         }
@@ -404,8 +397,9 @@ namespace LUI.tabs
                     break;
 
                 case Dialog.PROGRESS_COMPLETE:
-                    Display(progress.Data);
-                    LastGraphTrace = progress.Data;
+                    var Ssmth = Data.MovingAverage(progress.Data, 5);
+                    Display(Ssmth);
+                    LastGraphTrace = Ssmth;
                     break;
 
                 case Dialog.PROGRESS_PLUS:

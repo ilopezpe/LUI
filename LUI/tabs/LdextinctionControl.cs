@@ -23,6 +23,7 @@ namespace LUI.tabs
         {
             INITIALIZE,
             PROGRESS,
+            PROGRESS_DARK,
             PROGRESS_CROSSED,
             PROGRESS_BETA,
             PROGRESS_COMPLETE,
@@ -79,7 +80,7 @@ namespace LUI.tabs
 
         void Beta_ValueChanged(object sender, EventArgs e)
         {
-            Commander.Polarizer.PolarizerBeta = (int)Beta.Value;
+            Commander.Polarizer.PolarizerBeta = (float)Beta.Value;
         }
 
         public override void HandleParametersChanged(object sender, EventArgs e)
@@ -151,7 +152,7 @@ namespace LUI.tabs
             var TempFileName = Path.GetTempFileName();
             DataFile = new MatFile(TempFileName);
             RawData = DataFile.CreateVariable<int>("rawdata", NumScans, NumChannels);
-            LuiData = DataFile.CreateVariable<double>("luidata", 2+2, NumChannels);
+            LuiData = DataFile.CreateVariable<double>("luidata", 2, NumChannels);
         }
 
         protected override void Graph_Click(object sender, MouseEventArgs e)
@@ -258,7 +259,7 @@ namespace LUI.tabs
             var AcqWidth = Commander.Camera.AcqWidth;
 
             // Number of accumulations + dark
-            var TotalScans = N * 2;
+            var TotalScans = N * 3;
             #endregion
 
             #region initialize data files
@@ -285,10 +286,11 @@ namespace LUI.tabs
             /* 
             * Calculate extinction
             * A. Collect crossed position intensity
-            *      1. Move polarizer to crossed position
-            *      2. Open probe beam shutter
-            *      3. Acquire data
-            *      4. Close beam shutters
+            *      1. Set up to collect dark spectrum
+            *      2. Acquire dark spectrum
+            *      3. Open probe beam shutter
+            *      4. Acquire crossed spectrum
+            *      5. Close beam shutters
             * B. Collect small angle intensity 
             *      1. Move polarizer to plus beta
             *      2. Open probe beam shutter
@@ -297,14 +299,20 @@ namespace LUI.tabs
             *      5. Calculate and plot
             */
 
-            // A1. Move polarizer to crossed position
+            // A1. Set up to collect dark spectrum
             Commander.Polarizer.PolarizerToZeroBeta();
-            // A2. Open probe beam shutter
-            Commander.BeamFlag.OpenFlash();
-            // A3. Acquire data
-            DoAcq(AcqBuffer,AcqRow, ZeroBetaBuffer, N, p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_CROSSED)));
+            // A2. Acquire dark
+            DoAcq(AcqBuffer, AcqRow, DarkBuffer, N, 
+                p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_DARK)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
-            // A4. Close beam shutters
+            Data.Accumulate(Dark, DarkBuffer);
+            // A3. Open probe beam shutter
+            Commander.BeamFlag.OpenFlash();
+            // A4. Acquire crossed spectrum
+            DoAcq(AcqBuffer,AcqRow, ZeroBetaBuffer, N, 
+                p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_CROSSED)));
+            if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
+            // A5. Close beam shutters
             Commander.BeamFlag.CloseFlash();
             Data.Accumulate(ZeroBeta, ZeroBetaBuffer);
 
@@ -313,25 +321,21 @@ namespace LUI.tabs
             // B2. Open probe beam shutter
             Commander.BeamFlag.OpenFlash();
             // B3 Acquire data
-            DoAcq(AcqBuffer, AcqRow, PlusBetaBuffer, N,
-                  p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_BETA)));
+            DoAcq(AcqBuffer, AcqRow, PlusBetaBuffer, N, p => PauseCancelProgress(e, p, new ProgressObject(null, Dialog.PROGRESS_BETA)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, Dialog.PROGRESS))) return;
             // B4. Close beam shutters
             Commander.BeamFlag.CloseFlash();
             Data.Accumulate(PlusBeta, PlusBetaBuffer);
 
             // B5. Calculate and plot
-            var Y = Data.Extinction(PlusBeta, ZeroBeta, (double)Beta.Value);
-            Y = Data.MovingAverage(Y, 4);
+            var Y = Data.Extinction(PlusBeta, ZeroBeta, Dark, (double)Beta.Value);
+            Y = Data.MovingAverage(Y, 5); 
+
+
             LuiData.Write(Y, new long[] { 1, 0 }, RowSize);
-            // write raw data if needed
-            LuiData.Write(ZeroBeta, new long[] { 3, 0 }, RowSize);
-            LuiData.Write(PlusBeta, new long[] { 2, 0 }, RowSize); 
-            if (PauseCancelProgress(e, -1, new ProgressObject(Y, Dialog.PROGRESS_COMPLETE)))
-            {
-                return;
-            }
+            if (PauseCancelProgress(e, -1, new ProgressObject(Y, Dialog.PROGRESS_COMPLETE))) { return; }
             Array.Clear(PlusBeta, 0, PlusBeta.Length);
+            Array.Clear(ZeroBeta, 0, ZeroBeta.Length);
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
@@ -345,6 +349,11 @@ namespace LUI.tabs
                     break;
 
                 case Dialog.PROGRESS:
+                    break;
+
+                case Dialog.PROGRESS_DARK:
+                    ProgressLabel.Text = "Collecting dark";
+                    ScanProgress.Text = progressValue + "/" + NScan.Value;
                     break;
 
                 case Dialog.PROGRESS_CROSSED:

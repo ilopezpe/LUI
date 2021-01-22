@@ -62,11 +62,11 @@ namespace LUI.controls
 
         public float YMin { get; set; }
         public float InitialYMin { get; set; }
-        const float YMINDEFAULT = float.NegativeInfinity;
+        const float YMINDEFAULT = 0.1f;
 
         public float YMax { get; set; }
         public float InitialYMax { get; set; }
-        const float YMAXDEFAULT = float.PositiveInfinity;
+        const float YMAXDEFAULT = 1.0f;
 
         public float ScaleHeight { get; set; }
         public float InitialScaleHeight { get; set; }

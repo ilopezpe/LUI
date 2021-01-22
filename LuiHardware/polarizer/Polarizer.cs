@@ -12,8 +12,8 @@ namespace LuiHardware.polarizer
     {
         #region Constants 
         // Serial commands to move polarizer
-        public const float PolarizerAlign = 0.00f;
-        public const float PolarizerCross = 90.00f;
+        public const float PolarizerAlign = 0.00F; // absolute moves
+        public const float PolarizerCross = 90.00F; // absolute moves
         public const string PolarizerMoveCommand = "MOVETO";
         public const string PolarizerSetPosCommand = "SETPOS";
         public const string PolarizerStopCommand = "STOP\r\n";
@@ -45,7 +45,7 @@ namespace LuiHardware.polarizer
 
         public override float PolarizerBeta { get; set; } = 1.00F;
         public override int MinBeta { get; set; } = 0;
-        public override int MaxBeta { get; set; } = 90;
+        public override int MaxBeta { get; set; } = 10;
 
         public int Delay { get; set; } // Time in miliseconds to sleep between commands.
 
@@ -70,10 +70,9 @@ namespace LuiHardware.polarizer
             _port.DiscardOutBuffer();
         }
 
-        private float ToStep(float angle)
+        private int ToStep(float angle)
         {
-            float NSteps = angle * stepsPerUnit;
-            Math.Round(NSteps, 2);
+            int NSteps = (int)(angle * stepsPerUnit);
             return NSteps;
         }
 
@@ -140,7 +139,7 @@ namespace LuiHardware.polarizer
         /// <param name="wait"></param>
         void PolarizerToCrossed(bool wait)
         {
-            float NSteps = ToStep(PolarizerCross);
+            int NSteps = ToStep(PolarizerCross);
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
@@ -182,7 +181,7 @@ namespace LuiHardware.polarizer
         /// <param name="wait"></param>
         void PolarizerToMinusBeta(bool wait)
         {
-            float NSteps = ToStep(PolarizerCross - PolarizerBeta);
+            int NSteps = ToStep(PolarizerCross - PolarizerBeta);
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
@@ -197,19 +196,66 @@ namespace LuiHardware.polarizer
         }
 
         /// <summary>
-        /// Move the polarizer to the plus beta position,  sleeping to ensure the move has completed.
+        /// Move the polarizer to the crossed position when making small moves,  sleeping to ensure the move has completed.
         /// The PolarizerState is updated only after sleeping in case of monitoring by another thread.
         /// </summary>
         /// <param name="wait"></param>
         void PolarizerToZeroBeta(bool wait)
         {
-            float NSteps = ToStep(PolarizerCross);
+            int NSteps = ToStep(PolarizerCross);
 
             _port.DiscardInBuffer();
             _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
             if (wait) Thread.Sleep(Delay);
-            CurrentPosition = PolarizerPosition.Minus;
+            CurrentPosition = PolarizerPosition.Crossed;
             _port.DiscardOutBuffer();
+        }
+
+        public override void PolarizerConfigTrld()
+        {
+            PolarizerConfigTrld(true);
+        }
+
+        /// <summary>
+        /// Move the polarizer to the crossed position when making small moves,  sleeping to ensure the move has completed.
+        /// The PolarizerState is updated only after sleeping in case of monitoring by another thread.
+        /// </summary>
+        /// <param name="wait"></param>
+        void PolarizerConfigTrld(bool wait)
+        {
+            int NSteps = ToStep(PolarizerCross/2);
+            int NSteps2 = ToStep(PolarizerCross);
+
+            _port.DiscardInBuffer();
+            _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
+            if (wait) Thread.Sleep(Delay + (int)PolarizerCross / 2 * scanSpeed);
+            _port.DiscardOutBuffer();
+            _port.Write(PolarizerSetPosCommand + " " + NSteps2.ToString() + "\r\n");
+            CurrentPosition = PolarizerPosition.Crossed;
+            CurrentConfig = PolarizerConfig.Trld;
+        }
+
+        public override void PolarizerConfigOrd()
+        {
+            PolarizerConfigOrd(true);
+        }
+
+        /// <summary>
+        /// Move the polarizer to the crossed position when making small moves,  sleeping to ensure the move has completed.
+        /// The PolarizerState is updated only after sleeping in case of monitoring by another thread.
+        /// </summary>
+        /// <param name="wait"></param>
+        void PolarizerConfigOrd(bool wait)
+        {
+            int NSteps = ToStep(PolarizerCross / 2 + PolarizerCross);
+            int NSteps2 = ToStep(PolarizerCross);
+
+            _port.Write(PolarizerMoveCommand + " " + NSteps.ToString() + "\r\n");
+            if (wait) Thread.Sleep(Delay + (int)PolarizerCross * scanSpeed);
+
+            _port.Write(PolarizerSetPosCommand + " " + NSteps2.ToString() + "\r\n");
+            CurrentPosition = PolarizerPosition.Crossed;
+            CurrentConfig = PolarizerConfig.Ord;
         }
 
         void EnsurePortDisposed()

@@ -16,7 +16,7 @@ namespace LUI.tabs
     /// This was previously called laser power. 
     /// Can be used for alignment.
     /// </summary>
-    public partial class TransientAbsControl : LuiTab
+    public partial class TaalignControl : LuiTab
     {
         public enum Dialog
         {
@@ -39,7 +39,7 @@ namespace LUI.tabs
 
         double[] Light;
 
-        public TransientAbsControl(LuiConfig Config) : base(Config)
+        public TaalignControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
         }
@@ -319,12 +319,12 @@ namespace LUI.tabs
 
         void Display()
         {
-            Graph.ClearData();
-            Graph.Invalidate();
+            //Graph.ClearData();
+            //Graph.Invalidate();
 
             if (Light != null) Graph.DrawPoints(Commander.Camera.Calibration, Light);
-
             Graph.Invalidate();
+            Graph.MarkerColor = Graph.NextColor;
         }
 
         struct WorkArgs

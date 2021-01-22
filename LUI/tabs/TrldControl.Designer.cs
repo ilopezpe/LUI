@@ -38,6 +38,9 @@
             this.PolarizerBox = new LUI.controls.ObjectCommandPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.Beta = new System.Windows.Forms.NumericUpDown();
+            this.PolarizerConfigBox = new System.Windows.Forms.GroupBox();
+            this.buttonConfigTrld = new System.Windows.Forms.Button();
+            this.buttonConfigORD = new System.Windows.Forms.Button();
             this.TimeProgress = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
@@ -54,6 +57,7 @@
             this.PolarizerBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Beta)).BeginInit();
+            this.PolarizerConfigBox.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -82,10 +86,8 @@
             // 
             // Graph
             // 
-            this.Graph.InitialScaleHeight = 2F;
             this.Graph.InitialYMax = 1F;
             this.Graph.InitialYMin = -1F;
-            this.Graph.ScaleHeight = 2F;
             this.Graph.Size = new System.Drawing.Size(1176, 583);
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
@@ -187,16 +189,17 @@
             this.PolarizerBox.Flow.AutoSize = true;
             this.PolarizerBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PolarizerBox.Flow.Controls.Add(this.panel1);
+            this.PolarizerBox.Flow.Controls.Add(this.PolarizerConfigBox);
             this.PolarizerBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PolarizerBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.PolarizerBox.Flow.Location = new System.Drawing.Point(3, 16);
             this.PolarizerBox.Flow.Name = "Flow";
-            this.PolarizerBox.Flow.Size = new System.Drawing.Size(294, 73);
+            this.PolarizerBox.Flow.Size = new System.Drawing.Size(294, 143);
             this.PolarizerBox.Flow.TabIndex = 0;
             this.PolarizerBox.Location = new System.Drawing.Point(0, 0);
             this.PolarizerBox.Name = "PolarizerBox";
             this.PolarizerBox.SelectedObject = null;
-            this.PolarizerBox.Size = new System.Drawing.Size(300, 92);
+            this.PolarizerBox.Size = new System.Drawing.Size(300, 162);
             this.PolarizerBox.TabIndex = 0;
             this.PolarizerBox.Text = "Polarizer";
             // 
@@ -228,6 +231,38 @@
             this.Beta.Name = "Beta";
             this.Beta.Size = new System.Drawing.Size(67, 20);
             this.Beta.TabIndex = 10;
+            // 
+            // PolarizerConfigBox
+            // 
+            this.PolarizerConfigBox.Controls.Add(this.buttonConfigTrld);
+            this.PolarizerConfigBox.Controls.Add(this.buttonConfigORD);
+            this.PolarizerConfigBox.Location = new System.Drawing.Point(3, 76);
+            this.PolarizerConfigBox.Name = "PolarizerConfigBox";
+            this.PolarizerConfigBox.Size = new System.Drawing.Size(288, 64);
+            this.PolarizerConfigBox.TabIndex = 13;
+            this.PolarizerConfigBox.TabStop = false;
+            // 
+            // buttonConfigTrld
+            // 
+            this.buttonConfigTrld.Location = new System.Drawing.Point(2, 18);
+            this.buttonConfigTrld.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.buttonConfigTrld.Name = "buttonConfigTrld";
+            this.buttonConfigTrld.Size = new System.Drawing.Size(136, 34);
+            this.buttonConfigTrld.TabIndex = 11;
+            this.buttonConfigTrld.Text = "rho 45 deg";
+            this.buttonConfigTrld.UseVisualStyleBackColor = true;
+            this.buttonConfigTrld.Click += new System.EventHandler(this.buttonConfigTrld_Click);
+            // 
+            // buttonConfigORD
+            // 
+            this.buttonConfigORD.Location = new System.Drawing.Point(148, 18);
+            this.buttonConfigORD.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.buttonConfigORD.Name = "buttonConfigORD";
+            this.buttonConfigORD.Size = new System.Drawing.Size(136, 34);
+            this.buttonConfigORD.TabIndex = 12;
+            this.buttonConfigORD.Text = "rho 0 deg";
+            this.buttonConfigORD.UseVisualStyleBackColor = true;
+            this.buttonConfigORD.Click += new System.EventHandler(this.buttonConfigORD_Click);
             // 
             // TimeProgress
             // 
@@ -286,6 +321,7 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Beta)).EndInit();
+            this.PolarizerConfigBox.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -305,6 +341,8 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;
-
+        private System.Windows.Forms.Button buttonConfigTrld;
+        private System.Windows.Forms.Button buttonConfigORD;
+        private System.Windows.Forms.GroupBox PolarizerConfigBox;
     }
 }

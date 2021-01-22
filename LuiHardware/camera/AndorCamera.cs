@@ -11,15 +11,22 @@ namespace LuiHardware.camera
     /// </summary>
     public class AndorCamera : AbstractCamera
     {
-        public const int TriggerInvertRising = 0;
-        public const int TriggerInvertFalling = 1;
-        public const float DefaultTriggerLevel = 3.9F;
+        #region Andor Constants
 
-        public const int MCPGatingOff = 0;
-        public const int MCPGatingOn = 1;
+        public const int ReadModeFVB = 0;
+
+        public const int ReadModeMultiTrack = 1;
+        public const int ReadModeRandomTrack = 2;
+        public const int ReadModeSingleTrack = 3;
+        public const int ReadModeImage = 4;
+
+        public const int AcquisitionModeSingle = 1;
+        public const int AcquisitionModeAccumulate = 2;
+
+
         public const int DefaultMCPGain = 10;
-
         public const int DefaultADChannel = 0;
+        #endregion
 
         readonly int _BitDepth;
 
@@ -31,7 +38,7 @@ namespace LuiHardware.camera
 
         int _AcquisitionMode;
 
-        int _CurrentADChannel;
+        int _ADChannel;
 
         int _DDGTriggerMode;
 
@@ -55,15 +62,20 @@ namespace LuiHardware.camera
 
         int _SaturationLevel;
 
-        int _TriggerInvert;
-
-        float _TriggerLevel;
-
         int _TriggerMode;
 
+        public float HSSpeedMin { get; set; }
+        public float HSSpeedMax { get; set; }
+        public float HSSpeed { get; set; }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         protected int _Width;
-        public AndorSDK AndorSdk = new AndorSDK();
-        public AndorSDK.AndorCapabilities Capabilities;
+        public AndorSDK AndorSdk = new AndorSDK(); // Initialize Andor SDK
+        public AndorSDK.AndorCapabilities Capabilities; // Initialize capabilities 
 
         public uint InitVal;
 
@@ -86,9 +98,11 @@ namespace LuiHardware.camera
                 AndorSdk.GetCapabilities(ref Capabilities);
                 AndorSdk.FreeInternalMemory();
                 AndorSdk.GetDetector(ref _Width, ref _Height);
+
                 AndorSdk.GetNumberADChannels(ref _NumberADChannels);
-                CurrentADChannel = DefaultADChannel;
-                AndorSdk.GetBitDepth(CurrentADChannel, ref _BitDepth);
+                ADChannel = DefaultADChannel;
+
+                AndorSdk.GetBitDepth(ADChannel, ref _BitDepth);
                 SaturationLevel = p.SaturationLevel;
 
                 AndorSdk.GetMaximumBinning(ReadModeImage, 0, ref _MaxHorizontalBinSize);
@@ -98,17 +112,21 @@ namespace LuiHardware.camera
                 Image = p.Image;
 
                 GateMode = Constants.GatingModeSMBOnly;
-                MCPGating = Constants.MCPGatingOn;
+                MCPGating = 1; // enable the MCP
 
-                //TriggerInvert = Constants.TriggerInvertRising;
-                //TriggerLevel = Constants.DefaultTriggerLevel; // TTL signal is 4.0V
                 AndorSdk.GetMCPGainRange(ref _MinMCPGain, ref _MaxMCPGain);
                 IntensifierGain = p.InitialGain;
 
                 AcquisitionMode = AcquisitionModeSingle;
-                TriggerMode = TriggerModeExternalExposure;
+                TriggerMode = TriggerModeExternal;
                 DDGTriggerMode = DDGTriggerModeExternal;
                 ReadMode = p.ReadMode;
+
+                // quick hack for optimal camera setting for spectroscopy
+                AndorSdk.SetHighCapacity(0); // Note: 0 enables high sensitivity.
+                AndorSdk.SetPreAmpGain(2); // 2 = 4x , 1 = 2x, 0 = 1x;
+                AndorSdk.SetDDGInsertionDelay(1); // set to fast insertion delay, intelligate off.
+
             }
 
             LoadCalibration(p.CalFile);
@@ -124,6 +142,20 @@ namespace LuiHardware.camera
             {
                 _ReadMode = value;
                 AndorSdk.SetReadMode(value);
+                if (_ReadMode == ReadModeFVB)
+                    // available speeds
+                    // 0 = 5 MHz, 1 = 3 MHz, 2 = 1 MHz, 3 = 0.05 MHz
+                    // set speed to slowest
+                    AndorSdk.SetHSSpeed(0, 3);
+                else
+                    // set speed to second fastest, 1 = 3 MHz
+                    AndorSdk.SetHSSpeed(0, 1); 
+
+
+                int vsspeed_i = 0;
+                float vsspeed = 0;
+                AndorSdk.GetFastestRecommendedVSSpeed(ref vsspeed_i, ref vsspeed);
+                AndorSdk.SetVSSpeed(vsspeed_i);
             }
         }
 
@@ -144,26 +176,6 @@ namespace LuiHardware.camera
             {
                 _TriggerMode = value;
                 AndorSdk.SetTriggerMode(value);
-            }
-        }
-
-        public virtual int TriggerInvert
-        {
-            get => _TriggerInvert;
-            set
-            {
-                _TriggerInvert = value;
-                AndorSdk.SetTriggerInvert(value);
-            }
-        }
-
-        public virtual float TriggerLevel
-        {
-            get => _TriggerLevel;
-            set
-            {
-                _TriggerLevel = value;
-                AndorSdk.SetTriggerLevel(value);
             }
         }
 
@@ -317,15 +329,13 @@ namespace LuiHardware.camera
         public int BitDepth => _BitDepth;
         public int NumberADChannels => _NumberADChannels;
 
-        public int CurrentADChannel
+        public int ADChannel
         {
-            get => _CurrentADChannel;
+            get => _ADChannel;
             set
             {
-                //TODO check return from Andor
-                //TODO ALL properties in this class need this fix and code reorder to reflect
                 AndorSdk.SetADChannel(value);
-                _CurrentADChannel = value;
+                _ADChannel = value;
             }
         }
 
@@ -390,6 +400,8 @@ namespace LuiHardware.camera
             var image = Image;
             var readMode = ReadMode;
             ReadMode = ReadModeImage;
+            AndorSdk.SetHSSpeed(0, 0);
+
             Image = new ImageArea(1, 1, 0, Width, 0, Height);
             var npx = (uint) (Width * Height);
             var data = new int[npx];
@@ -474,18 +486,6 @@ namespace LuiHardware.camera
             throw new NotImplementedException();
         }
 
-        #region Andor Constants
-
-        public const int ReadModeFVB = 0;
-
-        public const int ReadModeMultiTrack = 1;
-        public const int ReadModeRandomTrack = 2;
-        public const int ReadModeSingleTrack = 3;
-        public const int ReadModeImage = 4;
-
-        public const int AcquisitionModeSingle = 1;
-        public const int AcquisitionModeAccumulate = 2;
-
         public const int GatingModeSMBOnly = 2;
 
         public const int DDGTriggerModeInternal = 0;
@@ -494,6 +494,5 @@ namespace LuiHardware.camera
         public const int TriggerModeExternal = 1;
         public const int TriggerModeExternalExposure = 7;
 
-        #endregion
     }
 }

@@ -250,11 +250,11 @@
     <Compile Include="tabs\LdextinctionControl.Designer.cs">
       <DependentUpon>LdextinctionControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="tabs\TransientAbsControl.cs">
+    <Compile Include="tabs\TaalignControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="tabs\TransientAbsControl.Designer.cs">
-      <DependentUpon>TransientAbsControl.cs</DependentUpon>
+    <Compile Include="tabs\TaalignControl.Designer.cs">
+      <DependentUpon>TaalignControl.cs</DependentUpon>
     </Compile>
     <Compile Include="tabs\ResidualsControl.cs">
       <SubType>UserControl</SubType>
@@ -337,8 +337,8 @@
     <EmbeddedResource Include="tabs\LdextinctionControl.resx">
       <DependentUpon>LdextinctionControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="tabs\TransientAbsControl.resx">
-      <DependentUpon>TransientAbsControl.cs</DependentUpon>
+    <EmbeddedResource Include="tabs\TaalignControl.resx">
+      <DependentUpon>TaalignControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\ResidualsControl.resx">
       <DependentUpon>ResidualsControl.cs</DependentUpon>

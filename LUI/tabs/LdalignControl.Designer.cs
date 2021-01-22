@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.PolarizerBetaLabel = new System.Windows.Forms.Label();
-            this.SaveData = new System.Windows.Forms.Button();
             this.DdgConfigBox = new LUI.controls.DdgCommandPanel();
             this.PolarizerBox = new LUI.controls.ObjectCommandPanel();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -37,6 +36,8 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.CountsLabel = new System.Windows.Forms.Label();
             this.CountsDisplay = new System.Windows.Forms.TextBox();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.SaveData = new System.Windows.Forms.Button();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -49,7 +50,7 @@
             this.PolarizerBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Beta)).BeginInit();
-            this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
             this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
@@ -70,11 +71,16 @@
             // 
             // Graph
             // 
+            this.Graph.InitialYMax = 1F;
+            this.Graph.InitialYMin = -1F;
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
+            this.Graph.YMax = 1F;
+            this.Graph.YMin = -1F;
             // 
             // LeftChildArea
             // 
+            this.LeftChildArea.Controls.Add(this.panel3);
             this.LeftChildArea.Controls.Add(this.CountsLabel);
             this.LeftChildArea.Controls.Add(this.CountsDisplay);
             this.LeftChildArea.Controls.Add(this.panel2);
@@ -93,16 +99,6 @@
             this.PolarizerBetaLabel.Size = new System.Drawing.Size(29, 13);
             this.PolarizerBetaLabel.TabIndex = 10;
             this.PolarizerBetaLabel.Text = "Beta";
-            // 
-            // SaveData
-            // 
-            this.SaveData.Location = new System.Drawing.Point(3, 2);
-            this.SaveData.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.SaveData.Name = "SaveData";
-            this.SaveData.Size = new System.Drawing.Size(136, 34);
-            this.SaveData.TabIndex = 12;
-            this.SaveData.Text = "Save Data";
-            this.SaveData.UseVisualStyleBackColor = true;
             // 
             // DdgConfigBox
             // 
@@ -172,10 +168,9 @@
             this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.panel2.AutoSize = true;
             this.panel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.panel2.Controls.Add(this.SaveData);
-            this.panel2.Location = new System.Drawing.Point(1028, 3);
+            this.panel2.Location = new System.Drawing.Point(1170, 3);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(142, 38);
+            this.panel2.Size = new System.Drawing.Size(0, 0);
             this.panel2.TabIndex = 16;
             // 
             // CountsLabel
@@ -198,6 +193,27 @@
             this.CountsDisplay.TabIndex = 19;
             this.CountsDisplay.Text = "0";
             this.CountsDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // panel3
+            // 
+            this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel3.AutoSize = true;
+            this.panel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel3.Controls.Add(this.SaveData);
+            this.panel3.Location = new System.Drawing.Point(1028, 5);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(142, 38);
+            this.panel3.TabIndex = 21;
+            // 
+            // SaveData
+            // 
+            this.SaveData.Location = new System.Drawing.Point(3, 2);
+            this.SaveData.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.SaveData.Name = "SaveData";
+            this.SaveData.Size = new System.Drawing.Size(136, 34);
+            this.SaveData.TabIndex = 12;
+            this.SaveData.Text = "Save Data";
+            this.SaveData.UseVisualStyleBackColor = true;
             // 
             // LdalignControl
             // 
@@ -224,13 +240,12 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Beta)).EndInit();
-            this.panel2.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.Button SaveData;
         private controls.DdgCommandPanel DdgConfigBox;
         private controls.ObjectCommandPanel PolarizerBox;
         private System.Windows.Forms.Panel panel1;
@@ -239,5 +254,7 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label CountsLabel;
         private System.Windows.Forms.TextBox CountsDisplay;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Button SaveData;
     }
 }

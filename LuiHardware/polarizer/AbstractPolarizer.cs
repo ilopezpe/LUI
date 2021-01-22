@@ -11,6 +11,8 @@ namespace LuiHardware.polarizer
 
         public PolarizerPosition CurrentPosition { get; protected set; }
 
+        public PolarizerConfig CurrentConfig { get; protected set; }
+
         public virtual float PolarizerBeta { get; set; }
 
         public virtual int MinBeta { get; set; }
@@ -79,5 +81,17 @@ namespace LuiHardware.polarizer
             return CurrentPosition;
         }
 
+
+        public virtual void PolarizerConfigTrld()
+        {
+            CurrentPosition = PolarizerPosition.Crossed;
+            CurrentConfig = PolarizerConfig.Trld;
+        }
+
+        public virtual void PolarizerConfigOrd()
+        {
+            CurrentPosition = PolarizerPosition.Crossed;
+            CurrentConfig = PolarizerConfig.Ord;
+        }
     }
 }

@@ -99,7 +99,7 @@ namespace LUI.tabs
 
         void Beta_ValueChanged(object sender, EventArgs e)
         {
-            Commander.Polarizer.PolarizerBeta = (int)Beta.Value;
+            Commander.Polarizer.PolarizerBeta = (float)Beta.Value;
         }
 
         public override void HandleParametersChanged(object sender, EventArgs e)
@@ -289,11 +289,8 @@ namespace LUI.tabs
         {
             DoTempCheck(() => PauseCancelProgress(e, 0, new ProgressObject(null, 0, Dialog.TEMPERATURE)));
 
-            if (PauseCancelProgress(e, 0, new ProgressObject(null, 0, Dialog.INITIALIZE)))
-            {
-                return; // Show zero progress.
-            }
-
+            if (PauseCancelProgress(e, 0, new ProgressObject(null, 0, Dialog.INITIALIZE))) return; // Show zero progress.
+            
             #region collect variables 
             var args = (WorkArgs)e.Argument;
             var N = args.N; // Save typing for later.
@@ -351,69 +348,75 @@ namespace LUI.tabs
             *      5. Calculate and plot
             */
 
-            // A1. Set up to collect dark spectrum 
+            #region Collect dark spectrum
+            // A0. Reset GS delay for dark
             Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8);
+
+            // A1. Set up to collect dark spectrum 
+            //Commander.Polarizer.PolarizerToZeroBeta();
             Commander.BeamFlag.CloseLaserAndFlash();
 
             // A2. Acquire data 
-            DoAcq(AcqBuffer,
-                  AcqRow,
-                  DarkBuffer,
-                  N,
+            DoAcq(AcqBuffer, AcqRow, DarkBuffer, N,
                   p => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_DARK)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
             Data.Accumulate(Dark, DarkBuffer);
+            #endregion
 
             for (int i = 0; i < Times.Count; i++)
             {
-                // B1. Set time delay 
+                // Set time delay
                 var Delay = Times[i];
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay);
-                // B2. Move polarizer to plus beta 
-                Commander.Polarizer.PolarizerToPlusBeta();
-                // B3. Open pump and probe beam shutters
-                Commander.BeamFlag.OpenLaserAndFlash();
-                // B4. Acquire data
-                if (PauseCancelProgress(e, -1, new ProgressObject(null, Delay, Dialog.PROGRESS_TIME))) return;
-                DoAcq(AcqBuffer,
-                      AcqRow,
-                      PlusBetaBuffer,
-                      N,
-                      p => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_PLUS)));
-                if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
-                // B5. Close beam shutters
-                Commander.BeamFlag.CloseLaserAndFlash();
 
-                // C1. Move polarizer to minus beta 
+                #region Collect minus beta
+                // B1. Move polarizer to minus beta 
                 Commander.Polarizer.PolarizerToMinusBeta();
-                // C2. Open pump and probe beam shutters
+
+                // B2. Open pump and probe beam shutters
                 Commander.BeamFlag.OpenLaserAndFlash();
-                // C3. Acquire data
+
+                // B3. Acquire data
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, Delay, Dialog.PROGRESS_TIME))) return;
-                DoAcq(AcqBuffer,
-                      AcqRow,
-                      MinusBetaBuffer,
-                      N,
+                DoAcq(AcqBuffer, AcqRow, MinusBetaBuffer, N,
                       p => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_MINUS)));
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
+                Data.Accumulate(MinusBeta, MinusBetaBuffer);
+
+                // B4. Close beam shutters
+                Commander.BeamFlag.CloseLaserAndFlash();
+                #endregion
+
+                #region Collect plus beta
+                // C1. Move polarizer to plus beta 
+                Commander.Polarizer.PolarizerToPlusBeta();
+
+                // C2. Open pump and probe beam shutters
+                Commander.BeamFlag.OpenLaserAndFlash();
+
+                // C3. Acquire data
+                if (PauseCancelProgress(e, -1, new ProgressObject(null, Delay, Dialog.PROGRESS_TIME))) return;
+                DoAcq(AcqBuffer, AcqRow, PlusBetaBuffer, N,
+                      p => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_PLUS)));
+                if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
+                Data.Accumulate(PlusBeta, PlusBetaBuffer);
+
                 // C4. Close beam shutters
                 Commander.BeamFlag.CloseLaserAndFlash();
-
-                Data.Accumulate(PlusBeta, PlusBetaBuffer);
-                Data.DivideArray(PlusBeta, N);
-
-                Data.Accumulate(MinusBeta, MinusBetaBuffer);
-                Data.DivideArray(MinusBeta, N);
+                #endregion
 
                 var S = Data.S(PlusBeta, MinusBeta, Dark);
                 LuiData.Write(S, new long[] { i + 1, 1 }, RowSize);
-                if (PauseCancelProgress(e, i, new ProgressObject(S, Delay, Dialog.PROGRESS_TIME_COMPLETE)))
-                {
-                    return;
-                }
+                //var LD = Data.LD(PlusBeta, MinusBeta, Dark, (double)Beta.Value);
+                //LuiData.Write(LD, new long[] { i + 1, 1 }, RowSize);
+                if (PauseCancelProgress(e, i, new ProgressObject(S, Delay, Dialog.PROGRESS_TIME_COMPLETE))) { return; }
                 Array.Clear(PlusBeta, 0, PlusBeta.Length);
                 Array.Clear(MinusBeta, 0, MinusBeta.Length);
+                Array.Clear(PlusBetaBuffer, 0, PlusBetaBuffer.Length);
+                Array.Clear(MinusBetaBuffer, 0, PlusBetaBuffer.Length);
             }
+            Array.Clear(Dark, 0, Dark.Length);
+            Array.Clear(DarkBuffer, 0, DarkBuffer.Length);
             Commander.Polarizer.PolarizerToZeroBeta();
             Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8);
         }
@@ -570,11 +573,8 @@ namespace LUI.tabs
                 Title = "Save As"
             };
             var result = saveFile.ShowDialog();
-
             if (result != DialogResult.OK || saveFile.FileName == "") return;
-
             if (File.Exists(saveFile.FileName)) File.Delete(saveFile.FileName);
-
             switch (saveFile.FilterIndex)
             {
                 case 1: // MAT file; just move temporary MAT file.
@@ -588,7 +588,6 @@ namespace LUI.tabs
                         Log.Error(ex);
                         MessageBox.Show(ex.Message);
                     }
-
                     break;
 
                 case 2: // CSV file; read LuiData to CSV file.
@@ -606,7 +605,6 @@ namespace LUI.tabs
 
                         DataFile.Close();
                     }
-
                     break;
             }
         }
@@ -696,6 +694,16 @@ namespace LUI.tabs
             public readonly double[] Data;
             public readonly double Delay;
             public readonly Dialog Status;
+        }
+
+        private void buttonConfigTrld_Click(object sender, EventArgs e)
+        {
+            Commander.Polarizer.PolarizerConfigTrld();
+        }
+
+        private void buttonConfigORD_Click(object sender, EventArgs e)
+        {
+            Commander.Polarizer.PolarizerConfigOrd();
         }
     }
 }

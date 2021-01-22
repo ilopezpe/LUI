@@ -166,31 +166,55 @@ namespace LuiHardware
         }
 
         /// <summary>
+        /// Computes LD from +/- beta transmitted intensity, and dark counts.
+        /// </summary>
+        /// <param name="PlusB"></param>
+        /// <param name="MinusB"></param>
+        /// <param name="Dark"></param>
+        /// <param name="beta"></param>
+        /// <returns>LD</returns>
+        public static double[] LD(IList<double> PlusB, IList<double> MinusB, IList<double> Dark, double beta)
+        {
+            var S = new double[PlusB.Count];
+            var LD = new double[PlusB.Count];
+            for (var i = 0; i < LD.Length; i++)
+            {
+                S[i] = (PlusB[i] - MinusB[i]) / (PlusB[i] + MinusB[i] - 2 * Dark[i]);
+                LD[i] = S[i]*(Math.PI * beta / 180.0);
+            }
+            return LD;
+        }
+
+        /// <summary>
         /// Compute the extinction for crossed polarizers
         /// </summary>
         /// <param name="SmallAngleSpectrum"></param>
         /// <param name="CrossedSpectrum"></param>
         /// <param name="beta"></param>
         /// <returns>Extinction</returns>
-        public static double[] Extinction(IList<double> SmallAngleSpectrum, IList<double> CrossedSpectrum, double beta)
+        public static double[] Extinction(IList<double> SmallAngleSpectrum, IList<double> CrossedSpectrum, IList<double> DarkSpectrum, double beta)
         {
             double sinAngle = Math.Sin(Math.PI * beta / 180.0);
 
             var AlignedSpectrum = new double[SmallAngleSpectrum.Count];
             for (var i = 0; i < AlignedSpectrum.Length; i++)
             {
+                // read out noise is already subtracted
+                // (small+dark) minus (cross+dark) = aligned
                 AlignedSpectrum[i] = (SmallAngleSpectrum[i] - CrossedSpectrum[i])/(sinAngle*sinAngle);
             }
 
             // baseline offset w/o introducing more noise.
-            double Offset = Queryable.Average(CrossedSpectrum.AsQueryable());
+            //double Offset = Queryable.Average(CrossedSpectrum.AsQueryable());
 
             var Extinction = new double[SmallAngleSpectrum.Count];
             for (var i =0; i < Extinction.Length; i++)
             {
-                Extinction[i] = (CrossedSpectrum[i] - Offset)/ AlignedSpectrum[i];
-            }
+                //Extinction[i] = (CrossedSpectrum[i] - Offset)/ AlignedSpectrum[i];
 
+                // extinction = ((cross + dark) minus dark) / aligned
+                Extinction[i] = (CrossedSpectrum[i] - DarkSpectrum[i]) / AlignedSpectrum[i];
+            }
             return Extinction;
         }
 
